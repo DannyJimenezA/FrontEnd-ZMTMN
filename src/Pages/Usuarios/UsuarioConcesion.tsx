@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { jwtDecode } from 'jwt-decode';
 import ApiRoutes from '../../Components/ApiRoutes';
+import { FaFilePdf } from 'react-icons/fa';
 
 const MySwal = withReactContent(Swal);
 
@@ -131,7 +132,17 @@ export default function UsuarioConcesion() {
   return (
     <div className="container mx-auto px-4 py-12">
       <h1 className="text-4xl font-bold mb-8 text-center">Módulo de Solicitud de Concesión</h1>
-      
+      <li className="flex items-center">
+            <FaFilePdf className="text-red-500 mr-3" />
+            <a 
+              href="/DocsPdf/Formulario Solicitud de Concesión.pdf" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-blue-600 hover:underline"
+            >
+              Formulario para Solicitud de Concesión
+            </a>
+          </li>
       <div
         {...getRootProps()}
         className={`p-8 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors ${

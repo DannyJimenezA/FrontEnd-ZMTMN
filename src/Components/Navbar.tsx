@@ -160,6 +160,9 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
                   <Link to="/usuario-prorroga" className="block py-2 text-gray-600 hover:text-blue-600">Prorrogas</Link>
                   <Link to="/usuario-precario" className="block py-2 text-gray-600 hover:text-blue-600">Uso Precario</Link>
                   <Link to="/usuario-plano" className="block py-2 text-gray-600 hover:text-blue-600">Revisión de Planos</Link>
+                  <Link to="/usuario-expediente" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
+                    Copia de Expediente
+                  </Link>
                 </div>
               )}
             </div>

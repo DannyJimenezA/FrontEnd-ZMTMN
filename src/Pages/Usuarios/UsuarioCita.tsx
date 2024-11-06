@@ -76,7 +76,7 @@ export default function UsuarioCita() {
   };
 
   const handleBack = () => {
-    navigate('/');
+    navigate('/mis-citas');
   };
 
   return (

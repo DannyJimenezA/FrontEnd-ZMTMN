@@ -242,7 +242,9 @@ const CitasList = () => {
                           <p className="flex items-center gap-1">
                             Estado: 
                             <span className={`inline-flex items-center ${
-                              appointment.status === 'confirmed' ? 'text-green-600' : 'text-yellow-600'
+                              appointment.status === 'Aprobada' ? 'text-green-600' 
+                              : appointment.status === 'Denegada'? 'text-red-600'
+                              : 'text-yellow-600'
                             }`}>
                               {appointment.status === 'confirmed' ? (
                                 <CheckCircleIcon className="h-4 w-4 mr-1" />

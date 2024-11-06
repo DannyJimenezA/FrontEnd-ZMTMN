@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../Components/Navbar';
+import ApiRoutes from '../../Components/ApiRoutes';
 
 interface Request {
   id: number;
@@ -12,20 +13,52 @@ interface Request {
 export default function UserRequests() {
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simular una llamada a la API para obtener las solicitudes del usuario
     const fetchRequests = async () => {
       setLoading(true);
-      // Aquí normalmente harías una llamada a tu API
-      const mockRequests: Request[] = [
-        { id: 1, type: 'Concesión', status: 'En proceso', date: '2023-05-01', description: 'Solicitud de concesión para uso de agua' },
-        { id: 2, type: 'Prórroga', status: 'Aprobada', date: '2023-04-15', description: 'Prórroga para concesión existente' },
-        { id: 3, type: 'Uso Precario', status: 'Pendiente', date: '2023-05-10', description: 'Solicitud de uso precario de terreno' },
-        { id: 4, type: 'Revisión de Planos', status: 'Rechazada', date: '2023-03-20', description: 'Revisión de planos para proyecto de construcción' },
-      ];
-      setRequests(mockRequests);
-      setLoading(false);
+      setError(null); // Reset error state
+
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('No se encontró el token de autenticación');
+          setLoading(false);
+          return;
+        }
+
+        console.log('Token:', token);
+        const url = `${ApiRoutes.expedientes}/my-solicitudes`;
+        console.log('API URL:', url);
+
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Error ${response.status}: ${response.statusText} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        console.log('Response data:', data);
+        setRequests(data);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error('Error fetching requests:', error.message);
+          setError(`Error al cargar las solicitudes: ${error.message}`);
+        } else {
+          console.error('Error desconocido:', error);
+          setError('Error desconocido al cargar las solicitudes');
+        }
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchRequests();
@@ -50,9 +83,13 @@ export default function UserRequests() {
     return <div className="text-center py-10">Cargando solicitudes...</div>;
   }
 
+  if (error) {
+    return <div className="text-center py-10 text-red-600">{error}</div>;
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
-        <Navbar/>
+      <Navbar />
       <h1 className="text-3xl font-bold mb-6">Mis Solicitudes</h1>
       {requests.length === 0 ? (
         <p>No tienes solicitudes activas.</p>
