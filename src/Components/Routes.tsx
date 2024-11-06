@@ -13,11 +13,10 @@ import ForgotPassword from '../Pages/Auth/ForgotPassword';
 import ProtectedRoute from './ProtectedRoute';
 import { AuthProvider } from '../Pages/Auth/AuthContext';
 import UsuarioExpediente from '../Pages/Usuarios/UsuarioExpediente';
-import UserAppointments from '../Pages/UsuariosSolicitudes/CitasList';
 import CitasList from '../Pages/UsuariosSolicitudes/CitasList';
 
 function AppRoutes() {
-  const isAuthenticated = !!localStorage.getItem('token');
+  // const isAuthenticated = !!localStorage.getItem('token');
 
   return (
     <AuthProvider>
@@ -28,7 +27,6 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/mis-citas" element={<CitasList/>}/>
 
       {/* Rutas Protegidas */}
       <Route path="/usuario-expediente" element={<ProtectedRoute><UsuarioExpediente/></ProtectedRoute>}/>
@@ -38,6 +36,7 @@ function AppRoutes() {
       <Route path="/usuario-precario" element={<ProtectedRoute><UsuarioPrecario /></ProtectedRoute>}/>
       <Route path="/usuario-plano" element={<ProtectedRoute><UsuarioPlano /></ProtectedRoute>}/>
       <Route path="/mis-solicitudes" element={<ProtectedRoute><UserRequests /></ProtectedRoute>}/>
+      <Route path="/mis-citas" element={<CitasList/>}/>
     </Routes>
             
    </AuthProvider>

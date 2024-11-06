@@ -115,7 +115,11 @@ export default function Login() {
                   Cancelar
                 </button>
               </div>
-
+              <div className="text-center text-sm">
+              <a href="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
+                  Olvido su contraseña
+                </a>
+                </div>
               <div className="text-center text-sm">
                 <span className="text-gray-600">¿No tienes una cuenta?</span>
                 {' '}

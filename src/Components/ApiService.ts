@@ -15,7 +15,7 @@ const ApiService = {
     return await response.json();
   },
 
-  async post<T>(url: string, data: any, p0: { headers: { 'Content-Type': string; }; }): Promise<T> {
+  async post<T>(url: string, data: any): Promise<T> {
     const token = localStorage.getItem('token');
     const headers = {
       'Content-Type': 'application/json',

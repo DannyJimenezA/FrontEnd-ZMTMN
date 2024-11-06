@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bars3Icon, XMarkIcon, UserIcon } from '@heroicons/react/24/outline';
 import { jwtDecode } from 'jwt-decode';
@@ -16,9 +16,9 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
   const [isSolicitudesDropdownOpen, setIsSolicitudesDropdownOpen] = useState(false); // Estado para "Realizar Solicitudes"
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false); // Estado para el dropdown de usuario
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false); // Estado para dropdown en modo móvil
-  const [prevScrollPos, setPrevScrollPos] = useState(0);
-  const [visible, setVisible] = useState(true);
-  const hideTimeout = useRef<ReturnType<typeof setTimeout> | null>(null); 
+  // const [prevScrollPos, setPrevScrollPos] = useState(0);
+  const [visible] = useState(true);
+  // const hideTimeout = useRef<ReturnType<typeof setTimeout> | null>(null); 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const navigate = useNavigate();

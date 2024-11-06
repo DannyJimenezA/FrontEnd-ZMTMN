@@ -16,7 +16,7 @@ export default function Home() {
           </p>
         </section>
 
-        {/* <ImageSlider /> */}
+        <ImageSlider />
 
         <section className="mb-16">
           <h2 className="text-3xl font-semibold mb-4 text-gray-800">Definición</h2>
