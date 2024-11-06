@@ -1,7 +1,7 @@
-import ImageSlider from '../Pages/Components/Slider';
-import Navbar from './Components/Navbar';
-import Footer from './Components/Footer';
-import DocumentosPDF from './Components/DocumentosPDF';
+import ImageSlider from './Slider';
+import Navbar from './Navbar';
+import Footer from './Footer';
+import DocumentosPDF from './DocumentosPDF';
 
 export default function Home() {
   return (
@@ -16,7 +16,7 @@ export default function Home() {
           </p>
         </section>
 
-        <ImageSlider />
+        {/* <ImageSlider /> */}
 
         <section className="mb-16">
           <h2 className="text-3xl font-semibold mb-4 text-gray-800">Definición</h2>
