@@ -4,6 +4,7 @@
 // import { useNavigate } from 'react-router-dom';
 // import Swal from 'sweetalert2';
 // import withReactContent from 'sweetalert2-react-content';
+// import ApiRoutes from '../../Components/ApiRoutes';
 // import { jwtDecode } from 'jwt-decode';
 
 // const MySwal = withReactContent(Swal);
@@ -15,11 +16,14 @@
 
 // interface DecodedToken {
 //   exp: number; // Expiration timestamp
+//   sub: string; // User ID
 // }
 
 // export default function UsuarioPlano() {
 //   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-//   const [fileDescription, setFileDescription] = useState(''); // Campo para la descripción de archivos
+//   const [comentario, setComentario] = useState(''); // Comentario adicional
+//   const [numeroPlano, setNumeroPlano] = useState(''); // Número de plano
+//   const [numeroExpediente, setNumeroExpediente] = useState(''); // Número de expediente
 //   const navigate = useNavigate();
 
 //   // Verificación de autenticación y expiración de token
@@ -57,9 +61,7 @@
 
 //   const { getRootProps, getInputProps, isDragActive } = useDropzone({
 //     onDrop,
-//     accept: {
-//       'application/pdf': ['.pdf'],
-//     },
+//     accept: { 'application/pdf': ['.pdf'] },
 //   });
 
 //   const removeFile = (fileToRemove: UploadedFile) => {
@@ -67,28 +69,65 @@
 //     URL.revokeObjectURL(fileToRemove.preview);
 //   };
 
-//   const handleSend = () => {
+//   const handleSend = async () => {
 //     if (uploadedFiles.length === 0) {
-//       MySwal.fire({
-//         title: 'Error',
-//         text: 'No has subido ningún archivo.',
-//         icon: 'error',
-//         confirmButtonText: 'Aceptar',
-//       });
+//       MySwal.fire('Error', 'No has subido ningún archivo.', 'error');
 //       return;
 //     }
 
-//     // Lógica de envío al servidor, incluyendo el detalle de los archivos
-//     MySwal.fire({
-//       title: 'Archivos enviados',
-//       text: '¡Tus archivos y descripción han sido enviados exitosamente!',
-//       icon: 'success',
-//       confirmButtonText: 'Aceptar',
-//       timer: 3000,
-//     }).then(() => {
-//       setUploadedFiles([]); // Limpia la lista de archivos después del envío
-//       setFileDescription(''); // Limpia el campo de descripción
+//     const formData = new FormData();
+//     uploadedFiles.forEach((file) => {
+//       formData.append('files', file.file); // Asegúrate de agregar cada archivo directamente
 //     });
+//     formData.append('comentario', comentario || '');
+//     formData.append('numeroPlano', numeroPlano);
+//     formData.append('numeroExpediente', numeroExpediente);
+
+//     const token = localStorage.getItem('token');
+//     const decodedToken = parseJwt(token);
+//     const userId = decodedToken?.sub;
+//     if (!userId) {
+//       MySwal.fire('Error', 'No se pudo obtener el ID del usuario.', 'error');
+//       return;
+//     }
+
+//     formData.append('userId', userId);
+
+//     try {
+//       const response = await fetch(ApiRoutes.planos, {
+//         method: 'POST',
+//         headers: {
+//           'Authorization': `Bearer ${token}`,
+//         },
+//         body: formData,
+//       });
+
+//       if (!response.ok) {
+//         const errorResponse = await response.json();
+//         console.error('Error en el servidor:', errorResponse);
+//         throw new Error('Error al enviar los datos al servidor');
+//       }
+
+//       MySwal.fire('Archivos enviados', '¡Tus archivos y la descripción se han enviado exitosamente!', 'success')
+//         .then(() => {
+//           setUploadedFiles([]);
+//           setComentario('');
+//           setNumeroPlano('');
+//           setNumeroExpediente('');
+//         });
+//     } catch (error) {
+//       console.error('Error al enviar archivos:', error);
+//       MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
+//     }
+//   };
+
+//   const parseJwt = (token: string | null) => {
+//     if (!token) return null;
+//     try {
+//       return JSON.parse(atob(token.split('.')[1]));
+//     } catch (e) {
+//       return null;
+//     }
 //   };
 
 //   const handleBack = () => {
@@ -99,12 +138,7 @@
 //     <div className="container mx-auto px-4 py-12">
 //       <h1 className="text-4xl font-bold mb-8 text-center">Módulo de Solicitud de Revisión de Planos</h1>
       
-//       <div
-//         {...getRootProps()}
-//         className={`p-8 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors ${
-//           isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
-//         }`}
-//       >
+//       <div {...getRootProps()} className={`p-8 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}`}>
 //         <input {...getInputProps()} />
 //         {isDragActive ? (
 //           <p className="text-lg text-blue-500">Suelta los archivos aquí...</p>
@@ -123,14 +157,9 @@
 //               <li key={index} className="flex items-center justify-between bg-white p-4 rounded-lg shadow">
 //                 <div>
 //                   <p className="font-semibold">{file.file.name}</p>
-//                   <p className="text-sm text-gray-500">
-//                     Tamaño: {(file.file.size / 1024 / 1024).toFixed(2)} MB
-//                   </p>
+//                   <p className="text-sm text-gray-500">Tamaño: {(file.file.size / 1024 / 1024).toFixed(2)} MB</p>
 //                 </div>
-//                 <button
-//                   onClick={() => removeFile(file)}
-//                   className="text-red-500 hover:text-red-700 transition-colors"
-//                 >
+//                 <button onClick={() => removeFile(file)} className="text-red-500 hover:text-red-700 transition-colors">
 //                   <XMarkIcon className="h-6 w-6" />
 //                 </button>
 //               </li>
@@ -139,48 +168,57 @@
 //         </div>
 //       )}
 
-//       {/* Campo para la descripción de los archivos */}
+//       {/* Campos adicionales */}
 //       <div className="mt-8">
-//         <label htmlFor="fileDescription" className="block text-lg font-medium text-gray-700 mb-2">
-//           Descripción de los Archivos
-//         </label>
+//         <label htmlFor="comentario" className="block text-lg font-medium text-gray-700 mb-2">Comentario</label>
 //         <textarea
-//           id="fileDescription"
-//           value={fileDescription}
-//           onChange={(e) => setFileDescription(e.target.value)}
-//           rows={4}
+//           id="comentario"
+//           value={comentario}
+//           onChange={(e) => setComentario(e.target.value)}
+//           rows={3}
 //           className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-//           placeholder="Escribe una descripción de los archivos que estás subiendo"
+//           placeholder="Agrega un comentario adicional sobre los archivos"
 //         ></textarea>
+//       </div>
+      
+//       <div className="mt-4">
+//         <label htmlFor="numeroPlano" className="block text-lg font-medium text-gray-700 mb-2">Número de Plano</label>
+//         <input
+//           id="numeroPlano"
+//           value={numeroPlano}
+//           onChange={(e) => setNumeroPlano(e.target.value)}
+//           className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+//           placeholder="Ingresa el número de plano"
+//         />
+//       </div>
+
+//       <div className="mt-4">
+//         <label htmlFor="numeroExpediente" className="block text-lg font-medium text-gray-700 mb-2">Número de Expediente</label>
+//         <input
+//           id="numeroExpediente"
+//           value={numeroExpediente}
+//           onChange={(e) => setNumeroExpediente(e.target.value)}
+//           className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+//           placeholder="Ingresa el número de expediente"
+//         />
 //       </div>
 
 //       <div className="flex justify-end space-x-4 mt-6">
-//         <button
-//           onClick={handleBack}
-//           className="px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded hover:bg-gray-400 transition-colors"
-//         >
-//           Volver
-//         </button>
-//         <button
-//           onClick={handleSend}
-//           className="px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors"
-//         >
-//           Enviar
-//         </button>
+//         <button onClick={handleBack} className="px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded hover:bg-gray-400 transition-colors">Volver</button>
+//         <button onClick={handleSend} className="px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors">Enviar</button>
 //       </div>
 //     </div>
 //   );
 // }
 
-
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import ApiRoutes from '../../Components/ApiRoutes';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 
 const MySwal = withReactContent(Swal);
 
@@ -190,36 +228,33 @@ interface UploadedFile {
 }
 
 interface DecodedToken {
-  exp: number; // Expiration timestamp
-  sub: string; // User ID
+  exp: number;
+  sub: string;
 }
 
 export default function UsuarioPlano() {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [fileDescription, setFileDescription] = useState(''); // Descripción de los archivos
-  const [comentario, setComentario] = useState(''); // Comentario adicional
-  const [numeroPlano, setNumeroPlano] = useState(''); // Número de plano
-  const [numeroExpediente, setNumeroExpediente] = useState(''); // Número de expediente
+  const [comentario, setComentario] = useState('');
+  const [numeroPlano, setNumeroPlano] = useState('');
+  const [numeroExpediente, setNumeroExpediente] = useState('');
   const navigate = useNavigate();
 
   // Verificación de autenticación y expiración de token
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/login'); // Redirige al login si no hay token
+      navigate('/login');
     } else {
       try {
         const decodedToken: DecodedToken = jwtDecode(token);
-        
-        // Verifica si el token ha expirado
         if (decodedToken.exp * 1000 < Date.now()) {
           console.warn('Token expirado, redirigiendo al login');
-          localStorage.removeItem('token'); // Elimina el token expirado
+          localStorage.removeItem('token');
           navigate('/login');
         }
       } catch (e) {
         console.error('Token inválido, redirigiendo al login');
-        localStorage.removeItem('token'); // Elimina el token inválido
+        localStorage.removeItem('token');
         navigate('/login');
       }
     }
@@ -255,11 +290,9 @@ export default function UsuarioPlano() {
     uploadedFiles.forEach((file) => {
       formData.append('files', file.file);
     });
-    formData.append('descripcion', fileDescription);
-    formData.append('comentario', comentario || '');
-    formData.append('numeroPlano', numeroPlano);
-    formData.append('numeroExpediente', numeroExpediente);
-    formData.append('Date', new Date().toISOString());
+    formData.append('Comentario', comentario || '');
+    formData.append('NumeroPlano', numeroPlano);
+    formData.append('NumeroExpediente', numeroExpediente);
 
     const token = localStorage.getItem('token');
     const decodedToken = parseJwt(token);
@@ -289,10 +322,10 @@ export default function UsuarioPlano() {
       MySwal.fire('Archivos enviados', '¡Tus archivos y la descripción se han enviado exitosamente!', 'success')
         .then(() => {
           setUploadedFiles([]);
-          setFileDescription('');
           setComentario('');
           setNumeroPlano('');
           setNumeroExpediente('');
+          navigate('/');
         });
     } catch (error) {
       console.error('Error al enviar archivos:', error);
@@ -307,10 +340,6 @@ export default function UsuarioPlano() {
     } catch (e) {
       return null;
     }
-  };
-
-  const handleBack = () => {
-    navigate('/');
   };
 
   return (
@@ -347,7 +376,6 @@ export default function UsuarioPlano() {
         </div>
       )}
 
-      {/* Campos adicionales */}
       <div className="mt-8">
         <label htmlFor="comentario" className="block text-lg font-medium text-gray-700 mb-2">Comentario</label>
         <textarea
@@ -383,7 +411,7 @@ export default function UsuarioPlano() {
       </div>
 
       <div className="flex justify-end space-x-4 mt-6">
-        <button onClick={handleBack} className="px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded hover:bg-gray-400 transition-colors">Volver</button>
+        <button onClick={() => navigate('/')} className="px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded hover:bg-gray-400 transition-colors">Volver</button>
         <button onClick={handleSend} className="px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors">Enviar</button>
       </div>
     </div>

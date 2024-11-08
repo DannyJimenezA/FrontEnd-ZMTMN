@@ -201,6 +201,7 @@ export default function UsuarioCita() {
   const [description, setDescription] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [occupiedTimes, setOccupiedTimes] = useState<string[]>([]); // Estado para las horas ocupadas
   const navigate = useNavigate();
 
   const validTimes = [
@@ -226,16 +227,54 @@ export default function UsuarioCita() {
     }
   }, [navigate]);
 
+  // Consultar las horas ocupadas cuando se selecciona una fecha
+  const handleDateChange = async (selectedDate: Date | null) => {
+    setDate(selectedDate);
+    setTime(''); // Limpiar la hora seleccionada cuando cambie la fecha
+    setOccupiedTimes([]); // Limpiar horas ocupadas al cambiar la fecha
+
+    if (selectedDate) {
+      const formattedDate = `${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${selectedDate.getDate().toString().padStart(2, '0')}`;
+      
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+          return;
+        }
+        
+        // Llamada al endpoint para obtener las horas ocupadas
+        const response = await axios.get(`${ApiRoutes.citas}/citas-ocupadas/${formattedDate}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data && Array.isArray(response.data)) {
+          setOccupiedTimes(response.data); // Actualiza el estado con las horas ocupadas
+          console.log("Horas ocupadas para la fecha seleccionada:", response.data); // <-- Para depuración
+        } else {
+          console.error("El backend no devolvió un array. Respuesta recibida:", response.data);
+        }
+        
+      } catch (error) {
+        console.error('Error al obtener horas ocupadas:', error);
+        setError('Error al cargar las horas disponibles.');
+      }
+    } else {
+      setOccupiedTimes([]); // Limpia las horas ocupadas si no hay fecha seleccionada
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Formato de fecha en zona horaria local (YYYY-MM-DD)
     const formattedDate = date
       ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`
       : "";
 
     const newAppointment: Partial<Cita> = {
-      date: formattedDate,  // Usa la fecha en formato local
+      date: formattedDate,
       time,
       description,
       status: 'Pendiente',
@@ -304,7 +343,7 @@ export default function UsuarioCita() {
               <div className="relative">
                 <DatePicker
                   selected={date}
-                  onChange={(selectedDate) => setDate(selectedDate)}
+                  onChange={handleDateChange}
                   filterDate={filterWeekdays} 
                   dateFormat="yyyy-MM-dd"
                   placeholderText="Selecciona una fecha"
@@ -315,29 +354,34 @@ export default function UsuarioCita() {
               </div>
             </div>
 
-            <div>
-              <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">
-                Hora
-              </label>
-              <div className="relative">
-                <select
-                  id="time"
-                  name="time"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  required
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Seleccione una hora</option>
-                  {validTimes.map((timeOption) => (
-                    <option key={timeOption} value={timeOption}>
-                      {timeOption}
-                    </option>
-                  ))}
-                </select>
-                <ClockIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            {/* Renderizar el campo de selección de hora solo si se ha seleccionado una fecha */}
+            {date && (
+              <div>
+                <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">
+                  Hora
+                </label>
+                <div className="relative">
+                  <select
+                    id="time"
+                    name="time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    required
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Seleccione una hora</option>
+                    {validTimes
+                      .filter((timeOption) => !occupiedTimes.includes(timeOption)) // Filtrar horas ocupadas
+                      .map((timeOption) => (
+                        <option key={timeOption} value={timeOption}>
+                          {timeOption}
+                        </option>
+                      ))}
+                  </select>
+                  <ClockIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                </div>
               </div>
-            </div>
+            )}
 
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
