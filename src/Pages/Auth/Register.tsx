@@ -166,7 +166,8 @@ export default function Register() {
     apellido2: '',
     telefono: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    origin: "admin",
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
