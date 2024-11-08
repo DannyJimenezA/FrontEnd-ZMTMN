@@ -17,6 +17,7 @@ const ApiRoutes = {
   },
   roles: `${BASE_URL}/roles`,
   expedientes: `${BASE_URL}/expedientes`,
+  urlBase: `${BASE_URL}`
 };
 
 export default ApiRoutes;

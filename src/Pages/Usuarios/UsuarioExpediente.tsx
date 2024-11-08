@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import ApiRoutes from '../../Components/ApiRoutes';
 
 const MySwal = withReactContent(Swal);
 
@@ -60,7 +61,7 @@ export default function UsuarioExpediente() {
     };
 
     try {
-      const response = await fetch("http://localhost:3000/expedientes/solicitud", {
+      const response = await fetch(`${ApiRoutes.expedientes}/solicitud`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

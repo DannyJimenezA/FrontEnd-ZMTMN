@@ -4,6 +4,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import ApiRoutes from '../../Components/ApiRoutes';
 
 const MySwal = withReactContent(Swal);
 
@@ -48,12 +49,12 @@ export default function UsuarioDenuncia() {
 
   useEffect(() => {
     // Cargar tipos de denuncia y lugares de denuncia desde la API
-    fetch('http://localhost:3000/tipo-denuncia')
+    fetch(`${ApiRoutes.urlBase}/tipo-denuncia`)
       .then(response => response.json())
       .then(data => setTiposDenuncia(data))
       .catch(error => console.error('Error al cargar los tipos de denuncia:', error));
 
-    fetch('http://localhost:3000/lugar-denuncia')
+    fetch(`${ApiRoutes.urlBase}/lugar-denuncia`)
       .then(response => response.json())
       .then(data => setLugaresDenuncia(data))
       .catch(error => console.error('Error al cargar los lugares de denuncia:', error));
@@ -100,14 +101,14 @@ export default function UsuarioDenuncia() {
     });
 
     try {
-      const response = await fetch('http://localhost:3000/denuncia/upload', {
+      const response = await fetch(`${ApiRoutes.denuncias}/upload`, {
         method: 'POST',
         body: formDataToSend,
       });
 
       if (response.ok) {
         MySwal.fire('Denuncia enviada con éxito', '¡Tus archivos se han enviado exitosamente!', 'success');
-        navigate('/denuncias');
+        navigate('/');
       } else {
         const errorData = await response.json();
         MySwal.fire('Error al enviar la denuncia', errorData.message, 'error');

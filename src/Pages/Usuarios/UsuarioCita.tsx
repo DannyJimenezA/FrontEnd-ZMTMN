@@ -1,10 +1,11 @@
 // import React, { useState, useEffect } from 'react';
 // import { CalendarIcon, ClockIcon } from 'lucide-react';
 // import { useNavigate } from 'react-router-dom';
-// import ApiService from '../../Components/ApiService';
+// // import ApiService from '../../Components/ApiService';
 // import { Cita } from '../Types';
 // import {jwtDecode} from 'jwt-decode';
 // import ApiRoutes from '../../Components/ApiRoutes';
+// import axios from 'axios';
 
 // interface DecodedToken {
 //   exp: number; 
@@ -22,11 +23,12 @@
 //   useEffect(() => {
 //     const token = localStorage.getItem('token');
 //     if (!token) {
-//       navigate('/login'); // Redirige al login si no hay token
+//       // Si no hay token, redirige al login
+//       navigate('/login');
 //     } else {
 //       try {
 //         const decodedToken: DecodedToken = jwtDecode(token);
-        
+
 //         // Verificar si el token ha expirado
 //         if (decodedToken.exp * 1000 < Date.now()) {
 //           console.warn('Token expirado, redirigiendo al login');
@@ -43,7 +45,7 @@
 
 //   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 //     e.preventDefault();
-
+  
 //     const newAppointment: Partial<Cita> = {
 //       date,
 //       time,
@@ -56,14 +58,28 @@
 //         email: '',
 //       },
 //     };
-
+  
 //     try {
-//       const createdAppointment = await ApiService.post<Cita>(ApiRoutes.citas.crearcita, newAppointment);
+//       // Asegurarse de que el token está disponible antes de enviar la solicitud
+//       const token = localStorage.getItem('token');
+//       if (!token) {
+//         navigate('/login');
+//         return;
+//       }
+  
+//       // Configurar la solicitud con Axios directamente
+//       const createdAppointment = await axios.post(ApiRoutes.citas.crearcita, newAppointment, {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       });
+      
 //       console.log('Cita creada con éxito:', createdAppointment);
-
+  
 //       setIsSubmitted(true);
 //       setError(null);
-
+  
+//       // Limpiar el formulario después de unos segundos
 //       setTimeout(() => {
 //         setDate('');
 //         setTime('');
@@ -71,10 +87,10 @@
 //         setIsSubmitted(false);
 //       }, 3000);
 //     } catch (error) {
+//       console.error('Error al agendar la cita:', error);
 //       setError('Error al agendar la cita. Intente de nuevo.');
 //     }
 //   };
-
 //   const handleBack = () => {
 //     navigate('/mis-citas');
 //   };
@@ -164,47 +180,47 @@
 //   );
 // }
 
-
 import React, { useState, useEffect } from 'react';
 import { CalendarIcon, ClockIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-// import ApiService from '../../Components/ApiService';
 import { Cita } from '../Types';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import ApiRoutes from '../../Components/ApiRoutes';
 import axios from 'axios';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import { isWednesday } from 'date-fns';
 
 interface DecodedToken {
-  exp: number; 
+  exp: number;
 }
 
 export default function UsuarioCita() {
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState<Date | null>(null);
   const [time, setTime] = useState('');
   const [description, setDescription] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Comprobación de autenticación y expiración del token
+  const validTimes = [
+    "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+    "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
+  ];
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      // Si no hay token, redirige al login
       navigate('/login');
     } else {
       try {
         const decodedToken: DecodedToken = jwtDecode(token);
-
-        // Verificar si el token ha expirado
         if (decodedToken.exp * 1000 < Date.now()) {
-          console.warn('Token expirado, redirigiendo al login');
-          localStorage.removeItem('token'); // Eliminar token expirado
+          localStorage.removeItem('token');
           navigate('/login');
         }
       } catch (e) {
-        console.error('Token inválido, redirigiendo al login');
-        localStorage.removeItem('token'); // Elimina token inválido
+        localStorage.removeItem('token');
         navigate('/login');
       }
     }
@@ -212,9 +228,14 @@ export default function UsuarioCita() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
+
+    // Formato de fecha en zona horaria local (YYYY-MM-DD)
+    const formattedDate = date
+      ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`
+      : "";
+
     const newAppointment: Partial<Cita> = {
-      date,
+      date: formattedDate,  // Usa la fecha en formato local
       time,
       description,
       status: 'Pendiente',
@@ -225,30 +246,27 @@ export default function UsuarioCita() {
         email: '',
       },
     };
-  
+
     try {
-      // Asegurarse de que el token está disponible antes de enviar la solicitud
       const token = localStorage.getItem('token');
       if (!token) {
         navigate('/login');
         return;
       }
-  
-      // Configurar la solicitud con Axios directamente
+
       const createdAppointment = await axios.post(ApiRoutes.citas.crearcita, newAppointment, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      
+
       console.log('Cita creada con éxito:', createdAppointment);
-  
+
       setIsSubmitted(true);
       setError(null);
-  
-      // Limpiar el formulario después de unos segundos
+
       setTimeout(() => {
-        setDate('');
+        setDate(null);
         setTime('');
         setDescription('');
         setIsSubmitted(false);
@@ -258,8 +276,13 @@ export default function UsuarioCita() {
       setError('Error al agendar la cita. Intente de nuevo.');
     }
   };
+
   const handleBack = () => {
     navigate('/mis-citas');
+  };
+
+  const filterWeekdays = (date: Date) => {
+    return isWednesday(date);
   };
 
   return (
@@ -279,13 +302,13 @@ export default function UsuarioCita() {
                 Fecha
               </label>
               <div className="relative">
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  required
+                <DatePicker
+                  selected={date}
+                  onChange={(selectedDate) => setDate(selectedDate)}
+                  filterDate={filterWeekdays} 
+                  dateFormat="yyyy-MM-dd"
+                  placeholderText="Selecciona una fecha"
+                  minDate={new Date()}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                 />
                 <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -297,15 +320,21 @@ export default function UsuarioCita() {
                 Hora
               </label>
               <div className="relative">
-                <input
-                  type="time"
+                <select
                   id="time"
                   name="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
                   required
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                />
+                >
+                  <option value="">Seleccione una hora</option>
+                  {validTimes.map((timeOption) => (
+                    <option key={timeOption} value={timeOption}>
+                      {timeOption}
+                    </option>
+                  ))}
+                </select>
                 <ClockIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               </div>
             </div>
