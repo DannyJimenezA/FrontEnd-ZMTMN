@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import { EnvelopeIcon, IdentificationIcon, UserIcon, PhoneIcon, LockClosedIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
-import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import ApiRoutes from '../../Components/ApiRoutes'
+import React, { useState } from 'react';
+import { EnvelopeIcon, IdentificationIcon, UserIcon, PhoneIcon, LockClosedIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import ApiRoutes from '../../Components/ApiRoutes';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -14,57 +14,24 @@ export default function Register() {
     telefono: '',
     password: '',
     confirmPassword: '',
-    origin: "admin",
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+    origin: "admin", // Definir el origen
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
-      [name]: value
-    }))
-  }
+      [name]: value,
+    }));
+  };
 
-  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault()
-    
-  //   // Validación de formulario
-  //   if (!formData.email || !formData.cedula || !formData.nombre || !formData.apellido1 || !formData.telefono || !formData.password || !formData.confirmPassword) {
-  //     setErrorMessage('Por favor completa todos los campos')
-  //     return
-  //   }
-  //   if (formData.password !== formData.confirmPassword) {
-  //     setErrorMessage('Las contraseñas no coinciden')
-  //     return
-  //   }
-
-  //   try {
-  //     // Envío de datos al backend
-  //     const response = await axios.post(`${ApiRoutes.usuarios}/register`, {
-  //       ...formData,
-  //       origin: 'admin'
-  //     })
-
-  //     // Manejo de respuesta exitosa
-  //     console.log('Registro exitoso:', response.data)
-  //     setErrorMessage('') // Limpiar mensajes de error
-  //     navigate('/login')
-  //   } catch (error) {
-  //     // Manejo de errores en el envío al backend
-  //     if (axios.isAxiosError(error) && error.response) {
-  //       setErrorMessage(error.response.data.message || 'Error en el registro')
-  //     } else {
-  //       setErrorMessage('Error de conexión con el servidor')
-  //     }
-  //   }
-  // }
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     // Validación de formulario
     if (!formData.email || !formData.cedula || !formData.nombre || !formData.apellido1 || !formData.telefono || !formData.password || !formData.confirmPassword) {
       setErrorMessage('Por favor completa todos los campos');
@@ -74,24 +41,16 @@ export default function Register() {
       setErrorMessage('Las contraseñas no coinciden');
       return;
     }
-  
+
     try {
       // Envío de datos al backend
-      const response = await axios.post(`${ApiRoutes.usuarios}/register`, {
-        email: formData.email,
-        cedula: formData.cedula,
-        nombre: formData.nombre,
-        apellido1: formData.apellido1,
-        apellido2: formData.apellido2,
-        telefono: formData.telefono,
-        password: formData.password,
-        origin: formData.origin, // Incluye origin explícitamente
-      });
-  
+      const response = await axios.post(`${ApiRoutes.usuarios}/register`, formData);
+
       // Manejo de respuesta exitosa
       console.log('Registro exitoso:', response.data);
       setErrorMessage(''); // Limpiar mensajes de error
-      navigate('/login');
+      window.alert(response.data.message || 'Usuario registrado. Por favor, revisa tu correo.');
+      navigate('/login'); // Redirigir al usuario a la página de inicio de sesión
     } catch (error) {
       // Manejo de errores en el envío al backend
       if (axios.isAxiosError(error) && error.response) {
@@ -100,8 +59,7 @@ export default function Register() {
         setErrorMessage('Error de conexión con el servidor');
       }
     }
-  }
-  
+  };
 
   const handleBack = () => {
     navigate('/login'); // Redirige a la página de inicio de sesión
@@ -141,7 +99,7 @@ export default function Register() {
         )}
       </div>
     </div>
-  )
+  );
 
   return (
     <div className="min-h-screen w-full bg-gray-50">
@@ -223,5 +181,5 @@ export default function Register() {
         </div>
       </div>
     </div>
-  )
+  );
 }
