@@ -14,6 +14,7 @@ import ProtectedRoute from './ProtectedRoute';
 import { AuthProvider } from '../Pages/Auth/AuthContext';
 import UsuarioExpediente from '../Pages/Usuarios/UsuarioExpediente';
 import CitasList from '../Pages/UsuariosSolicitudes/CitasList';
+import ConfirmAccount from '../Pages/Auth/ConfirmAccount';
 
 function AppRoutes() {
   // const isAuthenticated = !!localStorage.getItem('token');
@@ -26,6 +27,7 @@ function AppRoutes() {
       <Route path="/usuario-denuncia" element={<UsuarioDenuncia />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/confirm-user" element={<ConfirmAccount />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
 
       {/* Rutas Protegidas */}
