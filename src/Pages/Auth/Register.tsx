@@ -14,7 +14,7 @@ export default function Register() {
     telefono: '',
     password: '',
     confirmPassword: '',
-    origin: "user", // Definir el origen
+    origin: "admin", // Definir el origen
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);

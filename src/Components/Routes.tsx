@@ -27,7 +27,7 @@ function AppRoutes() {
       <Route path="/usuario-denuncia" element={<UsuarioDenuncia />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/confirm-user" element={<ConfirmAccount />} />
+      <Route path="/users/confirm/:token" element={<ConfirmAccount />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
 
       {/* Rutas Protegidas */}
