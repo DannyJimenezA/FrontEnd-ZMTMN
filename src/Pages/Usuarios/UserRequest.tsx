@@ -1,4 +1,4 @@
-// import  { useState, useEffect } from 'react';
+// import { useState, useEffect } from 'react';
 // import Navbar from '../../Components/Navbar';
 // import ApiRoutes from '../../Components/ApiRoutes';
 
@@ -18,7 +18,7 @@
 //   useEffect(() => {
 //     const fetchRequests = async () => {
 //       setLoading(true);
-//       setError(null); // Reset error state
+//       setError(null);
 
 //       try {
 //         const token = localStorage.getItem('token');
@@ -29,8 +29,7 @@
 //         }
 
 //         console.log('Token:', token);
-//         const url = `${ApiRoutes.expedientes}/my-solicitudes`;
-//         console.log('API URL:', url);
+//         const url = `${ApiRoutes.planos}/my-planos`; // Cambia la URL al endpoint correcto
 
 //         const response = await fetch(url, {
 //           method: 'GET',
@@ -47,7 +46,7 @@
 
 //         const data = await response.json();
 //         console.log('Response data:', data);
-//         setRequests(data);
+//         setRequests(data); // Asegúrate de que `data` sea un array de objetos que coincida con la interfaz `Request`
 //       } catch (error) {
 //         if (error instanceof Error) {
 //           console.error('Error fetching requests:', error.message);
@@ -116,7 +115,6 @@
 //   );
 // }
 
-
 import { useState, useEffect } from 'react';
 import Navbar from '../../Components/Navbar';
 import ApiRoutes from '../../Components/ApiRoutes';
@@ -130,9 +128,9 @@ interface Request {
 }
 
 export default function UserRequests() {
-  const [requests, setRequests] = useState<Request[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [requests, setRequests] = useState<Request[]>([]); // Estado para almacenar los datos de los planos
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [error, setError] = useState<string | null>(null); // Estado de error
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -140,20 +138,19 @@ export default function UserRequests() {
       setError(null);
 
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
         if (!token) {
           setError('No se encontró el token de autenticación');
           setLoading(false);
           return;
         }
 
-        console.log('Token:', token);
-        const url = `${ApiRoutes.planos}/my-planos`; // Cambia la URL al endpoint correcto
+        const url = `${ApiRoutes.planos}/my-planos`; // Endpoint correcto para cargar los planos
 
         const response = await fetch(url, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`, // Token para autenticación
             'Content-Type': 'application/json',
           },
         });
@@ -164,18 +161,27 @@ export default function UserRequests() {
         }
 
         const data = await response.json();
-        console.log('Response data:', data);
-        setRequests(data); // Asegúrate de que `data` sea un array de objetos que coincida con la interfaz `Request`
+
+        // Mapear los datos del backend al formato esperado
+        const mappedData: Request[] = data.map((plan: any) => ({
+          id: plan.id,
+          type: plan.NumeroPlano || 'Plano sin título', // Reemplaza por el campo adecuado
+          status: plan.status || 'Desconocido', // Usa el estado del backend o un valor predeterminado
+          date: plan.Date || 'Sin fecha', // Usa la fecha del backend
+          description: plan.Comentario || 'Sin descripción disponible', // Usa el comentario como descripción
+        }));
+
+        setRequests(mappedData); // Actualizar el estado con los datos mapeados
       } catch (error) {
         if (error instanceof Error) {
-          console.error('Error fetching requests:', error.message);
+          console.error('Error al cargar los planos:', error.message);
           setError(`Error al cargar las solicitudes: ${error.message}`);
         } else {
           console.error('Error desconocido:', error);
           setError('Error desconocido al cargar las solicitudes');
         }
       } finally {
-        setLoading(false);
+        setLoading(false); // Finaliza la carga
       }
     };
 
@@ -208,9 +214,9 @@ export default function UserRequests() {
   return (
     <div className="container mx-auto px-4 py-8">
       <Navbar />
-      <h1 className="text-3xl font-bold mb-6">Mis Solicitudes</h1>
+      <h1 className="text-3xl font-bold mb-6">Mis Planos</h1>
       {requests.length === 0 ? (
-        <p>No tienes solicitudes activas.</p>
+        <p>No tienes planos activos.</p>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {requests.map((request) => (
