@@ -7,7 +7,8 @@ import { isWednesday } from 'date-fns';
 import Navbar from '../../Components/Navbar';
 import { CalendarIcon, PencilIcon, TrashIcon, XCircleIcon, CheckCircleIcon } from 'lucide-react';
 import ApiRoutes from '../../Components/ApiRoutes';
-
+import { toZonedTime } from 'date-fns-tz';
+import { format, parseISO } from 'date-fns';
 interface Appointment {
   id: number;
   description: string;
@@ -36,7 +37,14 @@ const CitasList = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setAppointments(response.data);
+        const adjustedAppointments = response.data.map((appointment: Appointment) => {
+          const zonedDate = toZonedTime(parseISO(appointment.date), 'America/Costa_Rica'); // Ajuste a UTC-6
+          return {
+            ...appointment,
+            adjustedDate: zonedDate, // Guardar la fecha ajustada
+          };
+        });
+        setAppointments(adjustedAppointments);
       } catch (error) {
         setError('Error al cargar las citas. Por favor, intente nuevamente.');
         console.error('Error fetching appointments:', error);
@@ -237,7 +245,7 @@ const CitasList = () => {
                       <div>
                         <h3 className="text-lg font-semibold mb-2">{appointment.description}</h3>
                         <div className="space-y-1 text-sm text-gray-500">
-                          <p>Fecha: {new Date(appointment.date).toLocaleDateString()}</p>
+                          <p>Fecha: {format(toZonedTime(parseISO(appointment.date), 'America/Costa_Rica'), 'yyyy-MM-dd')}</p>
                           <p>Hora: {appointment.time}</p>
                           <p className="flex items-center gap-1">
                             Estado: 
