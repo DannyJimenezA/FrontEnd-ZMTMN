@@ -34,14 +34,14 @@ function AppRoutes() {
 
 
       {/* Rutas Protegidas */}
-      <Route path="/usuario-expediente" element={<ProtectedRoute><UsuarioExpediente/></ProtectedRoute>}/>
-      <Route path="/usuario-cita" element={<ProtectedRoute><UsuarioCita /></ProtectedRoute>}/>
-      <Route path="/usuario-concesion" element={<ProtectedRoute><UsuarioConcesion /></ProtectedRoute>}/>
-      <Route path="/usuario-prorroga" element={<ProtectedRoute><UsuarioProrroga /></ProtectedRoute>}/>
-      <Route path="/usuario-precario" element={<ProtectedRoute><UsuarioPrecario /></ProtectedRoute>}/>
-      <Route path="/usuario-plano" element={<ProtectedRoute><UsuarioPlano /></ProtectedRoute>}/>
-      <Route path="/mis-solicitudes" element={<ProtectedRoute><UserRequests /></ProtectedRoute>}/>
-      <Route path="/mis-citas" element={<CitasList/>}/>
+      <Route path="/usuario-expediente" element={<UsuarioExpediente/>}/>
+      <Route path="/usuario-cita" element={<UsuarioCita />}/>
+      <Route path="/usuario-concesion" element={<UsuarioConcesion />}/>
+      <Route path="/usuario-prorroga" element={<UsuarioProrroga />}/>
+      <Route path="/usuario-precario" element={<UsuarioPrecario />}/>
+      <Route path="/usuario-plano" element={<UsuarioPlano />}/>
+      <Route path="/mis-solicitudes" element={<UserRequests />}/>
+      <Route path="/mis-citas" element={<CitasList />}/>
     </Routes>
             
    </AuthProvider>
