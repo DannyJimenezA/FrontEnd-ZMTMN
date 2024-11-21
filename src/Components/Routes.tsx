@@ -10,7 +10,7 @@ import UserRequests from '../Pages/UsuariosSolicitudes/UserRequest';
 import Login from '../Pages/Auth/Login';
 import Register from '../Pages/Auth/Register';
 import ForgotPassword from '../Pages/Auth/ForgotPassword';
-import ProtectedRoute from './ProtectedRoute';
+// import ProtectedRoute from './ProtectedRoute';
 import { AuthProvider } from '../Pages/Auth/AuthContext';
 import UsuarioExpediente from '../Pages/Usuarios/UsuarioExpediente';
 import CitasList from '../Pages/UsuariosSolicitudes/CitasList';
