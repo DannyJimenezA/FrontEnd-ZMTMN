@@ -5,7 +5,7 @@ import DocumentosPDF from './DocumentosPDF';
 
 export default function Home() {
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div >
       <Navbar/>
       <div className="container mx-auto px-4 py-12">
         <section className="text-center mb-16">
@@ -18,7 +18,7 @@ export default function Home() {
 
         <ImageSlider />
 
-        <section className="mb-16">
+        <section className="text-center mb-16">
           <h2 className="text-3xl font-semibold mb-4 text-gray-800">Definición</h2>
           <p className="text-lg text-gray-700 mb-4">
             La Zona Marítimo Terrestre es la franja territorial de doscientos metros de ancho a todo lo largo de los litorales Atlántico y Pacífico de la República, cualquiera que sea su naturaleza, medidos horizontalmente a partir de la línea de la pleamar ordinaria, los terrenos y rocas que deje el mar en descubierto en la marea baja.
@@ -28,7 +28,7 @@ export default function Home() {
           </p>
         </section>
 
-        <section className="mb-16">
+        <section className="text-center mb-16">
           <h2 className="text-3xl font-semibold mb-4 text-gray-800">Composición</h2>
           <p className="text-lg text-gray-700 mb-4">Esta zona se compone de dos secciones:</p>
           <div className="grid md:grid-cols-2 gap-8">
@@ -50,7 +50,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mb-16">
+        <section className="text-center mb-16">
           <h2 className="text-3xl font-semibold mb-4 text-gray-800">Competencias del Departamento de Zona Marítima Terrestre</h2>
           <ul className="list-disc pl-6 space-y-4 text-lg text-gray-700">
             <li>
