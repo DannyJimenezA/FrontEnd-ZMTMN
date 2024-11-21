@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios, { AxiosError } from 'axios';
-import '../styles/ResetPassword.css';
 import ApiRoutes from '../../Components/ApiRoutes';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa'; // Importar iconos para mostrar/ocultar contraseñas
 
