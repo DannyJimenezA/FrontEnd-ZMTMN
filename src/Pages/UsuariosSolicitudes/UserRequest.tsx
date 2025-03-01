@@ -11,7 +11,8 @@ interface Request {
   status: string;
   date: string;
   description: string;
-  category: 'Plano' | 'Prórroga' | 'Precario' | 'Concesión' | 'CopiaExpediente'; // Se añade la nueva categoría
+  category: 'Plano' | 'Prórroga' | 'Precario' | 'Concesión' | 'CopiaExpediente';
+  fileUrl: string; // Asegúrate de que esto contenga la URL del archivo adjunto
 }
 
 export default function UserRequests() {
@@ -96,6 +97,7 @@ export default function UserRequests() {
           date: plan.Date || 'Sin fecha',
           description: plan.Comentario || 'Sin descripción disponible',
           category: 'Plano',
+          fileUrl: plan.ArchivoAdjunto || '', // Asegúrate de que el archivo adjunto esté aquí
         }));
 
         const prorrogas: Request[] = prorrogasData.map((prorroga: any) => ({
@@ -103,8 +105,8 @@ export default function UserRequests() {
           type: prorroga.ArchivoAdjunto || 'Prórroga sin título',
           status: prorroga.Status || 'Desconocido',
           date: prorroga.Date || 'Sin fecha',
-          // description: 'Prórroga solicitada por el usuario',
           category: 'Prórroga',
+          fileUrl: prorroga.ArchivoAdjunto || '', // Asegúrate de que el archivo adjunto esté aquí
         }));
 
         const precarios: Request[] = precariosData.map((precario: any) => ({
@@ -112,8 +114,8 @@ export default function UserRequests() {
           type: precario.ArchivoAdjunto || 'Precario sin título',
           status: precario.Status || 'Desconocido',
           date: precario.Date || 'Sin fecha',
-          // description: 'Precario asociado al usuario',
           category: 'Precario',
+          fileUrl: precario.ArchivoAdjunto || '', // Asegúrate de que el archivo adjunto esté aquí
         }));
 
         const concesiones: Request[] = concesionesData.map((concesion: any) => ({
@@ -121,8 +123,8 @@ export default function UserRequests() {
           type: concesion.ArchivoAdjunto || 'Concesión sin título',
           status: concesion.Status || 'Desconocido',
           date: concesion.Date || 'Sin fecha',
-          // description: 'Concesión otorgada al usuario',
           category: 'Concesión',
+          fileUrl: concesion.ArchivoAdjunto || '', // Asegúrate de que el archivo adjunto esté aquí
         }));
 
         const copiaExpedientes: Request[] = copiaExpedientesData.map((solicitud: any) => ({
@@ -130,8 +132,8 @@ export default function UserRequests() {
           type: solicitud.numeroExpediente || 'Copia de Expediente sin título',
           status: solicitud.status || 'Desconocido',
           date: solicitud.Date || 'Sin fecha',
-          // description: `Solicitante: ${solicitud.nombreSolicitante}, Teléfono: ${solicitud.telefonoSolicitante}`,
           category: 'CopiaExpediente',
+          fileUrl: solicitud.ArchivoAdjunto || '', // Asegúrate de que el archivo adjunto esté aquí
         }));
 
         // Combinar todas las solicitudes
@@ -170,16 +172,8 @@ export default function UserRequests() {
     return <div className="text-center py-10 text-red-600">{error}</div>;
   }
 
-  // return (
-  //   <div className="container mx-auto px-4 py-8">
-  //     <Navbar />
-  //     <h1 className="text-3xl font-bold mb-6">Mis Solicitudes</h1>
-  //     <RequestFilter filter={filter} onFilterChange={setFilter} />
-  //     <RequestList requests={filteredRequests} />
-  //   </div>
-  // );
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100"> {/* Clase de Tailwind para un diseño completo */}
+    <div className="flex flex-col min-h-screen bg-gray-100">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Mis Solicitudes</h1>
