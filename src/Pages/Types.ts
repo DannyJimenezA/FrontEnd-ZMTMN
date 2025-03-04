@@ -145,6 +145,14 @@ export interface DecodedToken {
     };
     status: string;
   }
+
+  // interface Appointment {
+  //   id: number;
+  //   description: string;
+  //   status: string;
+  //   user: User;
+  //   availableDate: AvailableDate;
+  // }
   
   export interface User {
     id: number;
@@ -152,7 +160,10 @@ export interface DecodedToken {
     apellido1: string;
     apellido2: string;
     email: string;
+    cedila: string;
     telefono: number;
+    password: string;
+    isActive: boolean;
     roles: {
       id: number;
       name: string;
@@ -168,9 +179,14 @@ export interface DecodedToken {
     apellido2: string;
     email: string;
     telefono: number;
+    password: string;
     isActive: boolean;
     roles: {
       name: string;
     }[];
   }
   
+  // interface AvailableDate {
+  //   id: number;
+  //   date: string;
+  // }

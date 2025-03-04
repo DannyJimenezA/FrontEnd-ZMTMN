@@ -7,43 +7,83 @@
 // import Navbar from '../../Components/Navbar';
 // import { CalendarIcon, PencilIcon, TrashIcon, XCircleIcon, CheckCircleIcon } from 'lucide-react';
 // import ApiRoutes from '../../Components/ApiRoutes';
-// import { toZonedTime } from 'date-fns-tz';
-// import { format, parseISO } from 'date-fns';
+// import { toZonedTime, formatInTimeZone } from 'date-fns-tz';
+// import { parseISO } from 'date-fns';
+
+// interface User {
+//   id: number;
+//   cedula: string;
+//   nombre: string;
+//   apellido1: string;
+//   apellido2: string;
+//   telefono: string;
+//   email: string;
+//   password: string;
+//   isActive: boolean;
+// }
+
+// interface AvailableDate {
+//   id: number;
+//   date: string;
+// }
+
 // interface Appointment {
 //   id: number;
 //   description: string;
-//   date: string;
-//   time: string;
-//   status?: string;
+//   status: string;
+//   user: User;
+//   availableDate: AvailableDate;
+//   time: string; // Añadir campo para la hora
 // }
 
 // const CitasList = () => {
 //   const [appointments, setAppointments] = useState<Appointment[]>([]);
 //   const [editingAppointmentId, setEditingAppointmentId] = useState<number | null>(null);
 //   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-//   const [selectedTime, setSelectedTime] = useState<string>("");
-//   const [description, setDescription] = useState<string>("");
+//   const [selectedTime, setSelectedTime] = useState<string>('');
+//   const [description, setDescription] = useState<string>('');
+//   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
 //   const [isLoading, setIsLoading] = useState(true);
 //   const [error, setError] = useState<string | null>(null);
 //   const navigate = useNavigate();
-//   const token = localStorage.getItem('token');
 
 //   useEffect(() => {
 //     const fetchAppointments = async () => {
 //       try {
 //         setIsLoading(true);
+
+//         const token = localStorage.getItem('token');
+//         if (!token) {
+//           navigate('/login');
+//           return;
+//         }
+
 //         const response = await axios.get(ApiRoutes.citas.miscitas, {
 //           headers: {
 //             Authorization: `Bearer ${token}`,
 //           },
 //         });
+
+//         if (!Array.isArray(response.data)) {
+//           throw new Error('La respuesta del backend no es un array válido.');
+//         }
+
 //         const adjustedAppointments = response.data.map((appointment: Appointment) => {
-//           const zonedDate = toZonedTime(parseISO(appointment.date), 'America/Costa_Rica'); // Ajuste a UTC-6
+//           if (!appointment.availableDate?.date) {
+//             console.warn('Cita sin fecha:', appointment);
+//             return {
+//               ...appointment,
+//               adjustedDate: null,
+//             };
+//           }
+
+//           const zonedDate = toZonedTime(parseISO(appointment.availableDate.date), 'America/Costa_Rica');
 //           return {
 //             ...appointment,
-//             adjustedDate: zonedDate, // Guardar la fecha ajustada
+//             adjustedDate: zonedDate,
 //           };
 //         });
+
 //         setAppointments(adjustedAppointments);
 //       } catch (error) {
 //         setError('Error al cargar las citas. Por favor, intente nuevamente.');
@@ -54,7 +94,32 @@
 //     };
 
 //     fetchAppointments();
-//   }, [token]);
+//   }, [navigate]);
+
+//   const fetchAvailableTimes = async (date: Date) => {
+//     try {
+//       const token = localStorage.getItem("token");
+//       if (!token) {
+//         navigate("/login");
+//         return;
+//       }
+
+//       const formattedDate = formatInTimeZone(date, "America/Costa_Rica", "yyyy-MM-dd");
+
+//       const response = await axios.get(`${ApiRoutes.horasDisponibles}?date=${formattedDate}`, {
+//         headers: { Authorization: `Bearer ${token}` },
+//       });
+
+//       if (Array.isArray(response.data)) {
+//         setAvailableTimes(response.data);
+//       } else {
+//         throw new Error("La respuesta de horarios disponibles no es válida.");
+//       }
+//     } catch (error) {
+//       console.error("Error obteniendo horarios disponibles:", error);
+//       setAvailableTimes([]);
+//     }
+//   };
 
 //   const handleCreateAppointment = () => {
 //     navigate('/usuario-cita');
@@ -62,27 +127,39 @@
 
 //   const handleEditClick = (appointment: Appointment) => {
 //     setEditingAppointmentId(appointment.id);
-//     setSelectedDate(new Date(appointment.date));
-//     setSelectedTime(appointment.time);
+//     const parsedDate = parseISO(appointment.availableDate.date);
+//     setSelectedDate(parsedDate);
+//     fetchAvailableTimes(parsedDate);
+//     setSelectedTime(appointment.time); // Usar el campo `time` de la cita
 //     setDescription(appointment.description);
 //   };
 
 //   const handleSaveClick = async (appointmentId: number) => {
-//     const validTimes = [
-//       "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-//       "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
-//     ];
-    
-//     if (!validTimes.includes(selectedTime)) {
-//       setError("La hora seleccionada no es válida.");
+//     if (!availableTimes.includes(selectedTime)) {
+//       setError("La hora seleccionada no está disponible.");
 //       return;
 //     }
 
 //     try {
-//       const updatedAppointment: Partial<Appointment> = {
+//       const token = localStorage.getItem("token");
+//       if (!token) {
+//         navigate("/login");
+//         return;
+//       }
+
+//       const appointmentToUpdate = appointments.find((app) => app.id === appointmentId);
+//       if (!appointmentToUpdate) {
+//         setError("Cita no encontrada.");
+//         return;
+//       }
+
+//       const updatedAppointment = {
 //         description,
-//         date: selectedDate ? selectedDate.toISOString().split('T')[0] : "",
-//         time: selectedTime,
+//         availableDate: {
+//           id: appointmentToUpdate.availableDate.id,
+//           date: selectedDate ? formatInTimeZone(selectedDate, "America/Costa_Rica", "yyyy-MM-dd'T'HH:mm:ss") : '',
+//         },
+//         time: selectedTime, // Asegúrate de incluir la hora actualizada
 //       };
 
 //       const response = await axios.put(
@@ -96,7 +173,9 @@
 //       if (response.status >= 200 && response.status < 300) {
 //         setAppointments((prev) =>
 //           prev.map((appointment) =>
-//             appointment.id === appointmentId ? { ...appointment, ...updatedAppointment } : appointment
+//             appointment.id === appointmentId
+//               ? { ...appointment, ...updatedAppointment }
+//               : appointment
 //           )
 //         );
 //         setEditingAppointmentId(null);
@@ -108,12 +187,22 @@
 //     }
 //   };
 
+//   const getTimeOptions = () => {
+//     return availableTimes.length > 0 ? availableTimes : ["No hay horas disponibles"];
+//   };
+
 //   const handleDeleteAppointment = async (id: number) => {
 //     if (!window.confirm('¿Está seguro que desea eliminar esta cita?')) {
 //       return;
 //     }
 
 //     try {
+//       const token = localStorage.getItem('token');
+//       if (!token) {
+//         navigate('/login');
+//         return;
+//       }
+
 //       await axios.delete(`${ApiRoutes.citas.crearcita}/${id}`, {
 //         headers: {
 //           Authorization: `Bearer ${token}`,
@@ -129,21 +218,13 @@
 //   const handleCancelClick = () => {
 //     setEditingAppointmentId(null);
 //     setSelectedDate(null);
-//     setSelectedTime("");
-//     setDescription("");
+//     setSelectedTime('');
+//     setDescription('');
 //     setError(null);
 //   };
 
 //   const filterWeekdays = (date: Date) => {
 //     return date && isWednesday(date);
-//   };
-
-//   const getTimeOptions = () => {
-//     const times = [
-//       "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-//       "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
-//     ];
-//     return times;
 //   };
 
 //   if (isLoading) {
@@ -160,7 +241,7 @@
 //       <div className="container mx-auto px-4 py-8">
 //         <div className="flex justify-between items-center mb-8">
 //           <h1 className="text-3xl font-bold text-gray-900">Mis Citas</h1>
-//           <button 
+//           <button
 //             onClick={handleCreateAppointment}
 //             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
 //           >
@@ -218,7 +299,9 @@
 //                           >
 //                             <option value="">Seleccione una hora</option>
 //                             {getTimeOptions().map((time) => (
-//                               <option key={time} value={time}>{time}</option>
+//                               <option key={time} value={time}>
+//                                 {time}
+//                               </option>
 //                             ))}
 //                           </select>
 //                         </div>
@@ -245,15 +328,26 @@
 //                       <div>
 //                         <h3 className="text-lg font-semibold mb-2">{appointment.description}</h3>
 //                         <div className="space-y-1 text-sm text-gray-500">
-//                           <p>Fecha: {format(toZonedTime(parseISO(appointment.date), 'America/Costa_Rica'), 'yyyy-MM-dd')}</p>
+//                           <p>
+//                             Fecha:{' '}
+//                             {formatInTimeZone(
+//                               parseISO(appointment.availableDate.date),
+//                               'America/Costa_Rica',
+//                               'yyyy-MM-dd'
+//                             )}
+//                           </p>
 //                           <p>Hora: {appointment.time}</p>
 //                           <p className="flex items-center gap-1">
-//                             Estado: 
-//                             <span className={`inline-flex items-center ${
-//                               appointment.status === 'Aprobada' ? 'text-green-600' 
-//                               : appointment.status === 'Denegada'? 'text-red-600'
-//                               : 'text-yellow-600'
-//                             }`}>
+//                             Estado:
+//                             <span
+//                               className={`inline-flex items-center ${
+//                                 appointment.status === 'Aprobada'
+//                                   ? 'text-green-600'
+//                                   : appointment.status === 'Denegada'
+//                                   ? 'text-red-600'
+//                                   : 'text-yellow-600'
+//                               }`}
+//                             >
 //                               {appointment.status === 'confirmed' ? (
 //                                 <CheckCircleIcon className="h-4 w-4 mr-1" />
 //                               ) : (
@@ -292,7 +386,6 @@
 
 // export default CitasList;
 
-
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -302,15 +395,38 @@ import { isWednesday } from 'date-fns';
 import Navbar from '../../Components/Navbar';
 import { CalendarIcon, PencilIcon, TrashIcon, XCircleIcon, CheckCircleIcon } from 'lucide-react';
 import ApiRoutes from '../../Components/ApiRoutes';
-import { toZonedTime } from 'date-fns-tz';
-import { format, parseISO } from 'date-fns';
+import { toZonedTime, formatInTimeZone } from 'date-fns-tz';
+import { parseISO } from 'date-fns';
+
+interface User {
+  id: number;
+  cedula: string;
+  nombre: string;
+  apellido1: string;
+  apellido2: string;
+  telefono: string;
+  email: string;
+  password: string;
+  isActive: boolean;
+}
+
+interface AvailableDate {
+  id: number;
+  date: string;
+  horasCita: {
+    id: number;
+    hora: string;
+    disponibilidad: boolean;
+  }[];
+}
 
 interface Appointment {
   id: number;
   description: string;
-  date: string;
-  time: string;
-  status?: string;
+  status: string;
+  user: User;
+  availableDate: AvailableDate;
+  time: string; // Añadir campo para la hora
 }
 
 const CitasList = () => {
@@ -319,6 +435,8 @@ const CitasList = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [description, setDescription] = useState<string>('');
+  const [availableDates, setAvailableDates] = useState<AvailableDate[]>([]);
+  const [availableHours, setAvailableHours] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -328,10 +446,9 @@ const CitasList = () => {
       try {
         setIsLoading(true);
 
-        // Validar el token
         const token = localStorage.getItem('token');
         if (!token) {
-          navigate('/login'); // Redirigir al login si no hay token
+          navigate('/login');
           return;
         }
 
@@ -341,13 +458,26 @@ const CitasList = () => {
           },
         });
 
+        if (!Array.isArray(response.data)) {
+          throw new Error('La respuesta del backend no es un array válido.');
+        }
+
         const adjustedAppointments = response.data.map((appointment: Appointment) => {
-          const zonedDate = toZonedTime(parseISO(appointment.date), 'America/Costa_Rica'); // Ajuste a UTC-6
+          if (!appointment.availableDate?.date) {
+            console.warn('Cita sin fecha:', appointment);
+            return {
+              ...appointment,
+              adjustedDate: null,
+            };
+          }
+
+          const zonedDate = toZonedTime(parseISO(appointment.availableDate.date), 'America/Costa_Rica');
           return {
             ...appointment,
-            adjustedDate: zonedDate, // Guardar la fecha ajustada
+            adjustedDate: zonedDate,
           };
         });
+
         setAppointments(adjustedAppointments);
       } catch (error) {
         setError('Error al cargar las citas. Por favor, intente nuevamente.');
@@ -360,39 +490,102 @@ const CitasList = () => {
     fetchAppointments();
   }, [navigate]);
 
+  useEffect(() => {
+    const fetchAvailableDates = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+          return;
+        }
+
+        const response = await axios.get(ApiRoutes.fechaDisponible, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data && Array.isArray(response.data)) {
+          setAvailableDates(response.data);
+        } else {
+          console.error("El backend no devolvió un array. Respuesta recibida:", response.data);
+        }
+      } catch (error) {
+        console.error('Error al obtener fechas disponibles:', error);
+        setError('Error al cargar las fechas disponibles.');
+      }
+    };
+
+    fetchAvailableDates();
+  }, [navigate]);
+
+  const handleDateChange = async (selectedDate: Date | null) => {
+    setSelectedDate(selectedDate);
+    setSelectedTime(''); // Limpiar la hora seleccionada al cambiar la fecha
+
+    if (selectedDate) {
+      const formattedDate = selectedDate.toISOString().split('T')[0]; // Formatear la fecha como 'YYYY-MM-DD'
+
+      // Buscar la fecha seleccionada en las fechas disponibles
+      const selectedDateData = availableDates.find(
+        (availableDate) => availableDate.date === formattedDate
+      );
+
+      if (selectedDateData) {
+        // Filtrar las horas disponibles (disponibilidad: true)
+        const horasDisponibles = selectedDateData.horasCita
+          .filter((hora) => hora.disponibilidad)
+          .map((hora) => hora.hora);
+
+        setAvailableHours(horasDisponibles); // Actualizar las horas disponibles
+      } else {
+        setAvailableHours([]); // No hay horas disponibles para esta fecha
+      }
+    } else {
+      setAvailableHours([]); // Limpiar las horas disponibles si no hay fecha seleccionada
+    }
+  };
+
   const handleCreateAppointment = () => {
     navigate('/usuario-cita');
   };
 
   const handleEditClick = (appointment: Appointment) => {
     setEditingAppointmentId(appointment.id);
-    setSelectedDate(new Date(appointment.date));
-    setSelectedTime(appointment.time);
+    const parsedDate = parseISO(appointment.availableDate.date);
+    setSelectedDate(parsedDate);
+    handleDateChange(parsedDate); // Cargar las horas disponibles para la fecha seleccionada
+    setSelectedTime(appointment.time); // Usar el campo `time` de la cita
     setDescription(appointment.description);
   };
 
   const handleSaveClick = async (appointmentId: number) => {
-    const validTimes = [
-      "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-      "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
-    ];
-
-    if (!validTimes.includes(selectedTime)) {
-      setError("La hora seleccionada no es válida.");
+    if (!availableHours.includes(selectedTime)) {
+      setError("La hora seleccionada no está disponible.");
       return;
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        navigate('/login');
+        navigate("/login");
         return;
       }
 
-      const updatedAppointment: Partial<Appointment> = {
+      const appointmentToUpdate = appointments.find((app) => app.id === appointmentId);
+      if (!appointmentToUpdate) {
+        setError("Cita no encontrada.");
+        return;
+      }
+
+      const updatedAppointment = {
         description,
-        date: selectedDate ? selectedDate.toISOString().split('T')[0] : '',
-        time: selectedTime,
+        availableDate: {
+          id: appointmentToUpdate.availableDate.id,
+          date: selectedDate ? formatInTimeZone(selectedDate, "America/Costa_Rica", "yyyy-MM-dd'T'HH:mm:ss") : '',
+          horasCita: appointmentToUpdate.availableDate.horasCita, // Incluir horasCita
+        },
+        time: selectedTime, // Asegúrate de incluir la hora actualizada
       };
 
       const response = await axios.put(
@@ -406,7 +599,9 @@ const CitasList = () => {
       if (response.status >= 200 && response.status < 300) {
         setAppointments((prev) =>
           prev.map((appointment) =>
-            appointment.id === appointmentId ? { ...appointment, ...updatedAppointment } : appointment
+            appointment.id === appointmentId
+              ? { ...appointment, ...updatedAppointment }
+              : appointment
           )
         );
         setEditingAppointmentId(null);
@@ -452,14 +647,6 @@ const CitasList = () => {
 
   const filterWeekdays = (date: Date) => {
     return date && isWednesday(date);
-  };
-
-  const getTimeOptions = () => {
-    const times = [
-      "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-      "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
-    ];
-    return times;
   };
 
   if (isLoading) {
@@ -515,7 +702,7 @@ const CitasList = () => {
                         <div className="relative">
                           <DatePicker
                             selected={selectedDate}
-                            onChange={(date) => setSelectedDate(date)}
+                            onChange={handleDateChange}
                             filterDate={filterWeekdays}
                             dateFormat="yyyy-MM-dd"
                             placeholderText="Selecciona una fecha"
@@ -533,11 +720,15 @@ const CitasList = () => {
                             className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                           >
                             <option value="">Seleccione una hora</option>
-                            {getTimeOptions().map((time) => (
-                              <option key={time} value={time}>
-                                {time}
-                              </option>
-                            ))}
+                            {availableHours.length === 0 ? (
+                              <option value="" disabled>No hay horas disponibles</option>
+                            ) : (
+                              availableHours.map((hora) => (
+                                <option key={hora} value={hora}>
+                                  {hora}
+                                </option>
+                              ))
+                            )}
                           </select>
                         </div>
                       )}
@@ -565,8 +756,9 @@ const CitasList = () => {
                         <div className="space-y-1 text-sm text-gray-500">
                           <p>
                             Fecha:{' '}
-                            {format(
-                              toZonedTime(parseISO(appointment.date), 'America/Costa_Rica'),
+                            {formatInTimeZone(
+                              parseISO(appointment.availableDate.date),
+                              'America/Costa_Rica',
                               'yyyy-MM-dd'
                             )}
                           </p>
@@ -619,4 +811,3 @@ const CitasList = () => {
 };
 
 export default CitasList;
-
