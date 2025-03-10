@@ -49,14 +49,14 @@ export interface DecodedToken {
     evidencia: boolean;
     archivosEvidencia?: string | string[];
     detallesEvidencia?: string;
-    Status: string;
+    status: string;
   }
   
   export interface Concesion {
     id: number;
     ArchivoAdjunto: string;
     Date: string;
-    Status?: string;
+    status?: string;
     user?: {
       cedula: number;
       nombre: string;
@@ -69,7 +69,7 @@ export interface DecodedToken {
     id: number;
     ArchivoAdjunto: string;
     Date: string;
-    Status?: string;
+    status?: string;
     user?: {
       cedula: number;
       nombre: string;
@@ -121,7 +121,7 @@ export interface DecodedToken {
     id: number;
     ArchivoAdjunto: string;
     Date: string; 
-    Status?: string;
+    status?: string;
     user?: {
       id: number;
       nombre: string;

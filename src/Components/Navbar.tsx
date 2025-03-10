@@ -258,9 +258,10 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
     // Escuchar cambios en el token en el almacenamiento local
     const handleStorageChange = () => checkAuthentication();
     window.addEventListener('storage', handleStorageChange);
-    
+    document.addEventListener('click', () => setIsMenuOpen(false));
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      document.removeEventListener('click', () => setIsMenuOpen(false));
     };
   }, []);
 
@@ -324,32 +325,29 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
 
             {/* Condición de usuario autenticado */}
             {isAuthenticated ? (
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setIsUserDropdownOpen(!isUserDropdownOpen);
-                    setIsSolicitudesDropdownOpen(false);
-                  }}
-                  className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 focus:outline-none"
-                >
-                  <UserIcon className="h-6 w-6" />
-                </button>
-                {isUserDropdownOpen && (
-                  <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-md w-48">
-                    <div className="px-4 py-2 text-gray-700 border-b">{userEmail}</div>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100"
-                    >
-                      Cerrar sesión
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <Link to="/login" className="text-gray-600 hover:text-blue-600">Iniciar Sesión</Link>
-            )}
-          </div>
+              <div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMenuOpen(!isMenuOpen);
+                }}
+                className="flex items-center gap-2"
+              >
+                <UserIcon className="h-6 w-6 text-gray-600" />
+              </button>
+              {isMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-2 p-4">
+                  <p className="text-sm text-gray-700 font-semibold">{userEmail}</p>
+                  <button onClick={handleLogout} className="block mt-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left">
+                    Cerrar sesión
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link to="/login" className="text-blue-600 hover:underline">Iniciar sesión</Link>
+          )}
+        </div>
 
           {/* Mobile menu button */}
           <button 
