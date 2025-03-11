@@ -5,41 +5,10 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { isWednesday } from 'date-fns';
 import Navbar from '../../Components/Navbar';
-import { CalendarIcon, PencilIcon, TrashIcon, XCircleIcon, CheckCircleIcon } from 'lucide-react';
+import { CalendarIcon, TrashIcon, XCircleIcon, CheckCircleIcon } from 'lucide-react';
 import ApiRoutes from '../../Components/ApiRoutes';
 import { toZonedTime, formatInTimeZone } from 'date-fns-tz';
 import { parseISO } from 'date-fns';
-
-// interface User {
-//   id: number;
-//   cedula: string;
-//   nombre: string;
-//   apellido1: string;
-//   apellido2: string;
-//   telefono: string;
-//   email: string;
-//   password: string;
-//   isActive: boolean;
-// }
-
-// interface AvailableDate {
-//   id: number;
-//   date: string;
-//   horasCita: {
-//     id: number;
-//     hora: string;
-//     disponibilidad: boolean;
-//   }[];
-// }
-
-// interface Appointment {
-//   id: number;
-//   description: string;
-//   status: string;
-//   user: User;
-//   availableDate: AvailableDate;
-//   time: string; // Añadir campo para la hora
-// }
 
 interface User {
   id: number;
@@ -202,14 +171,14 @@ const CitasList = () => {
     navigate('/usuario-cita');
   };
 
-  const handleEditClick = (appointment: Appointment) => {
-    setEditingAppointmentId(appointment.id);
-    const parsedDate = parseISO(appointment.availableDate.date);
-    setSelectedDate(parsedDate);
-    handleDateChange(parsedDate); // Cargar las horas disponibles para la fecha seleccionada
-    setSelectedTime(appointment.horaCita.hora); // Usar el campo `time` de la cita
-    setDescription(appointment.description);
-  };
+  // const handleEditClick = (appointment: Appointment) => {
+  //   setEditingAppointmentId(appointment.id);
+  //   const parsedDate = parseISO(appointment.availableDate.date);
+  //   setSelectedDate(parsedDate);
+  //   handleDateChange(parsedDate); // Cargar las horas disponibles para la fecha seleccionada
+  //   setSelectedTime(appointment.horaCita.hora); // Usar el campo `time` de la cita
+  //   setDescription(appointment.description);
+  // };
 
   const handleSaveClick = async (appointmentId: number) => {
     if (!availableHours.includes(selectedTime)) {
@@ -442,19 +411,30 @@ const CitasList = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="flex gap-2">
-                        {/* <button
+                      {/* <div className="flex gap-2">
+                        <button
                           onClick={() => handleEditClick(appointment)}
                           className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
                         >
                           <PencilIcon className="h-4 w-4" />
-                        </button> */}
+                        </button>
+                        
                         <button
                           onClick={() => handleDeleteAppointment(appointment.id)}
                           className="p-2 text-gray-600 hover:text-red-600 transition-colors"
                         >
                           <TrashIcon className="h-4 w-4" />
                         </button>
+                      </div> */}
+                                            <div className="flex gap-2">
+                        {appointment.status !== 'Aprobada' && appointment.status !== 'Denegada' && (
+                          <button
+                            onClick={() => handleDeleteAppointment(appointment.id)}
+                            className="p-2 text-gray-600 hover:text-red-600 transition-colors"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
