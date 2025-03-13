@@ -82,12 +82,24 @@ export default function UserRequests() {
           }),
         ]);
 
+      
         // Procesar las respuestas
         const planosData = await planosResponse.json();
         const prorrogasData = await prorrogasResponse.json();
         const precariosData = await precariosResponse.json();
         const concesionesData = await concesionesResponse.json();
         const copiaExpedientesData = await copiaExpedientesResponse.json();
+
+        const parseFileUrl = (fileString: string) => {
+          try {
+            const files = JSON.parse(fileString);
+            const filePath = Array.isArray(files) && files.length > 0 ? files[0] : '';
+            return filePath ? `${ApiRoutes.urlBase}/${filePath.replace(/\\/g, '/').replace(/\["|"\]/g, '')}` : '';
+          } catch {
+            return '';
+          }
+        };
+
 
         // Mapeo de datos
         const planos: Request[] = planosData.map((plan: any) => ({
@@ -97,7 +109,7 @@ export default function UserRequests() {
           date: plan.Date || 'Sin fecha',
           description: plan.Comentario || 'Sin descripción disponible',
           category: 'Plano',
-          fileUrl: plan.ArchivoAdjunto || '', // Asegúrate de que el archivo adjunto esté aquí
+          fileUrl: parseFileUrl(plan.ArchivoAdjunto) || '', // Asegúrate de que el archivo adjunto esté aquí
         }));
 
         const prorrogas: Request[] = prorrogasData.map((prorroga: any) => ({
@@ -106,7 +118,7 @@ export default function UserRequests() {
           status: prorroga.Status || 'Desconocido',
           date: prorroga.Date || 'Sin fecha',
           category: 'Prórroga',
-          fileUrl: prorroga.ArchivoAdjunto || '', // Asegúrate de que el archivo adjunto esté aquí
+          fileUrl: parseFileUrl(prorroga.ArchivoAdjunto) || '', // Asegúrate de que el archivo adjunto esté aquí
         }));
 
         const precarios: Request[] = precariosData.map((precario: any) => ({
@@ -115,7 +127,7 @@ export default function UserRequests() {
           status: precario.Status || 'Desconocido',
           date: precario.Date || 'Sin fecha',
           category: 'Precario',
-          fileUrl: precario.ArchivoAdjunto || '', // Asegúrate de que el archivo adjunto esté aquí
+          fileUrl: parseFileUrl(precario.ArchivoAdjunto) || '', // Asegúrate de que el archivo adjunto esté aquí
         }));
 
         const concesiones: Request[] = concesionesData.map((concesion: any) => ({
@@ -124,7 +136,7 @@ export default function UserRequests() {
           status: concesion.Status || 'Desconocido',
           date: concesion.Date || 'Sin fecha',
           category: 'Concesión',
-          fileUrl: concesion.ArchivoAdjunto || '', // Asegúrate de que el archivo adjunto esté aquí
+          fileUrl: parseFileUrl(concesion.ArchivoAdjunto),
         }));
 
         const copiaExpedientes: Request[] = copiaExpedientesData.map((solicitud: any) => ({
@@ -133,7 +145,7 @@ export default function UserRequests() {
           status: solicitud.status || 'Desconocido',
           date: solicitud.Date || 'Sin fecha',
           category: 'CopiaExpediente',
-          fileUrl: solicitud.ArchivoAdjunto || '', // Asegúrate de que el archivo adjunto esté aquí
+          fileUrl: parseFileUrl(solicitud.ArchivoAdjunto) || '', // Asegúrate de que el archivo adjunto esté aquí
         }));
 
         // Combinar todas las solicitudes
