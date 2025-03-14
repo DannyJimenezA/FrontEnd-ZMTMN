@@ -49,14 +49,14 @@ export interface DecodedToken {
     evidencia: boolean;
     archivosEvidencia?: string | string[];
     detallesEvidencia?: string;
-    Status: string;
+    status: string;
   }
   
   export interface Concesion {
     id: number;
     ArchivoAdjunto: string;
     Date: string;
-    Status?: string;
+    status?: string;
     user?: {
       cedula: number;
       nombre: string;
@@ -69,7 +69,7 @@ export interface DecodedToken {
     id: number;
     ArchivoAdjunto: string;
     Date: string;
-    Status?: string;
+    status?: string;
     user?: {
       cedula: number;
       nombre: string;
@@ -121,7 +121,7 @@ export interface DecodedToken {
     id: number;
     ArchivoAdjunto: string;
     Date: string; 
-    Status?: string;
+    status?: string;
     user?: {
       id: number;
       nombre: string;
@@ -145,6 +145,14 @@ export interface DecodedToken {
     };
     status: string;
   }
+
+  // interface Appointment {
+  //   id: number;
+  //   description: string;
+  //   status: string;
+  //   user: User;
+  //   availableDate: AvailableDate;
+  // }
   
   export interface User {
     id: number;
@@ -152,7 +160,10 @@ export interface DecodedToken {
     apellido1: string;
     apellido2: string;
     email: string;
+    cedila: string;
     telefono: number;
+    password: string;
+    isActive: boolean;
     roles: {
       id: number;
       name: string;
@@ -168,9 +179,14 @@ export interface DecodedToken {
     apellido2: string;
     email: string;
     telefono: number;
+    password: string;
     isActive: boolean;
     roles: {
       name: string;
     }[];
   }
   
+  // interface AvailableDate {
+  //   id: number;
+  //   date: string;
+  // }

@@ -9,34 +9,58 @@
 
 // interface DecodedToken {
 //   email: string;
+//   exp: number;
 // }
 
 // export default function Navbar({ isFixed = false }: NavbarProps) {
 //   const [isMenuOpen, setIsMenuOpen] = useState(false);
-//   const [isSolicitudesDropdownOpen, setIsSolicitudesDropdownOpen] = useState(false); // Estado para "Realizar Solicitudes"
-//   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false); // Estado para el dropdown de usuario
-//   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false); // Estado para dropdown en modo móvil
-//   // const [prevScrollPos, setPrevScrollPos] = useState(0);
-//   const [visible] = useState(true);
-//   // const hideTimeout = useRef<ReturnType<typeof setTimeout> | null>(null); 
+//   const [isSolicitudesDropdownOpen, setIsSolicitudesDropdownOpen] = useState(false);
+//   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+//   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
 //   const [isAuthenticated, setIsAuthenticated] = useState(false);
 //   const [userEmail, setUserEmail] = useState<string | null>(null);
 //   const navigate = useNavigate();
 
-//   // Verificar si el usuario está autenticado
-//   useEffect(() => {
+//   // Verificar si el usuario está autenticado y si el token ha expirado
+//   const checkAuthentication = () => {
 //     const token = localStorage.getItem('token');
 //     if (token) {
 //       try {
 //         const decodedToken: DecodedToken = jwtDecode(token);
-//         setUserEmail(decodedToken.email);
-//         setIsAuthenticated(true);
+        
+//         // Verificar si el token ha expirado
+//         if (decodedToken.exp * 1000 > Date.now()) {
+//           setIsAuthenticated(true);
+//           setUserEmail(decodedToken.email);
+//         } else {
+//           // Token expirado
+//           setIsAuthenticated(false);
+//           setUserEmail(null);
+//           localStorage.removeItem('token');
+//         }
 //       } catch (error) {
 //         console.error('Error decoding token:', error);
 //         setIsAuthenticated(false);
 //         setUserEmail(null);
 //       }
+//     } else {
+//       setIsAuthenticated(false);
+//       setUserEmail(null);
 //     }
+//   };
+
+//   // Ejecutar la verificación de autenticación al montar el componente
+//   useEffect(() => {
+//     checkAuthentication();
+
+//     // Escuchar cambios en el token en el almacenamiento local
+//     const handleStorageChange = () => checkAuthentication();
+//     window.addEventListener('storage', handleStorageChange);
+//     document.addEventListener('click', () => setIsMenuOpen(false));
+//     return () => {
+//       window.removeEventListener('storage', handleStorageChange);
+//       document.removeEventListener('click', () => setIsMenuOpen(false));
+//     };
 //   }, []);
 
 //   // Función para manejar el cierre de sesión
@@ -50,7 +74,6 @@
 //   const navbarClasses = `
 //     w-full bg-white shadow-md transition-all duration-300 z-50
 //     ${isFixed ? 'fixed' : 'sticky'} top-0
-//     ${visible ? 'translate-y-0' : '-translate-y-full'}
 //   `;
 
 //   return (
@@ -100,32 +123,29 @@
 
 //             {/* Condición de usuario autenticado */}
 //             {isAuthenticated ? (
-//               <div className="relative">
-//                 <button
-//                   onClick={() => {
-//                     setIsUserDropdownOpen(!isUserDropdownOpen);
-//                     setIsSolicitudesDropdownOpen(false);
-//                   }}
-//                   className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 focus:outline-none"
-//                 >
-//                   <UserIcon className="h-6 w-6" />
-//                 </button>
-//                 {isUserDropdownOpen && (
-//                   <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-md w-48">
-//                     <div className="px-4 py-2 text-gray-700 border-b">{userEmail}</div>
-//                     <button
-//                       onClick={handleLogout}
-//                       className="w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100"
-//                     >
-//                       Cerrar sesión
-//                     </button>
-//                   </div>
-//                 )}
-//               </div>
-//             ) : (
-//               <Link to="/login" className="text-gray-600 hover:text-blue-600">Iniciar Sesión</Link>
-//             )}
-//           </div>
+//               <div>
+//               <button
+//                 onClick={(e) => {
+//                   e.stopPropagation();
+//                   setIsMenuOpen(!isMenuOpen);
+//                 }}
+//                 className="flex items-center gap-2"
+//               >
+//                 <UserIcon className="h-6 w-6 text-gray-600" />
+//               </button>
+//               {isMenuOpen && (
+//                 <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-2 p-4">
+//                   <p className="text-sm text-gray-700 font-semibold">{userEmail}</p>
+//                   <button onClick={handleLogout} className="block mt-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left">
+//                     Cerrar sesión
+//                   </button>
+//                 </div>
+//               )}
+//             </div>
+//           ) : (
+//             <Link to="/login" className="text-blue-600 hover:underline">Iniciar sesión</Link>
+//           )}
+//         </div>
 
 //           {/* Mobile menu button */}
 //           <button 
@@ -200,7 +220,7 @@
 // }
 
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bars3Icon, XMarkIcon, UserIcon } from '@heroicons/react/24/outline';
 import { jwtDecode } from 'jwt-decode';
@@ -222,6 +242,7 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const navigate = useNavigate();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Verificar si el usuario está autenticado y si el token ha expirado
   const checkAuthentication = () => {
@@ -258,7 +279,6 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
     // Escuchar cambios en el token en el almacenamiento local
     const handleStorageChange = () => checkAuthentication();
     window.addEventListener('storage', handleStorageChange);
-    
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
@@ -271,6 +291,20 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
     setUserEmail(null);
     navigate('/');
   };
+
+  // Cerrar el dropdown de "Solicitudes" al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsSolicitudesDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const navbarClasses = `
     w-full bg-white shadow-md transition-all duration-300 z-50
@@ -290,6 +324,7 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
 
             {/* Dropdown para "Realizar Solicitudes" */}
             <div 
+              ref={dropdownRef}
               onClick={() => {
                 setIsSolicitudesDropdownOpen(!isSolicitudesDropdownOpen);
                 setIsUserDropdownOpen(false);
@@ -324,30 +359,27 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
 
             {/* Condición de usuario autenticado */}
             {isAuthenticated ? (
-              <div className="relative">
+              <div>
                 <button
-                  onClick={() => {
-                    setIsUserDropdownOpen(!isUserDropdownOpen);
-                    setIsSolicitudesDropdownOpen(false);
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMenuOpen(!isMenuOpen);
                   }}
-                  className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 focus:outline-none"
+                  className="flex items-center gap-2"
                 >
-                  <UserIcon className="h-6 w-6" />
+                  <UserIcon className="h-6 w-6 text-gray-600" />
                 </button>
-                {isUserDropdownOpen && (
-                  <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-md w-48">
-                    <div className="px-4 py-2 text-gray-700 border-b">{userEmail}</div>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100"
-                    >
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-2 p-4">
+                    <p className="text-sm text-gray-700 font-semibold">{userEmail}</p>
+                    <button onClick={handleLogout} className="block mt-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left">
                       Cerrar sesión
                     </button>
                   </div>
                 )}
               </div>
             ) : (
-              <Link to="/login" className="text-gray-600 hover:text-blue-600">Iniciar Sesión</Link>
+              <Link to="/login" className="text-blue-600 hover:underline">Iniciar sesión</Link>
             )}
           </div>
 
