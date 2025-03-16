@@ -55,6 +55,7 @@ export interface DecodedToken {
   export interface Concesion {
     id: number;
     ArchivoAdjunto: string;
+    Detalle: string;
     Date: string;
     status?: string;
     user?: {
@@ -69,6 +70,7 @@ export interface DecodedToken {
     id: number;
     ArchivoAdjunto: string;
     Date: string;
+    Detalle: string;
     status?: string;
     user?: {
       cedula: number;
@@ -121,6 +123,7 @@ export interface DecodedToken {
     id: number;
     ArchivoAdjunto: string;
     Date: string; 
+    Detalle: string;
     status?: string;
     user?: {
       id: number;

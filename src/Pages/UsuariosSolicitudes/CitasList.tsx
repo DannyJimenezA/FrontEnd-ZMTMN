@@ -246,7 +246,7 @@ const CitasList = () => {
         return;
       }
 
-      await axios.delete(`${ApiRoutes.citas.crearcita}/${id}`, {
+      await axios.delete(`${ApiRoutes.citas.miscitas}/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -74,7 +74,7 @@ export default function UsuarioProrroga() {
     uploadedFiles.forEach((file) => {
       formData.append('files', file.file);
     });
-    formData.append('descripcion', fileDescription);
+    formData.append('detalle', fileDescription);
 
     const token = localStorage.getItem('token');
     const decodedToken = parseJwt(token);
