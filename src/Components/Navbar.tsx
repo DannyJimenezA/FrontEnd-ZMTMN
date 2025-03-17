@@ -336,26 +336,26 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
               </button>
               {isSolicitudesDropdownOpen && (
                 <div className="absolute top-full mt-2 bg-white shadow-lg rounded-md w-48">
-                  <Link to="/usuario-concesion" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
+                  <Link to="/mis-concesiones" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
                     Concesiones
                   </Link>
-                  <Link to="/usuario-prorroga" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
+                  <Link to="/mis-prorrogas" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
                     Prorrogas
                   </Link>
-                  <Link to="/usuario-precario" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
+                  <Link to="/mis-precarios" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
                     Uso Precario
                   </Link>
-                  <Link to="/usuario-plano" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
+                  <Link to="/mis-planos" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
                     Revisión de Planos
                   </Link>
-                  <Link to="/usuario-expediente" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
+                  <Link to="/mis-expedientes" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
                     Copia de Expediente
                   </Link>
                 </div>
               )}
             </div>
 
-            <Link to="/mis-solicitudes" className="text-gray-600 hover:text-blue-600">Mis Solicitudes</Link>
+            {/* <Link to="/mis-solicitudes" className="text-gray-600 hover:text-blue-600">Mis Solicitudes</Link> */}
 
             {/* Condición de usuario autenticado */}
             {isAuthenticated ? (
@@ -412,18 +412,18 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
               </button>
               {isMobileDropdownOpen && (
                 <div className="pl-4">
-                  <Link to="/usuario-concesion" className="block py-2 text-gray-600 hover:text-blue-600">Concesiones</Link>
-                  <Link to="/usuario-prorroga" className="block py-2 text-gray-600 hover:text-blue-600">Prorrogas</Link>
-                  <Link to="/usuario-precario" className="block py-2 text-gray-600 hover:text-blue-600">Uso Precario</Link>
-                  <Link to="/usuario-plano" className="block py-2 text-gray-600 hover:text-blue-600">Revisión de Planos</Link>
-                  <Link to="/usuario-expediente" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
+                  <Link to="/mis-concesiones" className="block py-2 text-gray-600 hover:text-blue-600">Concesiones</Link>
+                  <Link to="/mis-prorrogas" className="block py-2 text-gray-600 hover:text-blue-600">Prorrogas</Link>
+                  <Link to="/mis-precarios" className="block py-2 text-gray-600 hover:text-blue-600">Uso Precario</Link>
+                  <Link to="/mis-planos" className="block py-2 text-gray-600 hover:text-blue-600">Revisión de Planos</Link>
+                  <Link to="/mis-expedientes" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
                     Copia de Expediente
                   </Link>
                 </div>
               )}
             </div>
 
-            <Link to="/mis-solicitudes" className="block py-2 px-4 text-gray-600 hover:text-blue-600">Mis Solicitudes</Link>
+            {/* <Link to="/mis-solicitudes" className="block py-2 px-4 text-gray-600 hover:text-blue-600">Mis Solicitudes</Link> */}
 
             {/* Autenticación en modo móvil */}
             {isAuthenticated ? (

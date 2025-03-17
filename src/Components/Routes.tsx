@@ -6,7 +6,6 @@ import UsuarioPrecario from '../Pages/Usuarios/UsuarioPrecario';
 import UsuarioPlano from '../Pages/Usuarios/UsuarioPlano';
 import UsuarioDenuncia from '../Pages/Usuarios/UsuarioDenuncia';
 import UsuarioCita from '../Pages/Usuarios/UsuarioCita';
-import UserRequests from '../Pages/UsuariosSolicitudes/UserRequest';
 import Login from '../Pages/Auth/Login';
 import Register from '../Pages/Auth/Register';
 import ForgotPassword from '../Pages/Auth/ForgotPassword';
@@ -16,6 +15,11 @@ import UsuarioExpediente from '../Pages/Usuarios/UsuarioExpediente';
 import CitasList from '../Pages/UsuariosSolicitudes/CitasList';
 import ConfirmAccount from '../Pages/Auth/ConfirmAccount';
 import ResetPassword from '../Pages/Auth/ResetPassword';
+import ConcesionesList from '../Pages/UsuariosSolicitudes/ConcesionesList';
+import ProrrogasList from '../Pages/UsuariosSolicitudes/ProrrogaList';
+import PrecariosList from '../Pages/UsuariosSolicitudes/PrecariosList';
+import ExpedientesList from '../Pages/UsuariosSolicitudes/ExpedienteList';
+import PlanosList from '../Pages/UsuariosSolicitudes/PlanosList';
 
 function AppRoutes() {
   // const isAuthenticated = !!localStorage.getItem('token');
@@ -40,8 +44,14 @@ function AppRoutes() {
       <Route path="/usuario-prorroga" element={<UsuarioProrroga />}/>
       <Route path="/usuario-precario" element={<UsuarioPrecario />}/>
       <Route path="/usuario-plano" element={<UsuarioPlano />}/>
-      <Route path="/mis-solicitudes" element={<UserRequests />}/>
+      {/* <Route path="/mis-solicitudes" element={<UserRequests />}/> */}
       <Route path="/mis-citas" element={<CitasList />}/>
+      <Route path="/mis-concesiones" element={<ConcesionesList />}/>
+      <Route path="/mis-prorrogas" element={<ProrrogasList />}/>
+      <Route path="/mis-precarios" element={<PrecariosList />}/>
+      <Route path="/mis-expedientes" element={<ExpedientesList />}/>
+      <Route path="/mis-planos" element={<PlanosList />}/>
+
     </Routes>
             
    </AuthProvider>

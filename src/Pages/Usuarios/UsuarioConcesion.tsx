@@ -235,7 +235,7 @@ export default function UsuarioConcesion() {
       }).then(() => {
         setUploadedFiles([]);
         setFileDetails('');
-        navigate('/'); // 🔥 Redirige al usuario correctamente
+        navigate('/mis-concesiones'); // 🔥 Redirige al usuario correctamente
       });
     } catch (error) {
       console.error('Error al enviar archivos:', error);
@@ -255,7 +255,7 @@ export default function UsuarioConcesion() {
   };
 
   const handleBack = () => {
-    navigate('/');
+    navigate('/mis-concesiones');
   };
 
   return (

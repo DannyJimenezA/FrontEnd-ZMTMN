@@ -115,6 +115,7 @@ export default function UsuarioPrecario() {
       }).then(() => {
         setUploadedFiles([]);
         setFileDescription('');
+        navigate('/mis-precarios');
       });
     } catch (error) {
       console.error('Error al enviar archivos:', error);
@@ -132,7 +133,7 @@ export default function UsuarioPrecario() {
   };
 
   const handleBack = () => {
-    navigate('/');
+    navigate('/mis-precarios');
   };
 
   return (
