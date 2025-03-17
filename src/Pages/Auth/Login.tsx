@@ -3,6 +3,7 @@ import { EnvelopeIcon, LockClosedIcon, EyeIcon, EyeSlashIcon } from '@heroicons/
 import { useNavigate } from 'react-router-dom';
 import ApiRoutes from '../../Components/ApiRoutes';
 import ApiService from '../../Components/ApiService';
+import image from '../../Img/Img01.jpg'
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -133,8 +134,11 @@ export default function Login() {
   return (
     <div 
       className="min-h-screen w-full bg-cover bg-center flex items-center justify-center" 
-      style={{ backgroundImage: "url('/src/Img/Img01.jpg')", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", height: "100vh", width: "100vw" }}
+      // style={{ backgroundImage: "url('/src/Img/Img01.jpg')", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", height: "100vh", width: "100vw" }}
     >
+        <div className="absolute inset-0 w-full h-full">
+      <img src={image} alt="Background" className="w-full h-full object-cover" />
+    </div>
       <div className="bg-white bg-opacity-0 backdrop-blur-lg shadow-2xl rounded-lg p-10 w-full max-w-md">
         <h2 className="text-3xl font-extrabold text-black mb-8 text-center">
           Iniciar sesión

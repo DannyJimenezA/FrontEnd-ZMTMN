@@ -107,62 +107,147 @@ export default function UsuarioCita() {
     }
   };
 
+  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  
+  //   if (!date || !time) {
+  //     setError('Por favor, selecciona una fecha y una hora.');
+  //     return;
+  //   }
+  
+  //   const formattedDate = date.toISOString().split('T')[0]; // Formatear la fecha como 'YYYY-MM-DD'
+  
+  //   // Buscar la fecha seleccionada en las fechas disponibles
+  //   const selectedDateData = availableDates.find(
+  //     (availableDate) => availableDate.date === formattedDate
+  //   );
+  
+  //   if (!selectedDateData) {
+  //     setError('Fecha no válida.');
+  //     return;
+  //   }
+  
+  //   // Buscar la hora seleccionada en las horas disponibles
+  //   const selectedHourData = selectedDateData.horasCita.find(
+  //     (hora) => hora.hora === time
+  //   );
+  
+  //   if (!selectedHourData) {
+  //     setError('Hora no válida.');
+  //     return;
+  //   }
+  
+  //   // Obtener el token
+  //   const token = localStorage.getItem('token');
+  //   if (!token) {
+  //     navigate('/login');
+  //     return;
+  //   }
+  
+  //   // Crear el cuerpo de la solicitud según lo que espera el backend
+  //   const newAppointment = {
+  //     description,
+  //     availableDateId: selectedDateData.id, // ID de la fecha disponible
+  //     horasCitaId: selectedHourData.id, // ID de la hora seleccionada
+  //   };
+  
+  //   // Verificar los datos que se enviarán en la solicitud
+  //   console.log('Datos que se enviarán en la solicitud POST:', newAppointment);
+  
+  //   try {
+  //     const response = await axios.post(ApiRoutes.citas.crearcita, newAppointment, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  
+  //     console.log('Cita creada con éxito:', response.data);
+  
+  //     setIsSubmitted(true);
+  //     setError(null);
+  
+  //     setTimeout(() => {
+  //       setDate(null);
+  //       setTime('');
+  //       setDescription('');
+  //       setIsSubmitted(false);
+  //       navigate('/mis-citas');
+  //     }, 3000);
+  //   } catch (error) {
+  //     console.error('Error al agendar la cita:', error);
+  //     setError('Error al agendar la cita. Intente de nuevo.');
+  //   }
+  // };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   
     if (!date || !time) {
       setError('Por favor, selecciona una fecha y una hora.');
+      window.alert('Por favor, selecciona una fecha y una hora.');
       return;
     }
   
-    const formattedDate = date.toISOString().split('T')[0]; // Formatear la fecha como 'YYYY-MM-DD'
+    const formattedDate = date.toISOString().split('T')[0]; // Formato 'YYYY-MM-DD'
   
-    // Buscar la fecha seleccionada en las fechas disponibles
-    const selectedDateData = availableDates.find(
-      (availableDate) => availableDate.date === formattedDate
-    );
-  
-    if (!selectedDateData) {
-      setError('Fecha no válida.');
-      return;
-    }
-  
-    // Buscar la hora seleccionada en las horas disponibles
-    const selectedHourData = selectedDateData.horasCita.find(
-      (hora) => hora.hora === time
-    );
-  
-    if (!selectedHourData) {
-      setError('Hora no válida.');
-      return;
-    }
-  
-    // Obtener el token
+    // Buscar si el usuario ya tiene una cita en esta fecha
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
       return;
     }
   
-    // Crear el cuerpo de la solicitud según lo que espera el backend
-    const newAppointment = {
-      description,
-      availableDateId: selectedDateData.id, // ID de la fecha disponible
-      horasCitaId: selectedHourData.id, // ID de la hora seleccionada
-    };
-  
-    // Verificar los datos que se enviarán en la solicitud
-    console.log('Datos que se enviarán en la solicitud POST:', newAppointment);
-  
     try {
-      const response = await axios.post(ApiRoutes.citas.crearcita, newAppointment, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      // Obtener citas existentes del usuario
+      const userAppointments = await axios.get(ApiRoutes.citas.miscitas, {
+        headers: { Authorization: `Bearer ${token}` },
       });
   
-      console.log('Cita creada con éxito:', response.data);
+      const hasExistingAppointment = userAppointments.data.some(
+        (appointment: any) => appointment.availableDate.date === formattedDate
+      );
   
+      if (hasExistingAppointment) {
+        const errorMessage = 'Ya tienes una cita programada para esta fecha.';
+        setError(errorMessage);
+        window.alert(errorMessage);
+        return;
+      }
+  
+      // Si no hay cita en esa fecha, proceder con la creación
+      const selectedDateData = availableDates.find(
+        (availableDate) => availableDate.date === formattedDate
+      );
+  
+      if (!selectedDateData) {
+        setError('Fecha no válida.');
+        window.alert('Fecha no válida.');
+        return;
+      }
+  
+      const selectedHourData = selectedDateData.horasCita.find(
+        (hora) => hora.hora === time
+      );
+  
+      if (!selectedHourData) {
+        setError('Hora no válida.');
+        window.alert('Hora no válida.');
+        return;
+      }
+  
+      const newAppointment = {
+        description,
+        availableDateId: selectedDateData.id,
+        horasCitaId: selectedHourData.id,
+      };
+  
+      const response = await axios.post(ApiRoutes.citas.crearcita, newAppointment, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      console.log('✅ Cita creada con éxito:', response.data);
+  
+      window.alert('✅ ¡Cita agendada con éxito!');
       setIsSubmitted(true);
       setError(null);
   
@@ -175,9 +260,14 @@ export default function UsuarioCita() {
       }, 3000);
     } catch (error) {
       console.error('Error al agendar la cita:', error);
-      setError('Error al agendar la cita. Intente de nuevo.');
+      const errorMessage = '❌ Error al agendar la cita. Intente de nuevo.';
+      setError(errorMessage);
+      window.alert(errorMessage);
     }
   };
+  
+
+
   const handleBack = () => {
     navigate('/mis-citas');
   };
