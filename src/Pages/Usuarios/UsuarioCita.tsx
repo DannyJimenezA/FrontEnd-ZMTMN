@@ -30,6 +30,9 @@ export default function UsuarioCita() {
   const [availableDates, setAvailableDates] = useState<AvailableDate[]>([]); // Estado para las fechas y horas disponibles
   const [availableHours, setAvailableHours] = useState<string[]>([]); // Estado para las horas disponibles de la fecha seleccionada
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
+
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -106,6 +109,14 @@ export default function UsuarioCita() {
       setAvailableHours([]); // Limpiar las horas disponibles si no hay fecha seleccionada
     }
   };
+
+  useEffect(() => {
+    if (confirmed) {
+      handleSubmit(new Event('submit') as unknown as React.FormEvent<HTMLFormElement>);
+      setConfirmed(false);
+    }
+  }, [confirmed]);
+  
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -197,7 +208,7 @@ export default function UsuarioCita() {
             ¡Cita agendada con éxito!
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
             {error && <div className="text-red-600 font-semibold text-center">{error}</div>}
 
             <div>
@@ -265,12 +276,14 @@ export default function UsuarioCita() {
             </div>
 
             <div>
-              <button
-                type="submit"
-                className="w-full px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Agendar Cita
-              </button>
+            <button
+              type="button"
+              onClick={() => setShowModal(true)}
+              className="w-full px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Agendar Cita
+            </button>
+
               <button
                 onClick={handleBack}
                 className="w-full mt-4 px-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded hover:bg-gray-400 transition-colors"
@@ -281,6 +294,32 @@ export default function UsuarioCita() {
           </form>
         )}
       </div>
+      {showModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+      <h3 className="text-lg font-semibold mb-4">¿Confirmar cita?</h3>
+      <p className="mb-6">¿Estás seguro de que deseas agendar esta cita?</p>
+      <div className="flex justify-end space-x-4">
+        <button
+          onClick={() => {
+            setConfirmed(true);
+            setShowModal(false);
+          }}
+          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        >
+          Aceptar
+        </button>
+        <button
+          onClick={() => setShowModal(false)}
+          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+        >
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }
