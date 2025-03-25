@@ -171,15 +171,6 @@ const CitasList = () => {
     navigate('/usuario-cita');
   };
 
-  // const handleEditClick = (appointment: Appointment) => {
-  //   setEditingAppointmentId(appointment.id);
-  //   const parsedDate = parseISO(appointment.availableDate.date);
-  //   setSelectedDate(parsedDate);
-  //   handleDateChange(parsedDate); // Cargar las horas disponibles para la fecha seleccionada
-  //   setSelectedTime(appointment.horaCita.hora); // Usar el campo `time` de la cita
-  //   setDescription(appointment.description);
-  // };
-
   const handleSaveClick = async (appointmentId: number) => {
     if (!availableHours.includes(selectedTime)) {
       setError("La hora seleccionada no está disponible.");
@@ -289,7 +280,7 @@ const CitasList = () => {
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
             <CalendarIcon className="h-4 w-4 mr-2" />
-            Crear Cita
+            Agendar Cita
           </button>
         </div>
 
@@ -299,7 +290,9 @@ const CitasList = () => {
           </div>
         )}
 
-        <div className="grid gap-6">
+        {/* <div className="grid gap-6"> */}
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
+
           {appointments.length === 0 ? (
             <div className="bg-white rounded-lg shadow p-6 text-center">
               <p className="text-gray-500">No se encontraron citas programadas</p>
@@ -390,7 +383,7 @@ const CitasList = () => {
 
 
 
-                          <p className="flex items-center gap-1">
+                          {/* <p className="flex items-center gap-1">
                             Estado:
                             <span
                               className={`inline-flex items-center ${
@@ -408,7 +401,24 @@ const CitasList = () => {
                               )}
                               {appointment.status}
                             </span>
-                          </p>
+                          </p> */}
+                                          <p className="flex items-center gap-1 mt-4">
+                  Estado:
+                  <span className={`inline-flex items-center ${appointment.status === 'Aprobada' ? 'text-green-600' :
+                      appointment.status === 'Denegada' ? 'text-red-600' : 'text-yellow-600'
+                    }`}>
+                    {appointment.status === 'Aprobada' && (
+                      <CheckCircleIcon className="h-4 w-4 mr-1" />
+                    )}
+                    {appointment.status === 'Denegada' && (
+                      <XCircleIcon className="h-4 w-4 mr-1" />
+                    )}
+                    {appointment.status === 'Pendiente' && (
+                      <span className="inline-block w-4 h-4 border-2 border-yellow-500 rounded-full mr-1"></span>
+                    )}
+                    {appointment.status}
+                  </span>
+                </p>
                         </div>
                       </div>
                       {/* <div className="flex gap-2">
