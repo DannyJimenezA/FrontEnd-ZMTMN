@@ -119,81 +119,9 @@ export default function UsuarioCita() {
   }, [confirmed]);
   
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
   // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   //   e.preventDefault();
 
-  
-  //   if (!date || !time) {
-  //     setError('Por favor, selecciona una fecha y una hora.');
-  //     return;
-  //   }
-  
-  //   const formattedDate = date.toISOString().split('T')[0]; // Formatear la fecha como 'YYYY-MM-DD'
-  
-  //   // Buscar la fecha seleccionada en las fechas disponibles
-  //   const selectedDateData = availableDates.find(
-  //     (availableDate) => availableDate.date === formattedDate
-  //   );
-  
-  //   if (!selectedDateData) {
-  //     setError('Fecha no válida.');
-  //     return;
-  //   }
-  
-  //   // Buscar la hora seleccionada en las horas disponibles
-  //   const selectedHourData = selectedDateData.horasCita.find(
-  //     (hora) => hora.hora === time
-  //   );
-  
-  //   if (!selectedHourData) {
-  //     setError('Hora no válida.');
-  //     return;
-  //   }
-  
-  //   // Obtener el token
-  //   const token = localStorage.getItem('token');
-  //   if (!token) {
-  //     navigate('/login');
-  //     return;
-  //   }
-  
-  //   // Crear el cuerpo de la solicitud según lo que espera el backend
-  //   const newAppointment = {
-  //     description,
-  //     availableDateId: selectedDateData.id, // ID de la fecha disponible
-  //     horasCitaId: selectedHourData.id, // ID de la hora seleccionada
-  //   };
-  
-  //   // Verificar los datos que se enviarán en la solicitud
-  //   console.log('Datos que se enviarán en la solicitud POST:', newAppointment);
-  
-  //   try {
-  //     const response = await axios.post(ApiRoutes.citas.crearcita, newAppointment, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  
-  //     console.log('Cita creada con éxito:', response.data);
-  
-  //     setIsSubmitted(true);
-  //     setError(null);
-  
-  //     setTimeout(() => {
-  //       setDate(null);
-  //       setTime('');
-  //       setDescription('');
-  //       setIsSubmitted(false);
-  //       navigate('/mis-citas');
-  //     }, 3000);
-  //   } catch (error) {
-  //     console.error('Error al agendar la cita:', error);
-  //     setError('Error al agendar la cita. Intente de nuevo.');
-  //   }
-  // };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
