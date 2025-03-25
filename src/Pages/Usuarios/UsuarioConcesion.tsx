@@ -116,6 +116,66 @@ export default function UsuarioConcesion() {
   //   }
   // };
 
+  // const handleSend = async () => {
+  //   if (uploadedFiles.length === 0) {
+  //     MySwal.fire('Error', 'No has subido ningún archivo.', 'error');
+  //     return;
+  //   }
+  
+  //   const formData = new FormData();
+  //   uploadedFiles.forEach((file) => {
+  //     formData.append('files', file.file);
+  //   });
+
+  //   if (!fileDetails.trim()) {
+  //     MySwal.fire('Error', 'Debes ingresar un detalle de los archivos.', 'error');
+  //     return;
+  //   }
+
+  //   formData.append('Detalle', fileDetails.trim());
+  
+  //   const token = localStorage.getItem('token');
+  //   const decodedToken = parseJwt(token);
+  //   const userId = decodedToken?.sub;
+  //   if (!userId) {
+  //     MySwal.fire('Error', 'No se pudo obtener el ID del usuario.', 'error');
+  //     return;
+  //   }
+  
+  //   formData.append('userId', userId);
+  
+  //   try {
+  //     const response = await fetch(ApiRoutes.concesiones, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Authorization': `Bearer ${token}`,
+  //       },
+  //       body: formData,
+  //     });
+  
+  //     if (!response.ok) {
+  //       const errorResponse = await response.json();
+  //       console.error('Error en el servidor:', errorResponse);
+  //       throw new Error('Error al enviar los datos al servidor');
+  //     }
+  
+  //     MySwal.fire({
+  //       title: 'Archivos enviados',
+  //       text: '¡Tus archivos y los detalles se han enviado exitosamente!',
+  //       icon: 'success',
+  //       confirmButtonText: 'Aceptar',
+  //       timer: 3000,
+  //     }).then(() => {
+  //       setUploadedFiles([]);
+  //       setFileDetails('');
+  //       navigate('/'); // Redirigir al usuario a la ruta '/'
+  //     });
+  //   } catch (error) {
+  //     console.error('Error al enviar archivos:', error);
+  //     MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
+  //   }
+  // };
+
   const handleSend = async () => {
     if (uploadedFiles.length === 0) {
       MySwal.fire('Error', 'No has subido ningún archivo.', 'error');
@@ -126,23 +186,36 @@ export default function UsuarioConcesion() {
     uploadedFiles.forEach((file) => {
       formData.append('files', file.file);
     });
-    formData.append('detalle', fileDetails);
   
+    if (!fileDetails.trim()) {
+      MySwal.fire('Error', 'Debes ingresar un detalle de los archivos.', 'error');
+      return;
+    }
+  
+    formData.append('detalle', fileDetails.trim()); // 🔥 Se asegura de que `Detalle` se envíe correctamente
+    console.log('Datos enviados al backend:', Object.fromEntries(formData.entries()));
+
     const token = localStorage.getItem('token');
+    if (!token) {
+      MySwal.fire('Error', 'No se encontró una sesión activa.', 'error');
+      return;
+    }
+  
     const decodedToken = parseJwt(token);
     const userId = decodedToken?.sub;
+  
     if (!userId) {
       MySwal.fire('Error', 'No se pudo obtener el ID del usuario.', 'error');
       return;
     }
   
-    formData.append('userId', userId);
+    formData.append('userId', userId); // 🔥 Se envía el `userId` correctamente
   
     try {
       const response = await fetch(ApiRoutes.concesiones, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`, // 🔥 Se incluye el token correctamente
         },
         body: formData,
       });
@@ -162,13 +235,14 @@ export default function UsuarioConcesion() {
       }).then(() => {
         setUploadedFiles([]);
         setFileDetails('');
-        navigate('/'); // Redirigir al usuario a la ruta '/'
+        navigate('/mis-concesiones'); // 🔥 Redirige al usuario correctamente
       });
     } catch (error) {
       console.error('Error al enviar archivos:', error);
       MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
     }
   };
+  
   
 
   const parseJwt = (token: string | null) => {
@@ -181,7 +255,7 @@ export default function UsuarioConcesion() {
   };
 
   const handleBack = () => {
-    navigate('/');
+    navigate('/mis-concesiones');
   };
 
   return (

@@ -74,7 +74,7 @@ export default function UsuarioProrroga() {
     uploadedFiles.forEach((file) => {
       formData.append('files', file.file);
     });
-    formData.append('descripcion', fileDescription);
+    formData.append('detalle', fileDescription);
 
     const token = localStorage.getItem('token');
     const decodedToken = parseJwt(token);
@@ -110,6 +110,7 @@ export default function UsuarioProrroga() {
       }).then(() => {
         setUploadedFiles([]);
         setFileDescription('');
+        navigate('/mis-prorrogas');
       });
     } catch (error) {
       console.error('Error al enviar archivos:', error);
@@ -127,7 +128,7 @@ export default function UsuarioProrroga() {
   };
 
   const handleBack = () => {
-    navigate('/');
+    navigate('/mis-prorrogas');
   };
 
   return (
