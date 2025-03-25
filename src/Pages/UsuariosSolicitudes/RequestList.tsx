@@ -52,7 +52,7 @@ export const RequestList: React.FC<RequestListProps> = ({ requests }) => {
       {requests.map((request) => (
         <div key={request.id} className="bg-white shadow-md rounded-lg p-6">
           <div className="flex justify-between items-start mb-4">
-            <h2 className="text-xl font-semibold">{request.type}</h2>
+            {/*<h2 className="text-xl font-semibold">{request.type}</h2>*/}
             <span
               className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
                 request.status
