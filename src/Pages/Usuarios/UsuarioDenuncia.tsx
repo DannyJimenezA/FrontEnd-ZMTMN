@@ -48,7 +48,6 @@ export default function UsuarioDenuncia() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Cargar tipos de denuncia y lugares de denuncia desde la API
     fetch(`${ApiRoutes.urlBase}/tipo-denuncia`)
       .then(response => response.json())
       .then(data => setTiposDenuncia(data))
@@ -88,40 +87,9 @@ export default function UsuarioDenuncia() {
     URL.revokeObjectURL(fileToRemove.preview);
   };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-
-  //   const formDataToSend = new FormData();
-  //   Object.entries(formData).forEach(([key, value]) => {
-  //     formDataToSend.append(key, String(value));
-  //   });
-
-  //   uploadedFiles.forEach(({ file }) => {
-  //     formDataToSend.append('files', file);
-  //   });
-
-  //   try {
-  //     const response = await fetch(`${ApiRoutes.denuncias}/upload`, {
-  //       method: 'POST',
-  //       body: formDataToSend,
-  //     });
-
-  //     if (response.ok) {
-  //       MySwal.fire('Denuncia enviada con éxito', '¡Tus archivos se han enviado exitosamente!', 'success');
-  //       navigate('/');
-  //     } else {
-  //       const errorData = await response.json();
-  //       MySwal.fire('Error al enviar la denuncia', errorData.message, 'error');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error al enviar la denuncia:', error);
-  //     MySwal.fire('Error', 'Hubo un error al enviar la denuncia. Intente nuevamente.', 'error');
-  //   }
-  // };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validaciones de campos obligatorios
     const requiredFields: string[] = [];
 
     if (!formData.tipoDenuncia) requiredFields.push("Tipo de Denuncia");
@@ -130,13 +98,11 @@ export default function UsuarioDenuncia() {
     if (!formData.ubicacion.trim()) requiredFields.push("Ubicación Exacta");
     if (!formData.detallesEvidencia.trim()) requiredFields.push("Detalles de la Evidencia");
 
-    // Validar notificación
     if (formData.notificacion) {
       if (!formData.metodoNotificacion.trim()) requiredFields.push("Método de Notificación");
       if (!formData.medioNotificacion.trim()) requiredFields.push("Medio de Notificación");
     }
 
-    // Validar al menos una imagen
     if (uploadedFiles.length === 0) requiredFields.push("Al menos una imagen");
 
     if (requiredFields.length > 0) {
@@ -149,7 +115,22 @@ export default function UsuarioDenuncia() {
       return;
     }
 
-    // Enviar formulario si todo está bien
+    const confirmacion = await MySwal.fire({
+      title: '¿Está seguro de enviar la denuncia?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        confirmButton: 'btn-azul',
+        cancelButton: 'btn-rojo',
+        actions: 'botones-horizontales',
+      },
+      buttonsStyling: false,
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
     const formDataToSend = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       formDataToSend.append(key, String(value));
@@ -166,7 +147,14 @@ export default function UsuarioDenuncia() {
       });
 
       if (response.ok) {
-        MySwal.fire('Denuncia enviada con éxito', '¡Tus archivos se han enviado exitosamente!', 'success');
+        await MySwal.fire({
+          title: 'Denuncia enviada con éxito',
+          text: '¡Tus archivos se han enviado exitosamente!',
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+          customClass: { confirmButton: 'btn-azul' },
+          buttonsStyling: false,
+        });
         navigate('/');
       } else {
         const errorData = await response.json();
@@ -179,10 +167,37 @@ export default function UsuarioDenuncia() {
   };
 
 
-
-
   return (
     <div className="container mx-auto px-4 py-12 bg-white rounded-lg shadow-lg">
+      {/* Estilos para SweetAlert2 */}
+      <style>
+        {`
+          .btn-azul {
+            background-color: #2563eb !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 6px !important;
+            padding: 8px 20px !important;
+            font-weight: bold !important;
+          }
+
+          .btn-rojo {
+            background-color: #dc2626 !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 6px !important;
+            padding: 8px 20px !important;
+            font-weight: bold !important;
+          }
+
+          .botones-horizontales {
+            display: flex !important;
+            justify-content: center;
+            gap: 10px;
+          }
+        `}
+      </style>
+
       <h1 className="text-4xl font-bold mb-8 text-center">Formulario de Denuncias</h1>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4" noValidate>
