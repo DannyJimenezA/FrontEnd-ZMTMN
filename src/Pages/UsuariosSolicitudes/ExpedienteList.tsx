@@ -5,6 +5,8 @@ import Navbar from '../../Components/Navbar';
 import { TrashIcon, XCircleIcon, CheckCircleIcon } from 'lucide-react';
 import ApiRoutes from '../../Components/ApiRoutes';
 import { FaFilePdf } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 interface User {
   id: number;
@@ -36,6 +38,7 @@ const ExpedientesList = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const MySwal = withReactContent(Swal);
   /** Carga los expedientes del usuario autenticado */
   useEffect(() => {
     const fetchExpedientes = async () => {
@@ -74,26 +77,68 @@ const ExpedientesList = () => {
   };
 
   /** Maneja la eliminación de un expediente */
-  const handleDeleteExpediente = async (idExpediente: number) => {
-    if (!window.confirm('¿Está seguro que desea eliminar este expediente?')) return;
+  // const handleDeleteExpediente = async (idExpediente: number) => {
+  //   if (!window.confirm('¿Está seguro que desea eliminar este expediente?')) return;
 
+  //   try {
+  //     const token = localStorage.getItem('token');
+  //     if (!token) {
+  //       navigate('/login');
+  //       return;
+  //     }
+
+  //     await axios.delete(`${ApiRoutes.eliminarexpediente}/${idExpediente}`, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+
+  //     setExpedientes((prev) => prev.filter((expediente) => expediente.idExpediente !== idExpediente));
+  //   } catch (error) {
+  //     setError('Error al eliminar el expediente. Intente nuevamente.');
+  //     console.error('Error eliminando expediente:', error);
+  //   }
+  // };
+  const handleDeleteExpediente = async (idExpediente: number) => {
+    const result = await MySwal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará tu solicitud de expediente permanentemente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    });
+  
+    if (!result.isConfirmed) return;
+  
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         navigate('/login');
         return;
       }
-
+  
       await axios.delete(`${ApiRoutes.eliminarexpediente}/${idExpediente}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      setExpedientes((prev) => prev.filter((expediente) => expediente.idExpediente !== idExpediente));
+  
+      setExpedientes((prev) =>
+        prev.filter((expediente) => expediente.idExpediente !== idExpediente)
+      );
+  
+      await MySwal.fire({
+        icon: 'success',
+        title: 'Expediente eliminado',
+        text: 'La solicitud fue eliminada correctamente.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
     } catch (error) {
       setError('Error al eliminar el expediente. Intente nuevamente.');
       console.error('Error eliminando expediente:', error);
     }
   };
+  
 
   if (isLoading) {
     return (
@@ -136,9 +181,22 @@ const ExpedientesList = () => {
               <div key={expediente.idExpediente} className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold">Expediente: {expediente.numeroExpediente}</h3>
                 <p className="text-sm text-gray-500">Fecha: {expediente.Date}</p>
-                <p className="text-sm text-gray-500">Solicitante: {expediente.nombreSolicitante}</p>
-                <p className="text-sm text-gray-500">Teléfono: {expediente.telefonoSolicitante}</p>
+                {/* <p className="text-sm text-gray-500">Solicitante: {expediente.nombreSolicitante}</p> */}
+                {/* <p className="text-sm text-gray-500">Teléfono: {expediente.telefonoSolicitante}</p>
                 <p className="text-sm text-gray-500">Notificación: {expediente.medioNotificacion}</p>
+                 */}
+                 {expediente.medioNotificacion === 'telefono' && (
+  <p className="text-sm text-gray-500">
+    Notificación por Teléfono: {expediente.telefonoSolicitante}
+  </p>
+)}
+
+{expediente.medioNotificacion === 'correo' && (
+  <p className="text-sm text-gray-500">
+    Notificación por Correo: {expediente.user?.email || 'No disponible'}
+  </p>
+)}
+
                 <p className="text-sm text-gray-500">
                   Copia Certificada: {expediente.copiaCertificada ? "Sí" : "No"}
                 </p>

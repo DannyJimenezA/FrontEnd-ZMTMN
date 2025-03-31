@@ -63,65 +63,75 @@ export default function UsuarioPrecario() {
     setUploadedFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
     URL.revokeObjectURL(fileToRemove.preview);
   };
-
   const handleSend = async () => {
-    if (uploadedFiles.length === 0) {
-      MySwal.fire({
-        title: 'Error',
-        text: 'No has subido ningún archivo.',
-        icon: 'error',
-        confirmButtonText: 'Aceptar',
-      });
-      return;
-    }
-
-    const formData = new FormData();
-    uploadedFiles.forEach((file) => {
-      formData.append('files', file.file);
+  if (uploadedFiles.length === 0) {
+    MySwal.fire({
+      title: 'Error',
+      text: 'No has subido ningún archivo.',
+      icon: 'warning',
+      confirmButtonText: 'Aceptar',
     });
-    formData.append('detalle', fileDescription);
+    return;
+  }
 
-    const token = localStorage.getItem('token');
-    const decodedToken = parseJwt(token);
-    const userId = decodedToken?.sub;
-    if (!userId) {
-      MySwal.fire('Error', 'No se pudo obtener el ID del usuario.', 'error');
-      return;
+  if (!fileDescription.trim()) {
+    MySwal.fire({
+      title: 'Error',
+      text: 'Debes ingresar una descripción de los archivos.',
+      icon: 'warning',
+      confirmButtonText: 'Aceptar',
+    });
+    return;
+  }
+
+  const formData = new FormData();
+  uploadedFiles.forEach((file) => {
+    formData.append('files', file.file);
+  });
+  formData.append('detalle', fileDescription.trim());
+
+  const token = localStorage.getItem('token');
+  const decodedToken = parseJwt(token);
+  const userId = decodedToken?.sub;
+  if (!userId) {
+    MySwal.fire('Error', 'No se pudo obtener el ID del usuario.', 'error');
+    return;
+  }
+
+  formData.append('userId', userId);
+
+  try {
+    const response = await fetch(ApiRoutes.precarios, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorResponse = await response.json();
+      console.error('Error en el servidor:', errorResponse);
+      throw new Error('Error al enviar los datos al servidor');
     }
 
-    formData.append('userId', userId);
+    MySwal.fire({
+      title: 'Archivos enviados',
+      text: '¡Tus archivos y la descripción se han enviado exitosamente!',
+      icon: 'success',
+      confirmButtonText: 'Aceptar',
+      timer: 3000,
+    }).then(() => {
+      setUploadedFiles([]);
+      setFileDescription('');
+      navigate('/mis-precarios');
+    });
+  } catch (error) {
+    console.error('Error al enviar archivos:', error);
+    MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
+  }
+};
 
-    try {
-      const response = await fetch(ApiRoutes.precarios, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorResponse = await response.json();
-        console.error('Error en el servidor:', errorResponse);
-        throw new Error('Error al enviar los datos al servidor');
-      }
-
-      MySwal.fire({
-        title: 'Archivos enviados',
-        text: '¡Tus archivos y la descripción se han enviado exitosamente!',
-        icon: 'success',
-        confirmButtonText: 'Aceptar',
-        timer: 3000,
-      }).then(() => {
-        setUploadedFiles([]);
-        setFileDescription('');
-        navigate('/mis-precarios');
-      });
-    } catch (error) {
-      console.error('Error al enviar archivos:', error);
-      MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
-    }
-  };
 
   const parseJwt = (token: string | null) => {
     if (!token) return null;

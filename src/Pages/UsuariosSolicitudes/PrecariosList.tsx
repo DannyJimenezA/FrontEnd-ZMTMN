@@ -5,6 +5,8 @@ import Navbar from '../../Components/Navbar';
 import { TrashIcon, XCircleIcon, CheckCircleIcon } from 'lucide-react';
 import { FaFilePdf } from 'react-icons/fa';
 import ApiRoutes from '../../Components/ApiRoutes';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 interface User {
   id: number;
@@ -32,6 +34,7 @@ const PrecariosList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const MySwal = withReactContent(Swal);
 
   /** Carga los precarios del usuario autenticado */
   useEffect(() => {
@@ -67,27 +70,66 @@ const PrecariosList = () => {
   }, [navigate]);
 
   /** Maneja la eliminación de un precario */
-  const handleDeletePrecario = async (id: number) => {
-    if (!window.confirm('¿Está seguro que desea eliminar este precario?')) return;
+  // const handleDeletePrecario = async (id: number) => {
+  //   if (!window.confirm('¿Está seguro que desea eliminar este precario?')) return;
 
+  //   try {
+  //     const token = localStorage.getItem('token');
+  //     if (!token) {
+  //       navigate('/login');
+  //       return;
+  //     }
+
+  //     await axios.delete(`${ApiRoutes.eliminarprecario}/${id}`, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+
+  //     setPrecarios((prev) => prev.filter((precario) => precario.id !== id));
+  //   } catch (error) {
+  //     setError('Error al eliminar el precario. Intente nuevamente.');
+  //     console.error('Error eliminando precario:', error);
+  //   }
+  // };
+  const handleDeletePrecario = async (id: number) => {
+    const result = await MySwal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará la solicitud de uso precario permanentemente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    });
+  
+    if (!result.isConfirmed) return;
+  
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         navigate('/login');
         return;
       }
-
+  
       await axios.delete(`${ApiRoutes.eliminarprecario}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+  
       setPrecarios((prev) => prev.filter((precario) => precario.id !== id));
+  
+      await MySwal.fire({
+        icon: 'success',
+        title: 'Eliminado',
+        text: 'La solicitud de uso precario fue eliminada correctamente.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
     } catch (error) {
       setError('Error al eliminar el precario. Intente nuevamente.');
       console.error('Error eliminando precario:', error);
     }
   };
-
+  
   const handleCreatePrecario = () => {
     navigate('/usuario-precario');
   };
