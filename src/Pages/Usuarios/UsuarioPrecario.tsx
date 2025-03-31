@@ -4,7 +4,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import ApiRoutes from '../../Components/ApiRoutes'; // Asegúrate de tener configurada la ruta en ApiRoutes
+import ApiRoutes from '../../Components/ApiRoutes';
 import { jwtDecode } from 'jwt-decode';
 import { FaFilePdf } from 'react-icons/fa';
 
@@ -25,7 +25,6 @@ export default function UsuarioPrecario() {
   const [fileDescription, setFileDescription] = useState('');
   const navigate = useNavigate();
 
-  // Verificación de autenticación y expiración de token
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -69,17 +68,43 @@ export default function UsuarioPrecario() {
       MySwal.fire({
         title: 'Error',
         text: 'No has subido ningún archivo.',
-        icon: 'error',
+        icon: 'warning',
         confirmButtonText: 'Aceptar',
       });
       return;
     }
 
+    if (!fileDescription.trim()) {
+      MySwal.fire({
+        title: 'Error',
+        text: 'Debes ingresar una descripción de los archivos.',
+        icon: 'warning',
+        confirmButtonText: 'Aceptar',
+      });
+      return;
+    }
+
+    const confirmacion = await MySwal.fire({
+      title: '¿Está seguro de enviar esta solicitud?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        confirmButton: 'btn-azul',
+        cancelButton: 'btn-rojo',
+        actions: 'botones-horizontales',
+      },
+      buttonsStyling: false,
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
     const formData = new FormData();
     uploadedFiles.forEach((file) => {
       formData.append('files', file.file);
     });
-    formData.append('detalle', fileDescription);
+    formData.append('detalle', fileDescription.trim());
 
     const token = localStorage.getItem('token');
     const decodedToken = parseJwt(token);
@@ -102,21 +127,24 @@ export default function UsuarioPrecario() {
 
       if (!response.ok) {
         const errorResponse = await response.json();
-        console.error('Error en el servidor:', errorResponse);
-        throw new Error('Error al enviar los datos al servidor');
+        throw new Error(errorResponse.message || 'Error al enviar los datos');
       }
 
-      MySwal.fire({
+      await MySwal.fire({
         title: 'Archivos enviados',
         text: '¡Tus archivos y la descripción se han enviado exitosamente!',
         icon: 'success',
         confirmButtonText: 'Aceptar',
+        customClass: {
+          confirmButton: 'btn-azul',
+        },
+        buttonsStyling: false,
         timer: 3000,
-      }).then(() => {
-        setUploadedFiles([]);
-        setFileDescription('');
-        navigate('/mis-precarios');
       });
+
+      setUploadedFiles([]);
+      setFileDescription('');
+      navigate('/mis-precarios');
     } catch (error) {
       console.error('Error al enviar archivos:', error);
       MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
@@ -138,18 +166,48 @@ export default function UsuarioPrecario() {
 
   return (
     <div className="container mx-auto px-4 py-12">
+      <style>
+        {`
+          .btn-azul {
+            background-color: #2563eb !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 6px !important;
+            padding: 8px 20px !important;
+            font-weight: bold !important;
+          }
+
+          .btn-rojo {
+            background-color: #dc2626 !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 6px !important;
+            padding: 8px 20px !important;
+            font-weight: bold !important;
+          }
+
+          .botones-horizontales {
+            display: flex !important;
+            justify-content: center;
+            gap: 10px;
+          }
+        `}
+      </style>
+
       <h1 className="text-4xl font-bold mb-8 text-center">Módulo de Solicitud de Uso Precario</h1>
-      <li className="flex items-center">
-            <FaFilePdf className="text-red-500 mr-3" />
-            <a 
-              href="/DocsPdf/Formulario Solicitud de Uso Precario.pdf" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-blue-600 hover:underline"
-            >
-              Formulario para Solicitud de Uso Precario
-            </a>
-          </li>
+
+      <li className="flex items-center mb-4">
+        <FaFilePdf className="text-red-500 mr-3" />
+        <a
+          href="/DocsPdf/Formulario Solicitud de Uso Precario.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:underline"
+        >
+          Formulario para Solicitud de Uso Precario
+        </a>
+      </li>
+
       <div
         {...getRootProps()}
         className={`p-8 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors ${
@@ -168,7 +226,7 @@ export default function UsuarioPrecario() {
 
       {uploadedFiles.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Archivos Subidos (Se acepta un máximo 5 archivos)</h2>
+          <h2 className="text-2xl font-semibold mb-4">Archivos Subidos (Máximo 5 archivos)</h2>
           <ul className="space-y-4">
             {uploadedFiles.map((file, index) => (
               <li key={index} className="flex items-center justify-between bg-white p-4 rounded-lg shadow">

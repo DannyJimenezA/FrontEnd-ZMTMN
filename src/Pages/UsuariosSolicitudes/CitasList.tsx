@@ -9,6 +9,8 @@ import { CalendarIcon, TrashIcon, XCircleIcon, CheckCircleIcon } from 'lucide-re
 import ApiRoutes from '../../Components/ApiRoutes';
 import { toZonedTime, formatInTimeZone } from 'date-fns-tz';
 import { parseISO } from 'date-fns';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 interface User {
   id: number;
@@ -59,6 +61,8 @@ const CitasList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  
+const MySwal = withReactContent(Swal);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -225,29 +229,63 @@ const CitasList = () => {
     }
   };
 
-  const handleDeleteAppointment = async (id: number) => {
-    if (!window.confirm('¿Está seguro que desea eliminar esta cita?')) {
-      return;
-    }
+  // const handleDeleteAppointment = async (id: number) => {
+  //   if (!window.confirm('¿Está seguro que desea eliminar esta cita?')) {
+  //     return;
+  //   }
 
+  //   try {
+  //     const token = localStorage.getItem('token');
+  //     if (!token) {
+  //       navigate('/login');
+  //       return;
+  //     }
+
+  //     await axios.delete(`${ApiRoutes.citas.miscitas}/${id}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     setAppointments((prev) => prev.filter((appointment) => appointment.id !== id));
+  //   } catch (error) {
+  //     setError('Error al eliminar la cita. Por favor, intente nuevamente.');
+  //     console.error('Error deleting appointment:', error);
+  //   }
+  // };
+  const handleDeleteAppointment = async (id: number) => {
+    const result = await MySwal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará la cita permanentemente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    });
+  
+    if (!result.isConfirmed) return;
+  
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         navigate('/login');
         return;
       }
-
+  
       await axios.delete(`${ApiRoutes.citas.miscitas}/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+  
       setAppointments((prev) => prev.filter((appointment) => appointment.id !== id));
     } catch (error) {
       setError('Error al eliminar la cita. Por favor, intente nuevamente.');
       console.error('Error deleting appointment:', error);
     }
   };
+  
 
   const handleCancelClick = () => {
     setEditingAppointmentId(null);
@@ -421,21 +459,6 @@ const CitasList = () => {
                 </p>
                         </div>
                       </div>
-                      {/* <div className="flex gap-2">
-                        <button
-                          onClick={() => handleEditClick(appointment)}
-                          className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
-                        >
-                          <PencilIcon className="h-4 w-4" />
-                        </button>
-                        
-                        <button
-                          onClick={() => handleDeleteAppointment(appointment.id)}
-                          className="p-2 text-gray-600 hover:text-red-600 transition-colors"
-                        >
-                          <TrashIcon className="h-4 w-4" />
-                        </button>
-                      </div> */}
                                             <div className="flex gap-2">
                         {appointment.status !== 'Aprobada' && appointment.status !== 'Denegada' && (
                           <button

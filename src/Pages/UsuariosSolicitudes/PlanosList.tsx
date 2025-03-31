@@ -5,6 +5,8 @@ import Navbar from '../../Components/Navbar';
 import { TrashIcon, XCircleIcon, CheckCircleIcon } from 'lucide-react';
 import { FaFilePdf } from 'react-icons/fa';
 import ApiRoutes from '../../Components/ApiRoutes';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 interface User {
   id: number;
@@ -39,6 +41,8 @@ const PlanosList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  
+const MySwal = withReactContent(Swal);
 
   /** Carga los planos del usuario autenticado */
   useEffect(() => {
@@ -78,26 +82,66 @@ const PlanosList = () => {
   };
 
   /** Maneja la eliminación de un plano */
-  const handleDeletePlano = async (id: number) => {
-    if (!window.confirm('¿Está seguro que desea eliminar este plano?')) return;
+  // const handleDeletePlano = async (id: number) => {
+  //   if (!window.confirm('¿Está seguro que desea eliminar este plano?')) return;
 
+  //   try {
+  //     const token = localStorage.getItem('token');
+  //     if (!token) {
+  //       navigate('/login');
+  //       return;
+  //     }
+
+  //     await axios.delete(`${ApiRoutes.eliminarplano}/${id}`, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+
+  //     setPlanos((prev) => prev.filter((plano) => plano.id !== id));
+  //   } catch (error) {
+  //     setError('Error al eliminar el plano. Intente nuevamente.');
+  //     console.error('Error eliminando plano:', error);
+  //   }
+  // };
+  const handleDeletePlano = async (id: number) => {
+    const result = await MySwal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará la solicitud de revisión de plano permanentemente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    });
+  
+    if (!result.isConfirmed) return;
+  
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         navigate('/login');
         return;
       }
-
+  
       await axios.delete(`${ApiRoutes.eliminarplano}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+  
       setPlanos((prev) => prev.filter((plano) => plano.id !== id));
+  
+      await MySwal.fire({
+        icon: 'success',
+        title: 'Plano eliminado',
+        text: 'La solicitud ha sido eliminada correctamente.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
     } catch (error) {
       setError('Error al eliminar el plano. Intente nuevamente.');
       console.error('Error eliminando plano:', error);
     }
   };
+  
 
   /** Previsualiza un PDF en una nueva ventana */
   const handlePreviewPdf = (filePath: string) => {
@@ -144,10 +188,10 @@ const PlanosList = () => {
           ) : (
             planos.map((plano) => (
               <div key={plano.id} className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold">Plano: {plano.NumeroPlano}</h3>
-                <p className="text-sm text-gray-500">Expediente: {plano.NumeroExpediente}</p>
+                <h3 className="text-lg font-semibold">Comentario: {plano.Comentario}</h3>
                 <p className="text-sm text-gray-500">Fecha: {plano.Date}</p>
-                <p className="text-sm text-gray-500">Comentario: {plano.Comentario}</p>
+                <p className="text-sm text-gray-500">Número de plano: {plano.NumeroPlano}</p>
+                <p className="text-sm text-gray-500">Número de expediente: {plano.NumeroExpediente}</p>
 
                 <div className="text-sm text-gray-500 mt-2">
                   <p>Archivos Adjuntos:</p>

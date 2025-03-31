@@ -5,6 +5,8 @@ import Navbar from '../../Components/Navbar';
 import { TrashIcon, XCircleIcon, CheckCircleIcon } from 'lucide-react';
 import { FaFilePdf } from 'react-icons/fa';
 import ApiRoutes from '../../Components/ApiRoutes';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 interface User {
   id: number;
@@ -32,6 +34,7 @@ const ProrrogasList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const MySwal = withReactContent(Swal);
 
   /** Carga las prórrogas del usuario autenticado */
   useEffect(() => {
@@ -67,26 +70,66 @@ const ProrrogasList = () => {
   }, [navigate]);
 
   /** Maneja la eliminación de una prórroga */
-  const handleDeleteProrroga = async (id: number) => {
-    if (!window.confirm('¿Está seguro que desea eliminar esta prórroga?')) return;
+  // const handleDeleteProrroga = async (id: number) => {
+  //   if (!window.confirm('¿Está seguro que desea eliminar esta prórroga?')) return;
 
+  //   try {
+  //     const token = localStorage.getItem('token');
+  //     if (!token) {
+  //       navigate('/login');
+  //       return;
+  //     }
+
+  //     await axios.delete(`${ApiRoutes.eliminarprorroga}/${id}`, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+
+  //     setProrrogas((prev) => prev.filter((prorroga) => prorroga.id !== id));
+  //   } catch (error) {
+  //     setError('Error al eliminar la prórroga. Intente nuevamente.');
+  //     console.error('Error eliminando prórroga:', error);
+  //   }
+  // };
+  const handleDeleteProrroga = async (id: number) => {
+    const result = await MySwal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará la solicitud de prórroga permanentemente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    });
+  
+    if (!result.isConfirmed) return;
+  
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         navigate('/login');
         return;
       }
-
+  
       await axios.delete(`${ApiRoutes.eliminarprorroga}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+  
       setProrrogas((prev) => prev.filter((prorroga) => prorroga.id !== id));
+  
+      await MySwal.fire({
+        icon: 'success',
+        title: 'Eliminado',
+        text: 'La prórroga fue eliminada correctamente.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
     } catch (error) {
       setError('Error al eliminar la prórroga. Intente nuevamente.');
       console.error('Error eliminando prórroga:', error);
     }
   };
+  
 
   const handleCreateProrroga = () => {
     navigate('/usuario-prorroga');
