@@ -190,6 +190,13 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
                 {isUserDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-2 p-4">
                     <p className="text-sm text-gray-700 font-semibold">{userEmail}</p>
+                    <Link
+      to="/mi-perfil"
+      className="block mt-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100"
+      onClick={() => setIsUserDropdownOpen(false)}
+    >
+      Mi información
+    </Link>
                     <button
                       onClick={handleLogout}
                       className="block mt-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left"
@@ -272,6 +279,13 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
             {isAuthenticated ? (
   <>
     <div className="block py-2 px-4 text-gray-600">{userEmail}</div>
+    <Link
+  to="/mi-perfil"
+  className="block w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition"
+  onClick={() => setIsMenuOpen(false)}
+>
+  Mi información
+</Link>
     <button
       onClick={handleLogout}
       className="block w-full text-left px-4 py-2 text-red-600 hover:text-white hover:bg-red-500 transition"

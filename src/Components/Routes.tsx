@@ -20,6 +20,7 @@ import ProrrogasList from '../Pages/UsuariosSolicitudes/ProrrogaList';
 import PrecariosList from '../Pages/UsuariosSolicitudes/PrecariosList';
 import ExpedientesList from '../Pages/UsuariosSolicitudes/ExpedienteList';
 import PlanosList from '../Pages/UsuariosSolicitudes/PlanosList';
+import MiPerfil from '../Pages/Auth/MiPerfil';
 
 function AppRoutes() {
   // const isAuthenticated = !!localStorage.getItem('token');
@@ -35,6 +36,7 @@ function AppRoutes() {
       <Route path="/users/confirm/:token" element={<ConfirmAccount />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path='/mi-perfil' element={<MiPerfil/>}/>
 
 
       {/* Rutas Protegidas */}
