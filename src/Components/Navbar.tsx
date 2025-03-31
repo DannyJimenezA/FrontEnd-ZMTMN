@@ -68,11 +68,19 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
 
   // Función para manejar el cierre de sesión
   const handleLogout = () => {
+    console.log('Cerrando sesión...');
     localStorage.removeItem('token');
     setIsAuthenticated(false);
     setUserEmail(null);
-    navigate('/');
+    setIsMenuOpen(false);
+    setIsUserDropdownOpen(false);
+    // checkAuthentication(); // Ya no es necesario si recargamos
+    window.location.href = '/';
   };
+  
+  
+  
+  
 
   // Cerrar el dropdown de "Solicitudes" al hacer clic fuera
   // useEffect(() => {
@@ -256,11 +264,14 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
                 {isUserDropdownOpen && (
                   <div className="pl-4">
                     <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100"
-                    >
-                      Cerrar sesión
-                    </button>
+  type="button"
+  onMouseDown={handleLogout} // 👈 Ejecuta logout antes de que se cierre el dropdown
+  className="w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100"
+>
+  Cerrar sesión
+</button>
+
+
                   </div>
                 )}
               </div>
