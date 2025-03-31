@@ -163,7 +163,7 @@ export default function UsuarioProrroga() {
 
       {uploadedFiles.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Archivos Subidos</h2>
+          <h2 className="text-2xl font-semibold mb-4">Archivos Subidos (Se acepta un máximo 5 archivos)</h2>
           <ul className="space-y-4">
             {uploadedFiles.map((file, index) => (
               <li key={index} className="flex items-center justify-between bg-white p-4 rounded-lg shadow">

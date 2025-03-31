@@ -110,13 +110,13 @@ const ConcesionesList = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Mis Concesiones</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Mis Solicitudes de Concesion</h1>
           <button
             onClick={handleCreateConcesion}
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
             <FaFilePdf className="h-4 w-4 mr-2" />
-            Crear Concesion
+            Enviar Solicitud
           </button>
         </div>
 
@@ -126,7 +126,9 @@ const ConcesionesList = () => {
           </div>
         )}
 
-        <div className="grid gap-6">
+        {/* <div className="grid gap-6"> */}
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
+
           {concesiones.length === 0 ? (
             <div className="bg-white rounded-lg shadow p-6 text-center">
               <p className="text-gray-500">No se encontraron concesiones registradas</p>
@@ -161,8 +163,16 @@ const ConcesionesList = () => {
                     concesion.status === 'Aprobada' ? 'text-green-600' :
                     concesion.status === 'Denegada' ? 'text-red-600' : 'text-yellow-600'
                   }`}>
-                    {concesion.status === 'Aprobada' ? <CheckCircleIcon className="h-4 w-4 mr-1" /> : <XCircleIcon className="h-4 w-4 mr-1" />}
-                    {concesion.status}
+{concesion.status === 'Aprobada' && (
+  <CheckCircleIcon className="h-4 w-4 mr-1" />
+)}
+{concesion.status === 'Denegada' && (
+  <XCircleIcon className="h-4 w-4 mr-1" />
+)}
+{concesion.status === 'Pendiente' && (
+  <span className="inline-block w-4 h-4 border-2 border-yellow-500 rounded-full mr-1"></span>
+)}
+
                   </span>
                 </p>
 

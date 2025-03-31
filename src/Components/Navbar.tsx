@@ -71,6 +71,8 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
     localStorage.removeItem('token');
     setIsAuthenticated(false);
     setUserEmail(null);
+    setIsMenuOpen(false); // cerrar menú mobile
+    setIsUserDropdownOpen(false); // cerrar dropdown de usuario
     navigate('/');
   };
 
@@ -104,9 +106,9 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
     };
   }, []);
 
@@ -245,7 +247,7 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
             {/* <Link to="/mis-solicitudes" className="block py-2 px-4 text-gray-600 hover:text-blue-600">Mis Solicitudes</Link> */}
 
             {/* Autenticación en modo móvil */}
-            {isAuthenticated ? (
+            {/* {isAuthenticated ? (
               <div className="relative">
                 <button
                   onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
@@ -266,7 +268,21 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
               </div>
             ) : (
               <Link to="/login" className="block py-2 px-4 text-gray-600 hover:text-blue-600">Iniciar Sesión</Link>
-            )}
+            )} */}
+            {isAuthenticated ? (
+  <>
+    <div className="block py-2 px-4 text-gray-600">{userEmail}</div>
+    <button
+      onClick={handleLogout}
+      className="block w-full text-left px-4 py-2 text-red-600 hover:text-white hover:bg-red-500 transition"
+    >
+      Cerrar sesión
+    </button>
+  </>
+) : (
+  <Link to="/login" className="block py-2 px-4 text-gray-600 hover:text-blue-600">Iniciar Sesión</Link>
+)}
+
           </div>
         )}
       </div>

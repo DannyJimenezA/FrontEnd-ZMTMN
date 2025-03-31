@@ -30,6 +30,9 @@ export default function UsuarioCita() {
   const [availableDates, setAvailableDates] = useState<AvailableDate[]>([]); // Estado para las fechas y horas disponibles
   const [availableHours, setAvailableHours] = useState<string[]>([]); // Estado para las horas disponibles de la fecha seleccionada
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
+
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -107,77 +110,18 @@ export default function UsuarioCita() {
     }
   };
 
+
+  useEffect(() => {
+    if (confirmed) {
+      handleSubmit(new Event('submit') as unknown as React.FormEvent<HTMLFormElement>);
+      setConfirmed(false);
+    }
+  }, [confirmed]);
+  
+
   // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   //   e.preventDefault();
-  
-  //   if (!date || !time) {
-  //     setError('Por favor, selecciona una fecha y una hora.');
-  //     return;
-  //   }
-  
-  //   const formattedDate = date.toISOString().split('T')[0]; // Formatear la fecha como 'YYYY-MM-DD'
-  
-  //   // Buscar la fecha seleccionada en las fechas disponibles
-  //   const selectedDateData = availableDates.find(
-  //     (availableDate) => availableDate.date === formattedDate
-  //   );
-  
-  //   if (!selectedDateData) {
-  //     setError('Fecha no válida.');
-  //     return;
-  //   }
-  
-  //   // Buscar la hora seleccionada en las horas disponibles
-  //   const selectedHourData = selectedDateData.horasCita.find(
-  //     (hora) => hora.hora === time
-  //   );
-  
-  //   if (!selectedHourData) {
-  //     setError('Hora no válida.');
-  //     return;
-  //   }
-  
-  //   // Obtener el token
-  //   const token = localStorage.getItem('token');
-  //   if (!token) {
-  //     navigate('/login');
-  //     return;
-  //   }
-  
-  //   // Crear el cuerpo de la solicitud según lo que espera el backend
-  //   const newAppointment = {
-  //     description,
-  //     availableDateId: selectedDateData.id, // ID de la fecha disponible
-  //     horasCitaId: selectedHourData.id, // ID de la hora seleccionada
-  //   };
-  
-  //   // Verificar los datos que se enviarán en la solicitud
-  //   console.log('Datos que se enviarán en la solicitud POST:', newAppointment);
-  
-  //   try {
-  //     const response = await axios.post(ApiRoutes.citas.crearcita, newAppointment, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  
-  //     console.log('Cita creada con éxito:', response.data);
-  
-  //     setIsSubmitted(true);
-  //     setError(null);
-  
-  //     setTimeout(() => {
-  //       setDate(null);
-  //       setTime('');
-  //       setDescription('');
-  //       setIsSubmitted(false);
-  //       navigate('/mis-citas');
-  //     }, 3000);
-  //   } catch (error) {
-  //     console.error('Error al agendar la cita:', error);
-  //     setError('Error al agendar la cita. Intente de nuevo.');
-  //   }
-  // };
+
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -287,7 +231,7 @@ export default function UsuarioCita() {
             ¡Cita agendada con éxito!
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
             {error && <div className="text-red-600 font-semibold text-center">{error}</div>}
 
             <div>
@@ -355,12 +299,14 @@ export default function UsuarioCita() {
             </div>
 
             <div>
-              <button
-                type="submit"
-                className="w-full px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Agendar Cita
-              </button>
+            <button
+              type="button"
+              onClick={() => setShowModal(true)}
+              className="w-full px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Agendar Cita
+            </button>
+
               <button
                 onClick={handleBack}
                 className="w-full mt-4 px-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded hover:bg-gray-400 transition-colors"
@@ -371,6 +317,32 @@ export default function UsuarioCita() {
           </form>
         )}
       </div>
+      {showModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+      <h3 className="text-lg font-semibold mb-4">¿Confirmar cita?</h3>
+      <p className="mb-6">¿Estás seguro de que deseas agendar esta cita?</p>
+      <div className="flex justify-end space-x-4">
+        <button
+          onClick={() => {
+            setConfirmed(true);
+            setShowModal(false);
+          }}
+          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        >
+          Aceptar
+        </button>
+        <button
+          onClick={() => setShowModal(false)}
+          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+        >
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }
