@@ -111,13 +111,13 @@ const PrecariosList = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Mis Precarios</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Mis Solicitudes de Uso Precario</h1>
           <button
             onClick={handleCreatePrecario}
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
             <FaFilePdf className="h-4 w-4 mr-2" />
-            Crear Precario
+            Enviar Solicitud
           </button>
         </div>
 
@@ -126,8 +126,10 @@ const PrecariosList = () => {
             <p className="text-red-700">{error}</p>
           </div>
         )}
+{/* 
+        <div className="grid gap-6"> */}
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
 
-        <div className="grid gap-6">
           {precarios.length === 0 ? (
             <div className="bg-white rounded-lg shadow p-6 text-center">
               <p className="text-gray-500">No se encontraron precarios registrados</p>
@@ -156,13 +158,30 @@ const PrecariosList = () => {
                   </div>
                 </div>
 
-                <p className="flex items-center gap-1 mt-4">
+                {/* <p className="flex items-center gap-1 mt-4">
                   Estado:
                   <span className={`inline-flex items-center ${
                     precario.status === 'Aprobada' ? 'text-green-600' :
                     precario.status === 'Denegada' ? 'text-red-600' : 'text-yellow-600'
                   }`}>
                     {precario.status === 'Aprobada' ? <CheckCircleIcon className="h-4 w-4 mr-1" /> : <XCircleIcon className="h-4 w-4 mr-1" />}
+                    {precario.status}
+                  </span>
+                </p> */}
+                                <p className="flex items-center gap-1 mt-4">
+                  Estado:
+                  <span className={`inline-flex items-center ${precario.status === 'Aprobada' ? 'text-green-600' :
+                      precario.status === 'Denegada' ? 'text-red-600' : 'text-yellow-600'
+                    }`}>
+                    {precario.status === 'Aprobada' && (
+                      <CheckCircleIcon className="h-4 w-4 mr-1" />
+                    )}
+                    {precario.status === 'Denegada' && (
+                      <XCircleIcon className="h-4 w-4 mr-1" />
+                    )}
+                    {precario.status === 'Pendiente' && (
+                      <span className="inline-block w-4 h-4 border-2 border-yellow-500 rounded-full mr-1"></span>
+                    )}
                     {precario.status}
                   </span>
                 </p>
