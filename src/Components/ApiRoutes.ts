@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3000';  // URL base de tu API
+const BASE_URL = 'https://backend-deptozmtmn.onrender.com';  // URL base de tu API
 
 
 
@@ -11,6 +11,7 @@ const ApiRoutes = {
   auth: {
     login: `${BASE_URL}/auth/login`,
   },
+  miPerfil: `${BASE_URL}/users/me`,
   concesiones: `${BASE_URL}/Concesiones`,
   misconcesiones: `${BASE_URL}/Concesiones/my-concesiones`,
   eliminarconcesion: `${BASE_URL}/Concesiones/my-concesiones`,
