@@ -36,7 +36,7 @@ const ApiRoutes = {
   misexpedientes: `${BASE_URL}/expedientes/my-solicitudes`,
   eliminarexpediente: `${BASE_URL}/expedientes/my-solicitudes`,
   urlBase: `${BASE_URL}`,
-  miPerfil: `${BASE_URL}/users/me` // ruta para el cambio de informacion de la cuenta
+  //miPerfil: `${BASE_URL}/users/me` // ruta para el cambio de informacion de la cuenta
 };
 
 export default ApiRoutes;
