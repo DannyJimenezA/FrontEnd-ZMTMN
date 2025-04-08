@@ -46,6 +46,7 @@ export default function UsuarioDenuncia() {
   const [tiposDenuncia, setTiposDenuncia] = useState<any[]>([]);
   const [lugaresDenuncia, setLugaresDenuncia] = useState<any[]>([]);
   const navigate = useNavigate();
+  const maxFiles = 10;
 
   useEffect(() => {
     fetch(`${ApiRoutes.urlBase}/tipo-denuncia`)
@@ -67,17 +68,37 @@ export default function UsuarioDenuncia() {
     });
   };
 
+  // const onDrop = useCallback((acceptedFiles: File[]) => {
+  //   const newFiles = acceptedFiles.map(file => ({
+  //     file,
+  //     preview: URL.createObjectURL(file),
+  //   }));
+  //   setUploadedFiles(prevFiles => [...prevFiles, ...newFiles]);
+  // }, []);
   const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (uploadedFiles.length + acceptedFiles.length > maxFiles) {
+      MySwal.fire({
+        icon: 'warning',
+        title: 'Límite de imágenes alcanzado',
+        text: `Solo puedes subir hasta ${maxFiles} imágenes.`,
+        confirmButtonText: 'Entendido',
+      });
+      return;
+    }
+
     const newFiles = acceptedFiles.map(file => ({
       file,
       preview: URL.createObjectURL(file),
     }));
+
     setUploadedFiles(prevFiles => [...prevFiles, ...newFiles]);
-  }, []);
+  }, [uploadedFiles]);
+
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
+      // maxFiles,
       'image/*': ['.png', '.jpg', '.jpeg'],
     },
   });

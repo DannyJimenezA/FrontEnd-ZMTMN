@@ -44,15 +44,36 @@ export default function UsuarioPlano() {
     }
   }, [navigate]);
 
+  // const onDrop = useCallback((acceptedFiles: File[]) => {
+  //   const newFiles = acceptedFiles
+  //     .filter(file => file.type === 'application/pdf')
+  //     .map(file => ({
+  //       file,
+  //       preview: URL.createObjectURL(file),
+  //     }));
+  //   setUploadedFiles(prevFiles => [...prevFiles, ...newFiles]);
+  // }, []);
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    const newFiles = acceptedFiles
+    const nuevosArchivos = acceptedFiles
       .filter(file => file.type === 'application/pdf')
       .map(file => ({
         file,
         preview: URL.createObjectURL(file),
       }));
-    setUploadedFiles(prevFiles => [...prevFiles, ...newFiles]);
-  }, []);
+  
+    if (uploadedFiles.length + nuevosArchivos.length > 5) {
+      MySwal.fire({
+        title: 'Límite Excedido',
+        text: 'Solo se pueden subir hasta 5 archivos PDF.',
+        icon: 'warning',
+        confirmButtonColor: '#2563eb',
+      });
+      return;
+    }
+  
+    setUploadedFiles(prevFiles => [...prevFiles, ...nuevosArchivos]);
+  }, [uploadedFiles]);
+  
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
