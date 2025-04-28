@@ -11,6 +11,7 @@ const ApiRoutes = {
   auth: {
     login: `${BASE_URL}/auth/login`,
   },
+  miPerfil: `${BASE_URL}/users/me`,
   concesiones: `${BASE_URL}/Concesiones`,
   misconcesiones: `${BASE_URL}/Concesiones/my-concesiones`,
   eliminarconcesion: `${BASE_URL}/Concesiones/my-concesiones`,
@@ -34,7 +35,8 @@ const ApiRoutes = {
   expedientes: `${BASE_URL}/expedientes`,
   misexpedientes: `${BASE_URL}/expedientes/my-solicitudes`,
   eliminarexpediente: `${BASE_URL}/expedientes/my-solicitudes`,
-  urlBase: `${BASE_URL}`
+  urlBase: `${BASE_URL}`,
+  //miPerfil: `${BASE_URL}/users/me` // ruta para el cambio de informacion de la cuenta
 };
 
 export default ApiRoutes;

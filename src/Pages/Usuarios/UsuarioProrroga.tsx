@@ -25,7 +25,6 @@ export default function UsuarioProrroga() {
   const [fileDescription, setFileDescription] = useState('');
   const navigate = useNavigate();
 
-  // Verificación de autenticación y expiración de token
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -44,15 +43,36 @@ export default function UsuarioProrroga() {
     }
   }, [navigate]);
 
+  // const onDrop = useCallback((acceptedFiles: File[]) => {
+  //   const newFiles = acceptedFiles
+  //     .filter(file => file.type === 'application/pdf')
+  //     .map(file => ({
+  //       file,
+  //       preview: URL.createObjectURL(file),
+  //     }));
+  //   setUploadedFiles(prevFiles => [...prevFiles, ...newFiles]);
+  // }, []);
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    const newFiles = acceptedFiles
+    const nuevosArchivos = acceptedFiles
       .filter(file => file.type === 'application/pdf')
       .map(file => ({
         file,
         preview: URL.createObjectURL(file),
       }));
-    setUploadedFiles(prevFiles => [...prevFiles, ...newFiles]);
-  }, []);
+  
+    if (uploadedFiles.length + nuevosArchivos.length > 5) {
+      MySwal.fire({
+        title: 'Límite de Archivos Excedido',
+        text: 'Solo puedes subir un máximo de 5 archivos PDF.',
+        icon: 'warning',
+        confirmButtonColor: '#2563eb',
+      });
+      return;
+    }
+  
+    setUploadedFiles(prevFiles => [...prevFiles, ...nuevosArchivos]);
+  }, [uploadedFiles]);
+  
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -66,17 +86,43 @@ export default function UsuarioProrroga() {
 
   const handleSend = async () => {
     if (uploadedFiles.length === 0) {
-      MySwal.fire('Error', 'No has subido ningún archivo.', 'error');
+      MySwal.fire('Error', 'No has subido ningún archivo.', 'warning');
       return;
     }
+
+    if (!fileDescription.trim()) {
+      MySwal.fire('Error', 'Debes ingresar una descripción de los archivos.', 'warning');
+      return;
+    }
+
+    const confirmacion = await MySwal.fire({
+      title: '¿Está seguro de enviar esta solicitud?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        confirmButton: 'btn-azul',
+        cancelButton: 'btn-rojo',
+        actions: 'botones-horizontales',
+      },
+      buttonsStyling: false,
+    });
+
+    if (!confirmacion.isConfirmed) return;
 
     const formData = new FormData();
     uploadedFiles.forEach((file) => {
       formData.append('files', file.file);
     });
-    formData.append('detalle', fileDescription);
+    formData.append('detalle', fileDescription.trim());
 
     const token = localStorage.getItem('token');
+    if (!token) {
+      MySwal.fire('Error', 'No se encontró una sesión activa.', 'error');
+      return;
+    }
+
     const decodedToken = parseJwt(token);
     const userId = decodedToken?.sub;
     if (!userId) {
@@ -97,21 +143,24 @@ export default function UsuarioProrroga() {
 
       if (!response.ok) {
         const errorResponse = await response.json();
-        console.error('Error en el servidor:', errorResponse);
-        throw new Error('Error al enviar los datos al servidor');
+        throw new Error(errorResponse.message || 'Error al enviar los datos al servidor');
       }
 
-      MySwal.fire({
+      await MySwal.fire({
         title: 'Archivos enviados',
         text: '¡Tus archivos y los detalles se han enviado exitosamente!',
         icon: 'success',
         confirmButtonText: 'Aceptar',
+        customClass: {
+          confirmButton: 'btn-azul',
+        },
+        buttonsStyling: false,
         timer: 3000,
-      }).then(() => {
-        setUploadedFiles([]);
-        setFileDescription('');
-        navigate('/mis-prorrogas');
       });
+
+      setUploadedFiles([]);
+      setFileDescription('');
+      navigate('/mis-prorrogas');
     } catch (error) {
       console.error('Error al enviar archivos:', error);
       MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
@@ -133,18 +182,48 @@ export default function UsuarioProrroga() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold mb-8 text-center">Módulo de Solicitud de Prorrogas de Concesión</h1>
-      <li className="flex items-center">
-            <FaFilePdf className="text-red-500 mr-3" />
-            <a 
-              href="/DocsPdf/Formulario Solicitud de Prorroga de Concesión.pdf" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-blue-600 hover:underline"
-            >
-              Formulario para Prórroga de Concesión
-            </a>
-          </li>
+      <style>
+        {`
+          .btn-azul {
+            background-color: #2563eb !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 6px !important;
+            padding: 8px 20px !important;
+            font-weight: bold !important;
+          }
+
+          .btn-rojo {
+            background-color: #dc2626 !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 6px !important;
+            padding: 8px 20px !important;
+            font-weight: bold !important;
+          }
+
+          .botones-horizontales {
+            display: flex !important;
+            justify-content: center;
+            gap: 10px;
+          }
+        `}
+      </style>
+
+      <h1 className="text-4xl font-bold mb-8 text-center">Módulo de Solicitud de Prórrogas de Concesión</h1>
+
+      <li className="flex items-center mb-4">
+        <FaFilePdf className="text-red-500 mr-3" />
+        <a
+          href="/DocsPdf/Formulario Solicitud de Prorroga de Concesión.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:underline"
+        >
+          Formulario para Prórroga de Concesión
+        </a>
+      </li>
+
       <div
         {...getRootProps()}
         className={`p-8 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors ${
@@ -163,7 +242,7 @@ export default function UsuarioProrroga() {
 
       {uploadedFiles.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Archivos Subidos (Se acepta un máximo 5 archivos)</h2>
+          <h2 className="text-2xl font-semibold mb-4">Archivos Subidos (Máximo 5 archivos)</h2>
           <ul className="space-y-4">
             {uploadedFiles.map((file, index) => (
               <li key={index} className="flex items-center justify-between bg-white p-4 rounded-lg shadow">
