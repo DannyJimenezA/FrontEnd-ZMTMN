@@ -10,7 +10,7 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  //const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const MySwal = withReactContent(Swal);
 
@@ -199,7 +199,7 @@ export default function Login() {
             </div>
           </div>
   
-          {error && <p className="text-red-500 text-center">{error}</p>}
+         
   
           <div>
             <button
