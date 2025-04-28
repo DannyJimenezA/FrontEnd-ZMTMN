@@ -43,15 +43,36 @@ export default function UsuarioProrroga() {
     }
   }, [navigate]);
 
+  // const onDrop = useCallback((acceptedFiles: File[]) => {
+  //   const newFiles = acceptedFiles
+  //     .filter(file => file.type === 'application/pdf')
+  //     .map(file => ({
+  //       file,
+  //       preview: URL.createObjectURL(file),
+  //     }));
+  //   setUploadedFiles(prevFiles => [...prevFiles, ...newFiles]);
+  // }, []);
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    const newFiles = acceptedFiles
+    const nuevosArchivos = acceptedFiles
       .filter(file => file.type === 'application/pdf')
       .map(file => ({
         file,
         preview: URL.createObjectURL(file),
       }));
-    setUploadedFiles(prevFiles => [...prevFiles, ...newFiles]);
-  }, []);
+  
+    if (uploadedFiles.length + nuevosArchivos.length > 5) {
+      MySwal.fire({
+        title: 'Límite de Archivos Excedido',
+        text: 'Solo puedes subir un máximo de 5 archivos PDF.',
+        icon: 'warning',
+        confirmButtonColor: '#2563eb',
+      });
+      return;
+    }
+  
+    setUploadedFiles(prevFiles => [...prevFiles, ...nuevosArchivos]);
+  }, [uploadedFiles]);
+  
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
