@@ -86,7 +86,7 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMessage('');
-    setIsSubmitting(true); // Bloquea botones al enviar
+    setIsSubmitting(true);
   
     const newErrors: { [key: string]: string } = {};
     Object.entries(formData).forEach(([key, value]) => {
@@ -96,27 +96,48 @@ export default function Register() {
   
     if (Object.keys(newErrors).length > 0) {
       setFieldErrors(newErrors);
-      setErrorMessage('Corrige los campos marcados.');
-      setIsSubmitting(false); // Reactiva si hay errores
+  
+      // 👉 Chequeo de errores específicos
+      if (newErrors.email) {
+        await MySwal.fire({
+          icon: 'error',
+          title: 'Correo Inválido',
+          text: 'Por favor ingresa un correo electrónico válido que contenga "@".',
+          confirmButtonColor: '#ef4444',
+        });
+      } else if (newErrors.confirmPassword) {
+        if (newErrors.confirmPassword === 'Las contraseñas no coinciden') {
+          await MySwal.fire({
+            icon: 'error',
+            title: 'Contraseñas no coinciden',
+            text: 'Asegúrate de que ambas contraseñas sean iguales.',
+            confirmButtonColor: '#ef4444',
+          });
+        } else {
+          await MySwal.fire({
+            icon: 'error',
+            title: 'Contraseña Inválida',
+            text: 'La contraseña debe tener mínimo 8 caracteres, una letra y un número.',
+            confirmButtonColor: '#ef4444',
+          });
+        }
+      } else {
+        // 👉 Otros errores generales
+        await MySwal.fire({
+          icon: 'error',
+          title: 'Error de Validación',
+          text: 'Corrige los campos marcados antes de continuar.',
+          confirmButtonColor: '#ef4444',
+        });
+      }
+  
+      setIsSubmitting(false);
       return;
     }
   
-    // try {
-    //   const response = await axios.post(`${ApiRoutes.usuarios}/register`, formData);
-    //   window.alert(response.data.message || 'Usuario registrado. Por favor, revisa tu correo.');
-    //   navigate('/login');
-    // } catch (error) {
-    //   if (axios.isAxiosError(error) && error.response) {
-    //     setErrorMessage(error.response.data.message || 'Error en el registro');
-    //   } else {
-    //     setErrorMessage('Error de conexión con el servidor');
-    //   }
-    //   setIsSubmitting(false); // Reactiva si hay fallo
-    // }
     try {
       const response = await axios.post(`${ApiRoutes.usuarios}/register`, formData);
-    
-      // 🎉 Alerta visual como en denuncias
+  
       await MySwal.fire({
         icon: 'success',
         title: '¡Registro Exitoso!',
@@ -124,15 +145,22 @@ export default function Register() {
         confirmButtonText: 'Ir al inicio de sesión',
         confirmButtonColor: '#2563eb',
       });
-    
+  
       navigate('/login');
     } catch (error) {
+      let errorMessage = 'Error de conexión con el servidor';
       if (axios.isAxiosError(error) && error.response) {
-        setErrorMessage(error.response.data.message || 'Error en el registro');
-      } else {
-        setErrorMessage('Error de conexión con el servidor');
+        errorMessage = error.response.data.message || 'Error en el registro';
       }
-      setIsSubmitting(false); // Reactiva si hay fallo
+  
+      await MySwal.fire({
+        icon: 'error',
+        title: '¡Ups!',
+        text: errorMessage,
+        confirmButtonColor: '#ef4444',
+      });
+  
+      setIsSubmitting(false);
     }
   };
   

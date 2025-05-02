@@ -4,13 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import ApiRoutes from '../../Components/ApiRoutes';
 import ApiService from '../../Components/ApiService';
 import image from '../../Img/Img01.jpg'
-
+import withReactContent from 'sweetalert2-react-content';
+import Swal from 'sweetalert2';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  //const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const MySwal = withReactContent(Swal);
+
 
   useEffect(() => {
     const listener = (event: StorageEvent) => {
@@ -32,21 +35,97 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
+    if (!email.includes('@')) {
+      await MySwal.fire({
+        icon: 'error',
+        title: 'Correo Inválido',
+        text: 'Por favor ingresa un correo electrónico válido.',
+        confirmButtonColor: '#ef4444',
+      });
+      return;
+    }
+  
     try {
       const data = await ApiService.post<{ access_token: string }>(ApiRoutes.auth.login, { email, password });
-      console.log('JWT received:', data.access_token);
-
-      // Guarda el token en el almacenamiento local
+  
       localStorage.setItem('token', data.access_token);
-
-      // Redirige al usuario a la página principal o al dashboard
+  
+      await MySwal.fire({
+        icon: 'success',
+        title: '¡Bienvenido!',
+        text: 'Inicio de sesión exitoso.',
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      });
+  
       navigate('/');
-    } catch (err) {
-      setError('Error al iniciar sesión. Verifica tus credenciales.');
-      console.error('Login error:', err);
+    } catch (error: any) {
+      console.error('Login error:', error);
+  
+      if (error.data && error.data.message) {
+        let apiMessage = error.data.message;
+  
+        if (Array.isArray(apiMessage)) {
+          apiMessage = apiMessage[0]; // Normaliza si es un array
+        }
+  
+        if (typeof apiMessage === 'string') {
+          const loweredMessage = apiMessage.toLowerCase();
+  
+          if (loweredMessage.includes('correo no registrado')) {
+            const result = await MySwal.fire({
+              icon: 'warning',
+              title: 'Correo no registrado',
+              text: '¿Deseas crear una cuenta nueva?',
+              showCancelButton: true,
+              confirmButtonText: 'Registrarme',
+              cancelButtonText: 'Cancelar',
+              confirmButtonColor: '#2563eb',
+              cancelButtonColor: '#ef4444',
+            });
+  
+            if (result.isConfirmed) {
+              navigate('/register');
+            }
+            return;
+          }
+  
+          if (loweredMessage.includes('contraseña incorrecta')) {
+            await MySwal.fire({
+              icon: 'error',
+              title: 'Contraseña incorrecta',
+              text: 'La contraseña ingresada no es correcta. Intenta de nuevo.',
+              confirmButtonColor: '#ef4444',
+            });
+            return;
+          }
+  
+          if (loweredMessage.includes('cuenta no activada')) {
+            await MySwal.fire({
+              icon: 'warning',
+              title: 'Cuenta no activada',
+              text: 'Debes confirmar tu correo electrónico antes de iniciar sesión.',
+              confirmButtonColor: '#f59e0b',
+            });
+            return;
+          }
+        }
+      }
+  
+      // Si llega aquí: error inesperado
+      await MySwal.fire({
+        icon: 'error',
+        title: 'Error de Inicio de Sesión',
+        text: 'Ocurrió un error inesperado. Intenta más tarde.',
+        confirmButtonColor: '#ef4444',
+      });
     }
   };
+  
 
   const handleBack = () => {
     navigate('/');
@@ -120,7 +199,7 @@ export default function Login() {
             </div>
           </div>
   
-          {error && <p className="text-red-500 text-center">{error}</p>}
+         
   
           <div>
             <button
