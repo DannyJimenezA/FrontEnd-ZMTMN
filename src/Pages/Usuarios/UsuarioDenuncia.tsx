@@ -324,19 +324,31 @@ export default function UsuarioDenuncia() {
 
         </div>
 
-        {/* Cuarta fila: Subir imágenes y detalles de evidencia */}
-        <div className="md:col-span-2">
-          <label htmlFor="ubicacion" className="block text-lg font-medium text-gray-700">
-            Evidencia (Máximo 10 Imagenes)
-          </label>
-          <div {...getRootProps()} className={`p-8 border-2 border-dashed rounded-lg text-center cursor-pointer ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}`}>
-            <input {...getInputProps()} />
-            {isDragActive ? (
-              <p className="text-lg text-blue-500">Suelta las imágenes aquí...</p>
-            ) : (
-              <p className="text-lg text-gray-500">Arrastra y suelta imágenes aquí, o haz clic para seleccionar archivos</p>
-            )}
-          </div>
+       {/* Cuarta fila: Subir imágenes y detalles de evidencia */}
+<div className="md:col-span-2">
+  <label htmlFor="ubicacion" className="block text-lg font-medium text-gray-700">
+    Evidencia (Máximo 10 Imágenes)
+  </label>
+  <div
+    {...getRootProps()}
+    className={`p-8 border-2 border-dashed rounded-lg text-center cursor-pointer ${
+      isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
+    }`}
+  >
+    <input
+  {...getInputProps({
+    accept: 'image/jpeg, image/png',
+  })}
+  />
+
+    {isDragActive ? (
+      <p className="text-lg text-blue-500">Suelta las imágenes aquí...</p>
+    ) : (
+      <p className="text-lg text-gray-500">
+        Arrastra y suelta imágenes aquí, o haz clic para seleccionar archivos (solo .jpg, .jpeg, .png)
+      </p>
+    )}
+  </div>
 
           {uploadedFiles.length > 0 && (
             <div className="mt-4">
