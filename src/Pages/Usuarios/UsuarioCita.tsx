@@ -117,12 +117,11 @@ export default function UsuarioCita() {
       cancelButtonText: 'Cancelar',
       customClass: {
         confirmButton: 'btn-azul',
-        cancelButton: 'btn-rojo', // ← CAMBIA ESTA CLASE
+        cancelButton: 'btn-rojo',
         actions: 'botones-horizontales',
       },
       buttonsStyling: false,
     });
-    
 
     if (!confirmacion.isConfirmed) {
       return;
@@ -186,9 +185,27 @@ export default function UsuarioCita() {
       setTime('');
       setDescription('');
       navigate('/mis-citas');
-    } catch (err) {
+
+    } catch (err: any) {
       console.error('Error al agendar la cita:', err);
-      await MySwal.fire('Error', 'Ocurrió un problema al agendar la cita.', 'error');
+
+      const errorMsg = err?.response?.data?.message;
+
+      if (typeof errorMsg === 'string') {
+        await MySwal.fire({
+          icon: 'error',
+          title: 'Error al agendar la cita',
+          text: errorMsg,
+          confirmButtonColor: '#dc2626',
+        });
+      } else {
+        await MySwal.fire({
+          icon: 'error',
+          title: 'Error inesperado',
+          text: 'Ocurrió un problema al agendar la cita. Intenta nuevamente.',
+          confirmButtonColor: '#dc2626',
+        });
+      }
     }
   };
 
