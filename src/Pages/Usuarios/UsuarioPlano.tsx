@@ -213,6 +213,27 @@ export default function UsuarioPlano() {
 
       <h1 className="text-4xl font-bold mb-8 text-center">Módulo de Solicitud de Revisión de Planos</h1>
 
+      {/* <div className="mt-4">
+        <label htmlFor="numeroPlano" className="block text-lg font-medium text-gray-700 mb-2">Número de Plano</label>
+        <input
+          id="numeroPlano"
+          value={numeroPlano}
+          onChange={(e) => setNumeroPlano(e.target.value)}
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Ingresa el número de plano"
+        />
+      </div>
+
+      <div className="mt-4">
+        <label htmlFor="numeroExpediente" className="block text-lg font-medium text-gray-700 mb-2">Número de Expediente</label>
+        <input
+          id="numeroExpediente"
+          value={numeroExpediente}
+          onChange={(e) => setNumeroExpediente(e.target.value)}
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Ingresa el número de expediente"
+        />
+      </div>
       <div {...getRootProps()} className={`p-8 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}`}>
         <input {...getInputProps()} />
         <p className="text-lg text-gray-500">
@@ -221,6 +242,50 @@ export default function UsuarioPlano() {
             : 'Arrastra y suelta archivos PDF aquí, o haz clic para seleccionar archivos'}
         </p>
       </div>
+       */}
+
+<div className="mt-4">
+  <label htmlFor="numeroPlano" className="block text-lg font-medium text-gray-700 mb-2">Número de Plano</label>
+  <input
+    id="numeroPlano"
+    inputMode="numeric"
+    pattern="[0-9]*"
+    value={numeroPlano}
+    onChange={(e) => {
+      const onlyNums = e.target.value.replace(/\D/g, '');
+      setNumeroPlano(onlyNums);
+    }}
+    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+    placeholder="Ingresa el número de plano"
+  />
+</div>
+
+<div className="mt-4">
+  <label htmlFor="numeroExpediente" className="block text-lg font-medium text-gray-700 mb-2">Número de Expediente</label>
+  <input
+    id="numeroExpediente"
+    inputMode="numeric"
+    pattern="[0-9]*"
+    value={numeroExpediente}
+    onChange={(e) => {
+      const onlyNums = e.target.value.replace(/\D/g, '');
+      setNumeroExpediente(onlyNums);
+    }}
+    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+    placeholder="Ingresa el número de expediente"
+  />
+</div>
+
+{/* Aquí se añadió mt-6 para separar del input anterior */}
+<div {...getRootProps()} className={`mt-6 p-8 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}`}>
+  <input {...getInputProps()} />
+  <p className="text-lg text-gray-500">
+    {isDragActive
+      ? 'Suelta los archivos aquí...'
+      : 'Arrastra y suelta archivos PDF aquí, o haz clic para seleccionar archivos'}
+  </p>
+</div>
+
 
       {uploadedFiles.length > 0 && (
         <div className="mt-8">
@@ -253,31 +318,10 @@ export default function UsuarioPlano() {
         />
       </div>
 
-      <div className="mt-4">
-        <label htmlFor="numeroPlano" className="block text-lg font-medium text-gray-700 mb-2">Número de Plano</label>
-        <input
-          id="numeroPlano"
-          value={numeroPlano}
-          onChange={(e) => setNumeroPlano(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Ingresa el número de plano"
-        />
-      </div>
-
-      <div className="mt-4">
-        <label htmlFor="numeroExpediente" className="block text-lg font-medium text-gray-700 mb-2">Número de Expediente</label>
-        <input
-          id="numeroExpediente"
-          value={numeroExpediente}
-          onChange={(e) => setNumeroExpediente(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Ingresa el número de expediente"
-        />
-      </div>
 
       <div className="flex justify-end space-x-4 mt-6">
-        <button onClick={() => navigate('/mis-planos')} className="px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded hover:bg-gray-400 transition-colors">Volver</button>
         <button onClick={handleSend} className="px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors">Enviar</button>
+        <button onClick={() => navigate('/mis-planos')} className="px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded hover:bg-gray-400 transition-colors">Volver</button>
       </div>
     </div>
   );

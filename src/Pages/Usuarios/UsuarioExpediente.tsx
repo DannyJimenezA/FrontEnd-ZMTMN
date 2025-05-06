@@ -231,17 +231,17 @@ export default function UsuarioExpediente() {
 
         <div className="flex justify-end space-x-4 mt-6">
           <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors"
+          >
+            Enviar
+          </button>
+          <button
             type="button"
             onClick={() => navigate('/mis-expedientes')}
             className="px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded hover:bg-gray-400 transition-colors"
           >
             Volver
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors"
-          >
-            Enviar Solicitud
           </button>
         </div>
       </form>

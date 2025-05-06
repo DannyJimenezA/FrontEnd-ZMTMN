@@ -251,7 +251,7 @@ export default function UsuarioDenuncia() {
         </div>
 
         {/* Segunda fila: Tipo denuncia y Lugar */}
-        <div>
+        {/* <div>
           <label htmlFor="tipoDenuncia" className="block text-lg font-medium text-gray-700">
             Tipo de Denuncia
           </label>
@@ -291,10 +291,10 @@ export default function UsuarioDenuncia() {
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
 
         {/* Tercera fila: Descripción y Ubicación */}
-        <div>
+        {/* <div>
           <label htmlFor="descripcion" className="block text-lg font-medium text-gray-700">
             Descripción
           </label>
@@ -322,7 +322,84 @@ export default function UsuarioDenuncia() {
             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
           />
 
-        </div>
+        </div> */}
+
+{/* Tipo de Denuncia */}
+<div className="md:col-span-2">
+  <label htmlFor="tipoDenuncia" className="block text-lg font-medium text-gray-700">
+    Tipo de Denuncia
+  </label>
+  <select
+    id="tipoDenuncia"
+    name="tipoDenuncia"
+    value={formData.tipoDenuncia}
+    onChange={handleInputChange}
+    required
+    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+  >
+    <option value="">Seleccione un tipo de denuncia</option>
+    {tiposDenuncia.map((tipo) => (
+      <option key={tipo.id} value={tipo.id}>
+        {tipo.descripcion}
+      </option>
+    ))}
+  </select>
+</div>
+
+{/* Descripción */}
+<div className="md:col-span-2">
+  <label htmlFor="descripcion" className="block text-lg font-medium text-gray-700">
+    Descripción
+  </label>
+  <textarea
+    id="descripcion"
+    name="descripcion"
+    value={formData.descripcion}
+    onChange={handleInputChange}
+    required
+    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+  />
+</div>
+
+{/* Lugar de Denuncia */}
+<div className="md:col-span-2">
+  <label htmlFor="lugarDenuncia" className="block text-lg font-medium text-gray-700">
+    Lugar de Denuncia
+  </label>
+  <select
+    id="lugarDenuncia"
+    name="lugarDenuncia"
+    value={formData.lugarDenuncia}
+    onChange={handleInputChange}
+    required
+    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+  >
+    <option value="">Seleccione un lugar de denuncia</option>
+    {lugaresDenuncia.map((lugar) => (
+      <option key={lugar.id} value={lugar.id}>
+        {lugar.descripcion}
+      </option>
+    ))}
+  </select>
+</div>
+
+{/* Ubicación Exacta */}
+<div className="md:col-span-2">
+  <label htmlFor="ubicacion" className="block text-lg font-medium text-gray-700">
+    Ubicación Exacta
+  </label>
+  <textarea
+    id="ubicacion"
+    name="ubicacion"
+    value={formData.ubicacion}
+    onChange={handleInputChange}
+    required
+    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+  />
+</div>
+
+
+
 
        {/* Cuarta fila: Subir imágenes y detalles de evidencia */}
 <div className="md:col-span-2">
@@ -433,11 +510,11 @@ export default function UsuarioDenuncia() {
 
         {/* Botones */}
         <div className="md:col-span-2 flex justify-end space-x-4 mt-6">
-          <button onClick={() => navigate('/')} className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
-            Volver
-          </button>
           <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
             Enviar
+          </button>
+          <button onClick={() => navigate('/')} className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+            Volver
           </button>
         </div>
       </form>
