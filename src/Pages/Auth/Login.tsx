@@ -254,6 +254,7 @@ export default function Login() {
               </div>
               <input
                 id="email-address"
+                maxLength={60}
                 name="email"
                 type="text"
                 autoComplete="email"
@@ -276,6 +277,7 @@ export default function Login() {
               </div>
               <input
                 id="password"
+                maxLength={25}
                 name="password"
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="current-password"
