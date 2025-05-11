@@ -6,6 +6,7 @@ import ApiService from '../../Components/ApiService';
 import image from '../../Img/Img01.jpg'
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
+import { useAuth } from './AuthContext';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,6 +14,8 @@ export default function Login() {
   //const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const MySwal = withReactContent(Swal);
+
+  const { login: loginWithContext } = useAuth();
 
 
   useEffect(() => {
@@ -49,7 +52,7 @@ export default function Login() {
     try {
       const data = await ApiService.post<{ access_token: string }>(ApiRoutes.auth.login, { email, password });
   
-      localStorage.setItem('token', data.access_token);
+      loginWithContext(data.access_token);
   
       await MySwal.fire({
         icon: 'success',
