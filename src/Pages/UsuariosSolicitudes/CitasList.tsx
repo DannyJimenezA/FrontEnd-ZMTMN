@@ -81,7 +81,7 @@ const MySwal = withReactContent(Swal);
           },
         });
 
-        console.log("Datos recibidos de la API:", response.data); 
+        // console.log("Datos recibidos de la API:", response.data); 
 
         if (!Array.isArray(response.data)) {
           throw new Error('La respuesta del backend no es un array válido.');

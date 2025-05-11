@@ -51,7 +51,7 @@ const PrecariosList = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        console.log("Precarios recibidos:", response.data);
+        // console.log("Precarios recibidos:", response.data);
 
         if (!Array.isArray(response.data)) {
           throw new Error('La respuesta del backend no es un array válido.');

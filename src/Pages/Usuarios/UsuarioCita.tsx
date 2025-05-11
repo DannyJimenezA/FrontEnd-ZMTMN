@@ -140,9 +140,15 @@ export default function UsuarioCita() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      // const yaTieneCita = userAppointments.data.some(
+      //   (cita: any) => cita.availableDate.date === formattedDate
+      // );
       const yaTieneCita = userAppointments.data.some(
-        (cita: any) => cita.availableDate.date === formattedDate
-      );
+  (cita: any) =>
+    cita.availableDate.date === formattedDate &&
+    ['Pendiente', 'Aprobada'].includes(cita.status)
+);
+
 
       if (yaTieneCita) {
         await MySwal.fire({

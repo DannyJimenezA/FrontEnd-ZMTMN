@@ -59,7 +59,7 @@ const MySwal = withReactContent(Swal);
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        console.log("Planos recibidos:", response.data);
+        // console.log("Planos recibidos:", response.data);
 
         if (!Array.isArray(response.data)) {
           throw new Error('La respuesta del backend no es un array válido.');

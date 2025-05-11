@@ -2,7 +2,7 @@ import axios from 'axios';
 import { login, logout } from './AuthContextHelper';
 
 export const setupAxiosInterceptor = () => {
-  console.log('🚀 Interceptor de Axios global activado');
+  // console.log('🚀 Interceptor de Axios global activado');
 
   // ✅ Interceptor de solicitud
   axios.interceptors.request.use(
@@ -11,9 +11,9 @@ export const setupAxiosInterceptor = () => {
       if (token) {
         const headers = config.headers as Record<string, string>;
         headers['Authorization'] = `Bearer ${token}`;
-        console.log('📤 Token enviado en solicitud:', token);
+        // console.log('📤 Token enviado en solicitud:', token);
       } else {
-        console.log('⚠️ No se encontró token para esta solicitud');
+        // console.log('⚠️ No se encontró token para esta solicitud');
       }
       return config;
     },
@@ -28,11 +28,11 @@ export const setupAxiosInterceptor = () => {
     (response) => {
       const newToken = response.headers['x-refresh-token'];
       if (newToken) {
-        console.log('🔄 Token actualizado correctamente (axios global):', newToken);
+        // console.log('🔄 Token actualizado correctamente (axios global):', newToken);
         localStorage.setItem('token', newToken);
         login(newToken);
       } else {
-        console.log('ℹ️ Sin token nuevo en esta respuesta');
+        // console.log('ℹ️ Sin token nuevo en esta respuesta');
       }
       return response;
     },

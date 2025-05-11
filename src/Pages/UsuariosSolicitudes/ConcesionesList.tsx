@@ -51,7 +51,7 @@ const ConcesionesList = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        console.log("Concesiones recibidas:", response.data);
+        // console.log("Concesiones recibidas:", response.data);
 
         if (!Array.isArray(response.data)) {
           throw new Error('La respuesta del backend no es un array válido.');

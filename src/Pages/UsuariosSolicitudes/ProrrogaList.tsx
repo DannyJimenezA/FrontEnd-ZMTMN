@@ -51,7 +51,7 @@ const ProrrogasList = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        console.log("Prórrogas recibidas:", response.data);
+        // console.log("Prórrogas recibidas:", response.data);
 
         if (!Array.isArray(response.data)) {
           throw new Error('La respuesta del backend no es un array válido.');

@@ -20,7 +20,7 @@ axiosInstance.interceptors.response.use(
   (response) => {
     const newToken = response.headers['x-refresh-token'];
     if (newToken) {
-      console.log('🔄 Token actualizado correctamente (axios)');
+      // console.log('🔄 Token actualizado correctamente (axios)');
       localStorage.setItem('token', newToken);
       login(newToken); // actualiza AuthContext
     }
