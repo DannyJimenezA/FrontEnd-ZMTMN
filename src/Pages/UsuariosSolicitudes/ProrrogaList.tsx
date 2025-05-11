@@ -154,7 +154,7 @@ const ProrrogasList = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Mis Solicitudes Prórroga</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Mis Solicitudes de Prórroga</h1>
           <button
             onClick={handleCreateProrroga}
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -236,7 +236,7 @@ const ProrrogasList = () => {
                     className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center"
                   >
                     <TrashIcon className="h-5 w-5 mr-2" />
-                    Eliminar Prórroga
+                    Eliminar 
                   </button>
                 )}
               </div>

@@ -248,7 +248,7 @@ const MySwal = withReactContent(Swal);
                     className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center"
                   >
                     <TrashIcon className="h-5 w-5 mr-2" />
-                    Eliminar Plano
+                    Eliminar 
                   </button>
                 )}
               </div>

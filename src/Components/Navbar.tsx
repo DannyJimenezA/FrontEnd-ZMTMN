@@ -146,7 +146,7 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
                     Concesiones
                   </Link>
                   <Link to="/mis-prorrogas" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
-                    Prorrogas
+                    Prórrogas
                   </Link>
                   <Link to="/mis-precarios" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
                     Uso Precario

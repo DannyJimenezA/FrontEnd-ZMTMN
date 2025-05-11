@@ -230,22 +230,32 @@ const MySwal = withReactContent(Swal);
   };
 
   // const handleDeleteAppointment = async (id: number) => {
-  //   if (!window.confirm('¿Está seguro que desea eliminar esta cita?')) {
-  //     return;
-  //   }
-
+  //   const result = await MySwal.fire({
+  //     title: '¿Estás seguro?',
+  //     text: 'Esta acción eliminará la cita permanentemente.',
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#d33',
+  //     cancelButtonColor: '#3085d6',
+  //     confirmButtonText: 'Sí, eliminar',
+  //     cancelButtonText: 'Cancelar',
+  //   });
+  
+  //   if (!result.isConfirmed) return;
+  
   //   try {
   //     const token = localStorage.getItem('token');
   //     if (!token) {
   //       navigate('/login');
   //       return;
   //     }
-
+  
   //     await axios.delete(`${ApiRoutes.citas.miscitas}/${id}`, {
   //       headers: {
   //         Authorization: `Bearer ${token}`,
   //       },
   //     });
+  
   //     setAppointments((prev) => prev.filter((appointment) => appointment.id !== id));
   //   } catch (error) {
   //     setError('Error al eliminar la cita. Por favor, intente nuevamente.');
@@ -280,11 +290,21 @@ const MySwal = withReactContent(Swal);
       });
   
       setAppointments((prev) => prev.filter((appointment) => appointment.id !== id));
+  
+      await MySwal.fire({
+        icon: 'success',
+        title: 'Eliminada',
+        text: 'La cita fue eliminada correctamente.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+  
     } catch (error) {
       setError('Error al eliminar la cita. Por favor, intente nuevamente.');
       console.error('Error deleting appointment:', error);
     }
   };
+  
   
 
   const handleCancelClick = () => {
@@ -404,7 +424,7 @@ const MySwal = withReactContent(Swal);
                   <div className="p-6">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">{appointment.description}</h3>
+                        <h3 className="text-lg font-semibold mb-2">Descripción: {appointment.description}</h3>
                         <div className="space-y-1 text-sm text-gray-500">
                           <p>
                             Fecha:{' '}
@@ -463,9 +483,11 @@ const MySwal = withReactContent(Swal);
                         {appointment.status !== 'Aprobada' && appointment.status !== 'Denegada' && (
                           <button
                             onClick={() => handleDeleteAppointment(appointment.id)}
-                            className="p-2 text-gray-600 hover:text-red-600 transition-colors"
+                                                className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center"
+                                                
                           >
-                            <TrashIcon className="h-4 w-4" />
+                     <TrashIcon className="h-5 w-5 mr-2" />
+                     Eliminar
                           </button>
                         )}
                       </div>

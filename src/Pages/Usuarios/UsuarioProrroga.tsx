@@ -147,15 +147,11 @@ export default function UsuarioProrroga() {
       }
 
       await MySwal.fire({
-        title: 'Archivos enviados',
-        text: '¡Tus archivos y los detalles se han enviado exitosamente!',
+        title: 'Solicitud de Prórroga enviada con éxito',
+        text: '¡Tu solicitud de prórroga se ha enviado exitosamente!',
         icon: 'success',
-        confirmButtonText: 'Aceptar',
-        customClass: {
-          confirmButton: 'btn-azul',
-        },
-        buttonsStyling: false,
-        timer: 3000,
+        timer: 2000,
+        showConfirmButton: false,
       });
 
       setUploadedFiles([]);
@@ -270,6 +266,7 @@ export default function UsuarioProrroga() {
         </label>
         <textarea
           id="fileDescription"
+          maxLength={250}
           value={fileDescription}
           onChange={(e) => setFileDescription(e.target.value)}
           rows={4}

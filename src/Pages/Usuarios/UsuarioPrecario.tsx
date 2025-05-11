@@ -152,15 +152,11 @@ export default function UsuarioPrecario() {
       }
 
       await MySwal.fire({
-        title: 'Archivos enviados',
-        text: '¡Tus archivos y la descripción se han enviado exitosamente!',
+        title: 'Solicitud de Uso Precario enviada con éxito',
+        text: '¡Tu solicitud se ha enviado exitosamente!',
         icon: 'success',
-        confirmButtonText: 'Aceptar',
-        customClass: {
-          confirmButton: 'btn-azul',
-        },
-        buttonsStyling: false,
-        timer: 3000,
+        timer: 2000,
+        showConfirmButton: false,
       });
 
       setUploadedFiles([]);
@@ -275,6 +271,7 @@ export default function UsuarioPrecario() {
         </label>
         <textarea
           id="fileDescription"
+          maxLength={250}
           value={fileDescription}
           onChange={(e) => setFileDescription(e.target.value)}
           rows={4}

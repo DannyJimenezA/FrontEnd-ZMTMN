@@ -167,6 +167,7 @@ export default function ForgotPassword() {
                     </div>
                     <input
                       id="email-address"
+                      maxLength={60}
                       name="email"
                       type="email"
                       autoComplete="email"

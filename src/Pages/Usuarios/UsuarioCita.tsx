@@ -174,11 +174,9 @@ export default function UsuarioCita() {
       await MySwal.fire({
         icon: 'success',
         title: '¡Cita agendada con éxito!',
-        confirmButtonText: 'Aceptar',
-        customClass: {
-          confirmButton: 'btn-azul',
-        },
-        buttonsStyling: false,
+        text: 'La cita fue agendada correctamente.',
+        timer: 2000,
+        showConfirmButton: false,
       });
 
       setDate(null);
@@ -296,6 +294,7 @@ export default function UsuarioCita() {
             </label>
             <textarea
               id="description"
+              maxLength={250}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}

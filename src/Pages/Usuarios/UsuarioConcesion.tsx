@@ -149,15 +149,11 @@ export default function UsuarioConcesion() {
       }
 
       await MySwal.fire({
-        title: 'Archivos enviados',
-        text: '¡Tus archivos y los detalles se han enviado exitosamente!',
+        title: 'Solicitud de Concesión enviada con éxito',
+        text: '¡Tu solicitud se ha enviado exitosamente!',
         icon: 'success',
-        confirmButtonText: 'Aceptar',
-        customClass: {
-          confirmButton: 'btn-azul',
-        },
-        buttonsStyling: false,
-        timer: 3000,
+        timer: 2000,
+        showConfirmButton: false,
       });
 
       setUploadedFiles([]);
@@ -272,6 +268,7 @@ export default function UsuarioConcesion() {
         </label>
         <textarea
           id="fileDetails"
+          maxLength={250}
           value={fileDetails}
           onChange={(e) => setFileDetails(e.target.value)}
           rows={4}

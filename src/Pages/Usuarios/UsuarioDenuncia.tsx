@@ -60,21 +60,35 @@ export default function UsuarioDenuncia() {
       .catch(error => console.error('Error al cargar los lugares de denuncia:', error));
   }, []);
 
+  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  //   const { name, value, type } = e.target;
+  //   setFormData({
+  //     ...formData,
+  //     [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+  //   });
+  // };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+  
+    setFormData((prev) => {
+      // Si cambia el método de notificación, limpiamos el medio
+      if (name === 'metodoNotificacion') {
+        return {
+          ...prev,
+          [name]: value,
+          medioNotificacion: '', // <- se limpia automáticamente
+        };
+      }
+  
+      return {
+        ...prev,
+        [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+      };
     });
   };
+  
 
-  // const onDrop = useCallback((acceptedFiles: File[]) => {
-  //   const newFiles = acceptedFiles.map(file => ({
-  //     file,
-  //     preview: URL.createObjectURL(file),
-  //   }));
-  //   setUploadedFiles(prevFiles => [...prevFiles, ...newFiles]);
-  // }, []);
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (uploadedFiles.length + acceptedFiles.length > maxFiles) {
       MySwal.fire({
@@ -170,11 +184,10 @@ export default function UsuarioDenuncia() {
       if (response.ok) {
         await MySwal.fire({
           title: 'Denuncia enviada con éxito',
-          text: '¡Tus archivos se han enviado exitosamente!',
+          text: '¡Tu denuncia se ha enviado exitosamente!',
           icon: 'success',
-          confirmButtonText: 'Aceptar',
-          customClass: { confirmButton: 'btn-azul' },
-          buttonsStyling: false,
+          timer: 2000,
+          showConfirmButton: false,
         });
         navigate('/');
       } else {
@@ -229,29 +242,54 @@ export default function UsuarioDenuncia() {
           </label>
           <input
             id="nombreDenunciante"
+            maxLength={100}
             name="nombreDenunciante"
             type="text"
             value={formData.nombreDenunciante}
             onChange={handleInputChange}
             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+            placeholder="Ingrese su nombre"
           />
         </div>
-        <div>
+        {/* <div>
           <label htmlFor="cedulaDenunciante" className="block text-lg font-medium text-gray-700">
             Cédula del Denunciante *(opcional)
           </label>
           <input
             id="cedulaDenunciante"
+            maxLength={12}
             name="cedulaDenunciante"
             type="text"
             value={formData.cedulaDenunciante}
             onChange={handleInputChange}
             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+            placeholder="Ingrese su cédula "
           />
-        </div>
+        </div> */}
+<div>
+  <label htmlFor="cedulaDenunciante" className="block text-lg font-medium text-gray-700">
+    Cédula del Denunciante *(opcional)
+  </label>
+  <input
+    id="cedulaDenunciante"
+    maxLength={12}
+    name="cedulaDenunciante"
+    type="text"
+    inputMode="numeric"
+    pattern="[0-9]*"
+    value={formData.cedulaDenunciante}
+    onChange={(e) => {
+      const onlyNumbers = e.target.value.replace(/\D/g, '');
+      setFormData(prev => ({ ...prev, cedulaDenunciante: onlyNumbers }));
+    }}
+    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+    placeholder="Ingrese su cédula"
+  />
+</div>
 
-        {/* Segunda fila: Tipo denuncia y Lugar */}
-        {/* <div>
+
+        {/* Tipo de Denuncia */}
+        <div className="md:col-span-2">
           <label htmlFor="tipoDenuncia" className="block text-lg font-medium text-gray-700">
             Tipo de Denuncia
           </label>
@@ -272,7 +310,25 @@ export default function UsuarioDenuncia() {
           </select>
         </div>
 
-        <div>
+        {/* Descripción */}
+        <div className="md:col-span-2">
+          <label htmlFor="descripcion" className="block text-lg font-medium text-gray-700">
+            Descripción
+          </label>
+          <textarea
+            id="descripcion"
+            maxLength={250}
+            name="descripcion"
+            value={formData.descripcion}
+            onChange={handleInputChange}
+            required
+            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+            placeholder="Ingrese una descripción"
+          />
+        </div>
+
+        {/* Lugar de Denuncia */}
+        <div className="md:col-span-2">
           <label htmlFor="lugarDenuncia" className="block text-lg font-medium text-gray-700">
             Lugar de Denuncia
           </label>
@@ -291,141 +347,52 @@ export default function UsuarioDenuncia() {
               </option>
             ))}
           </select>
-        </div> */}
-
-        {/* Tercera fila: Descripción y Ubicación */}
-        {/* <div>
-          <label htmlFor="descripcion" className="block text-lg font-medium text-gray-700">
-            Descripción
-          </label>
-          <textarea
-            id="descripcion"
-            name="descripcion"
-            value={formData.descripcion}
-            onChange={handleInputChange}
-            required
-            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-          />
         </div>
 
-        <div>
+        {/* Ubicación Exacta */}
+        <div className="md:col-span-2">
           <label htmlFor="ubicacion" className="block text-lg font-medium text-gray-700">
             Ubicación Exacta
           </label>
-
           <textarea
             id="ubicacion"
+            maxLength={250}
             name="ubicacion"
             value={formData.ubicacion}
             onChange={handleInputChange}
             required
             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+            placeholder="Ingrese la ubicación exacta"
           />
-
-        </div> */}
-
-{/* Tipo de Denuncia */}
-<div className="md:col-span-2">
-  <label htmlFor="tipoDenuncia" className="block text-lg font-medium text-gray-700">
-    Tipo de Denuncia
-  </label>
-  <select
-    id="tipoDenuncia"
-    name="tipoDenuncia"
-    value={formData.tipoDenuncia}
-    onChange={handleInputChange}
-    required
-    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="">Seleccione un tipo de denuncia</option>
-    {tiposDenuncia.map((tipo) => (
-      <option key={tipo.id} value={tipo.id}>
-        {tipo.descripcion}
-      </option>
-    ))}
-  </select>
-</div>
-
-{/* Descripción */}
-<div className="md:col-span-2">
-  <label htmlFor="descripcion" className="block text-lg font-medium text-gray-700">
-    Descripción
-  </label>
-  <textarea
-    id="descripcion"
-    name="descripcion"
-    value={formData.descripcion}
-    onChange={handleInputChange}
-    required
-    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-  />
-</div>
-
-{/* Lugar de Denuncia */}
-<div className="md:col-span-2">
-  <label htmlFor="lugarDenuncia" className="block text-lg font-medium text-gray-700">
-    Lugar de Denuncia
-  </label>
-  <select
-    id="lugarDenuncia"
-    name="lugarDenuncia"
-    value={formData.lugarDenuncia}
-    onChange={handleInputChange}
-    required
-    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="">Seleccione un lugar de denuncia</option>
-    {lugaresDenuncia.map((lugar) => (
-      <option key={lugar.id} value={lugar.id}>
-        {lugar.descripcion}
-      </option>
-    ))}
-  </select>
-</div>
-
-{/* Ubicación Exacta */}
-<div className="md:col-span-2">
-  <label htmlFor="ubicacion" className="block text-lg font-medium text-gray-700">
-    Ubicación Exacta
-  </label>
-  <textarea
-    id="ubicacion"
-    name="ubicacion"
-    value={formData.ubicacion}
-    onChange={handleInputChange}
-    required
-    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-  />
-</div>
+        </div>
 
 
 
 
-       {/* Cuarta fila: Subir imágenes y detalles de evidencia */}
-<div className="md:col-span-2">
-  <label htmlFor="ubicacion" className="block text-lg font-medium text-gray-700">
-    Evidencia (Máximo 10 Imágenes)
-  </label>
-  <div
-    {...getRootProps()}
-    className={`p-8 border-2 border-dashed rounded-lg text-center cursor-pointer ${
-      isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
-    }`}
-  >
-    <input
-  {...getInputProps({
-    accept: 'image/jpeg, image/png',
-  })}
-  />
+        {/* Cuarta fila: Subir imágenes y detalles de evidencia */}
+        <div className="md:col-span-2">
+          <label htmlFor="ubicacion" className="block text-lg font-medium text-gray-700">
+            Evidencia (Máximo 10 Imágenes)
+          </label>
+          <div
+            {...getRootProps()}
+            className={`p-8 border-2 border-dashed rounded-lg text-center cursor-pointer ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
+              }`}
+          >
+            <input
+              {...getInputProps({
+                accept: 'image/jpeg, image/png',
+              })}
+            />
 
-    {isDragActive ? (
-      <p className="text-lg text-blue-500">Suelta las imágenes aquí...</p>
-    ) : (
-      <p className="text-lg text-gray-500">
-        Arrastra y suelta imágenes aquí, o haz clic para seleccionar archivos (solo .jpg, .jpeg, .png)
-      </p>
-    )}
-  </div>
+            {isDragActive ? (
+              <p className="text-lg text-blue-500">Suelta las imágenes aquí...</p>
+            ) : (
+              <p className="text-lg text-gray-500">
+                Arrastra y suelta imágenes aquí, o haz clic para seleccionar archivos (solo .jpg, .jpeg, .png)
+              </p>
+            )}
+          </div>
 
           {uploadedFiles.length > 0 && (
             <div className="mt-4">
@@ -450,11 +417,13 @@ export default function UsuarioDenuncia() {
           </label>
           <textarea
             id="detallesEvidencia"
+            maxLength={250}
             name="detallesEvidencia"
             value={formData.detallesEvidencia}
             onChange={handleInputChange}
             required
             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+            placeholder="Ingrese una descripción de las imagenes"
           ></textarea>
         </div>
 
@@ -492,7 +461,7 @@ export default function UsuarioDenuncia() {
               </select>
             </div>
 
-            <div>
+            {/* <div>
               <label htmlFor="medioNotificacion" className="block text-lg font-medium text-gray-700">
                 Medio de Notificación
               </label>
@@ -504,7 +473,39 @@ export default function UsuarioDenuncia() {
                 onChange={handleInputChange}
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
               />
-            </div>
+            </div> */}
+<div>
+  <label htmlFor="medioNotificacion" className="block text-lg font-medium text-gray-700">
+    Medio de Notificación
+  </label>
+  <input
+    id="medioNotificacion"
+    name="medioNotificacion"
+    type="text"
+    maxLength={
+      formData.metodoNotificacion === 'Teléfono'
+        ? 8
+        : formData.metodoNotificacion === 'Correo electrónico'
+        ? 60
+        : undefined
+    }
+    disabled={!formData.metodoNotificacion}
+    value={formData.medioNotificacion}
+    onChange={handleInputChange}
+    className={`mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 ${
+      !formData.metodoNotificacion ? 'bg-gray-100 cursor-not-allowed' : ''
+    }`}
+    placeholder={
+      !formData.metodoNotificacion
+        ? 'Seleccione un método primero'
+        : formData.metodoNotificacion === 'Teléfono'
+        ? 'Ingrese su número '
+        : 'Ingrese su correo electrónico'
+    }
+  />
+</div>
+
+
           </>
         )}
 

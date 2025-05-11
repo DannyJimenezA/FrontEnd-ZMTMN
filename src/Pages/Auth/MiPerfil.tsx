@@ -5,6 +5,7 @@ import { User } from '../Types';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 const MySwal = withReactContent(Swal);
 
@@ -32,6 +33,7 @@ const MiPerfil = () => {
         });
         setPerfil(response.data);
         setFormData(response.data);
+        setCurrentPassword('');
       } catch (error) {
         console.error('Error al cargar el perfil:', error);
       }
@@ -88,6 +90,13 @@ const MiPerfil = () => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     return regex.test(password);
   };
+
+  const [passwordVisibility, setPasswordVisibility] = useState({
+    currentPassword: false,
+    newPassword: false,
+    confirmPassword: false,
+  });
+  
 
   const handleSubmit = async () => {
     if (!validarFormulario()) return;
@@ -184,16 +193,23 @@ const MiPerfil = () => {
           <div key={field.name}>
             <label className="block">
               <span className="text-gray-700">{field.label}:</span>
+
               <input
-                className={`border px-2 py-1 w-full rounded ${
-                  errores[field.name] ? 'border-red-500' : 'border-gray-300'
-                }`}
-                type={field.type}
-                name={field.name}
-                value={(formData as any)[field.name] || ''}
-                onChange={handleChange}
-                disabled={!editando}
-              />
+  className={`border px-2 py-1 w-full rounded ${errores[field.name] ? 'border-red-500' : 'border-gray-300'}`}
+  type={field.type}
+  name={field.name}
+  maxLength={
+    field.name === 'nombre' || field.name === 'apellido1' || field.name === 'apellido2' ? 30 :
+    field.name === 'telefono' ? 8 :
+    field.name === 'cedula' ? 12 :
+    field.name === 'email' ? 60 :
+    undefined
+  }
+  value={(formData as any)[field.name] || ''}
+  onChange={handleChange}
+  disabled={!editando}
+/>
+
             </label>
             {errores[field.name] && (
               <p className="text-red-500 text-xs mt-1">{errores[field.name]}</p>
@@ -216,50 +232,69 @@ const MiPerfil = () => {
           </div>
 
           {showPasswordFields && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-              <label className="block">
-                <span className="text-gray-700">Contraseña actual:</span>
-                <input
-                  className="border px-2 py-1 w-full rounded border-gray-300"
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                />
-              </label>
-
-              <label className="block">
-                <span className="text-gray-700">Nueva contraseña:</span>
-                <input
-                  className="border px-2 py-1 w-full rounded border-gray-300"
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                />
-              </label>
-
-              <label className="block md:col-span-2">
-                <span className="text-gray-700">Confirmar contraseña:</span>
-                <input
-                  className="border px-2 py-1 w-full rounded border-gray-300"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </label>
-            </div>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+{[
+  {
+    label: 'Contraseña actual',
+    value: currentPassword,
+    setValue: setCurrentPassword,
+    name: 'currentPassword',
+  },
+  {
+    label: 'Nueva contraseña',
+    value: newPassword,
+    setValue: setNewPassword,
+    name: 'newPassword',
+  },
+  {
+    label: 'Confirmar contraseña',
+    value: confirmPassword,
+    setValue: setConfirmPassword,
+    name: 'confirmPassword',
+    colSpan: 'md:col-span-2',
+  },
+].map((field) => (
+  <label key={field.name} className={`block ${field.colSpan || ''}`}>
+    <span className="text-gray-700">{field.label}:</span>
+    <div className="relative">
+      <input
+        className="border px-2 py-1 w-full rounded border-gray-300 pr-10"
+        type={passwordVisibility[field.name as keyof typeof passwordVisibility] ? 'text' : 'password'}
+        value={field.value}
+        onChange={(e) => field.setValue(e.target.value)}
+      />
+      <div className="absolute inset-y-0 right-2 flex items-center">
+        <button
+          type="button"
+          onClick={() =>
+            setPasswordVisibility((prev) => ({
+              ...prev,
+              [field.name]: !prev[field.name as keyof typeof passwordVisibility],
+            }))
+          }
+          className="text-gray-600 hover:text-gray-800 focus:outline-none"
+          tabIndex={-1}
+        >
+          {passwordVisibility[field.name as keyof typeof passwordVisibility] ? (
+            <FiEyeOff className="h-5 w-5" />
+          ) : (
+            <FiEye className="h-5 w-5" />
           )}
+        </button>
+      </div>
+    </div>
+  </label>
+))}
+
+
+  </div>
+)}
+
         </>
       )}
 
       {/* Botones */}
       <div className="mt-6 flex justify-between">
-        <button
-          className="bg-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-400"
-          onClick={() => navigate(-1)}
-        >
-          Volver
-        </button>
-
         {!editando ? (
           <button
             className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
@@ -280,6 +315,13 @@ const MiPerfil = () => {
             )}
           </button>
         )}
+        <button
+          className="bg-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-400"
+          onClick={() => navigate(-1)}
+        >
+          Volver
+        </button>
+
       </div>
     </div>
   );

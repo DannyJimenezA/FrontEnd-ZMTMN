@@ -105,13 +105,11 @@ export default function UsuarioExpediente() {
       }
 
       await MySwal.fire({
-        title: 'Solicitud enviada',
-        text: '¡La solicitud de expediente ha sido enviada exitosamente!',
+        title: 'Solicitud de Expediente enviada con éxito',
+        text: '¡Tu solicitud se ha enviado exitosamente!',
         icon: 'success',
-        confirmButtonText: 'Aceptar',
-        customClass: { confirmButton: 'btn-azul' },
-        buttonsStyling: false,
-        timer: 3000,
+        timer: 2000,
+        showConfirmButton: false,
       });
 
       setTelefonoSolicitante('');
@@ -174,6 +172,7 @@ export default function UsuarioExpediente() {
           </label>
           <input
             type="text"
+            maxLength={40}
             id="numeroExpediente"
             value={numeroExpediente}
             onChange={(e) => setNumeroExpediente(e.target.value)}
