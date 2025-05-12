@@ -180,7 +180,7 @@ const ProrrogasList = () => {
           ) : (
             prorrogas.map((prorroga) => (
               <div key={prorroga.id} className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold">Detalle: {prorroga.Detalle || "Sin descripción"}</h3>
+                <h3 className="text-lg font-semibold break-all">Detalle: {prorroga.Detalle || "Sin descripción"}</h3>
                 <p className="text-sm text-gray-500">Fecha: {prorroga.Date}</p>
 
                 <div className="text-sm text-gray-500 mt-2">

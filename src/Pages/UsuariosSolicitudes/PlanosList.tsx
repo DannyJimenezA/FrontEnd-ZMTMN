@@ -188,7 +188,7 @@ const MySwal = withReactContent(Swal);
           ) : (
             planos.map((plano) => (
               <div key={plano.id} className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold">Comentario: {plano.Comentario}</h3>
+                <h3 className="text-lg font-semibold break-all">Comentario: {plano.Comentario}</h3>
                 <p className="text-sm text-gray-500">Fecha: {plano.Date}</p>
                 <p className="text-sm text-gray-500">Número de plano: {plano.NumeroPlano}</p>
                 <p className="text-sm text-gray-500">Número de expediente: {plano.NumeroExpediente}</p>
