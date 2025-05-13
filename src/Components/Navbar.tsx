@@ -189,7 +189,7 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
                 </button>
                 {isUserDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-2 p-4">
-                    <p className="text-sm text-gray-700 font-semibold">{userEmail}</p>
+                    <p className="text-sm text-gray-700 font-semibold break-all">{userEmail}</p>
                     <Link
       to="/mi-perfil"
       className="block mt-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100"
