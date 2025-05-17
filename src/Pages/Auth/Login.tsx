@@ -3,7 +3,7 @@ import { EnvelopeIcon, LockClosedIcon, EyeIcon, EyeSlashIcon } from '@heroicons/
 import { useNavigate } from 'react-router-dom';
 import ApiRoutes from '../../Components/ApiRoutes';
 import ApiService from '../../Components/ApiService';
-import image from '../../Img/Img01.jpg'
+import image from '../../Img/img05.jpg'
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 import { useAuth } from './AuthContext';

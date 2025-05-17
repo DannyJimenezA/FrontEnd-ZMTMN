@@ -69,7 +69,7 @@ export default function UsuarioDenuncia() {
   // };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-  
+
     setFormData((prev) => {
       // Si cambia el método de notificación, limpiamos el medio
       if (name === 'metodoNotificacion') {
@@ -79,14 +79,14 @@ export default function UsuarioDenuncia() {
           medioNotificacion: '', // <- se limpia automáticamente
         };
       }
-  
+
       return {
         ...prev,
         [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
       };
     });
   };
-  
+
 
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -266,26 +266,26 @@ export default function UsuarioDenuncia() {
             placeholder="Ingrese su cédula "
           />
         </div> */}
-<div>
-  <label htmlFor="cedulaDenunciante" className="block text-lg font-medium text-gray-700">
-    Cédula del Denunciante *(opcional)
-  </label>
-  <input
-    id="cedulaDenunciante"
-    maxLength={12}
-    name="cedulaDenunciante"
-    type="text"
-    inputMode="numeric"
-    pattern="[0-9]*"
-    value={formData.cedulaDenunciante}
-    onChange={(e) => {
-      const onlyNumbers = e.target.value.replace(/\D/g, '');
-      setFormData(prev => ({ ...prev, cedulaDenunciante: onlyNumbers }));
-    }}
-    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-    placeholder="Ingrese su cédula"
-  />
-</div>
+        <div>
+          <label htmlFor="cedulaDenunciante" className="block text-lg font-medium text-gray-700">
+            Cédula del Denunciante *(opcional)
+          </label>
+          <input
+            id="cedulaDenunciante"
+            maxLength={12}
+            name="cedulaDenunciante"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={formData.cedulaDenunciante}
+            onChange={(e) => {
+              const onlyNumbers = e.target.value.replace(/\D/g, '');
+              setFormData(prev => ({ ...prev, cedulaDenunciante: onlyNumbers }));
+            }}
+            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+            placeholder="Ingrese su cédula"
+          />
+        </div>
 
 
         {/* Tipo de Denuncia */}
@@ -394,7 +394,7 @@ export default function UsuarioDenuncia() {
             )}
           </div>
 
-          {uploadedFiles.length > 0 && (
+          {/* {uploadedFiles.length > 0 && (
             <div className="mt-4">
               <h2 className="text-xl font-semibold mb-2">Imágenes Subidas</h2>
               <ul className="space-y-2">
@@ -408,7 +408,35 @@ export default function UsuarioDenuncia() {
                 ))}
               </ul>
             </div>
-          )}
+          )} */}
+          {uploadedFiles.length > 0 && (
+  <div className="mt-6">
+    <h2 className="text-lg font-semibold mb-3">Archivos Subidos (Máximo 10 imágenes)</h2>
+    <ul className="space-y-2">
+      {uploadedFiles.map((file, index) => (
+        <li
+          key={index}
+          className="flex justify-between items-center bg-gray-50 border border-gray-200 rounded-lg px-4 py-3"
+        >
+          <div>
+            <p className="text-sm font-medium text-gray-800">{file.file.name}</p>
+            <p className="text-xs text-gray-500">
+              Tamaño: {(file.file.size / 1024 / 1024).toFixed(2)} MB
+            </p>
+          </div>
+          <button
+            onClick={() => removeFile(file)}
+            className="text-red-600 hover:text-red-800 ml-4"
+            aria-label="Eliminar archivo"
+          >
+            <XMarkIcon className="h-5 w-5" />
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
         </div>
 
         <div className="md:col-span-2">
@@ -474,36 +502,35 @@ export default function UsuarioDenuncia() {
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
               />
             </div> */}
-<div>
-  <label htmlFor="medioNotificacion" className="block text-lg font-medium text-gray-700">
-    Medio de Notificación
-  </label>
-  <input
-    id="medioNotificacion"
-    name="medioNotificacion"
-    type="text"
-    maxLength={
-      formData.metodoNotificacion === 'Teléfono'
-        ? 8
-        : formData.metodoNotificacion === 'Correo electrónico'
-        ? 60
-        : undefined
-    }
-    disabled={!formData.metodoNotificacion}
-    value={formData.medioNotificacion}
-    onChange={handleInputChange}
-    className={`mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 ${
-      !formData.metodoNotificacion ? 'bg-gray-100 cursor-not-allowed' : ''
-    }`}
-    placeholder={
-      !formData.metodoNotificacion
-        ? 'Seleccione un método primero'
-        : formData.metodoNotificacion === 'Teléfono'
-        ? 'Ingrese su número '
-        : 'Ingrese su correo electrónico'
-    }
-  />
-</div>
+            <div>
+              <label htmlFor="medioNotificacion" className="block text-lg font-medium text-gray-700">
+                Medio de Notificación
+              </label>
+              <input
+                id="medioNotificacion"
+                name="medioNotificacion"
+                type="text"
+                maxLength={
+                  formData.metodoNotificacion === 'Teléfono'
+                    ? 8
+                    : formData.metodoNotificacion === 'Correo electrónico'
+                      ? 60
+                      : undefined
+                }
+                disabled={!formData.metodoNotificacion}
+                value={formData.medioNotificacion}
+                onChange={handleInputChange}
+                className={`mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 ${!formData.metodoNotificacion ? 'bg-gray-100 cursor-not-allowed' : ''
+                  }`}
+                placeholder={
+                  !formData.metodoNotificacion
+                    ? 'Seleccione un método primero'
+                    : formData.metodoNotificacion === 'Teléfono'
+                      ? 'Ingrese su número '
+                      : 'Ingrese su correo electrónico'
+                }
+              />
+            </div>
 
 
           </>
