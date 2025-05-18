@@ -104,6 +104,12 @@ const CitasList = () => {
           };
         });
 
+        adjustedAppointments.sort((a, b) => {
+  if (!a.adjustedDate || !b.adjustedDate) return 0;
+  return a.adjustedDate.getTime() - b.adjustedDate.getTime();
+});
+
+
         setAppointments(adjustedAppointments);
       } catch (error) {
         setError('Error al cargar las citas. Por favor, intente nuevamente.');
@@ -230,39 +236,6 @@ const CitasList = () => {
     }
   };
 
-  // const handleDeleteAppointment = async (id: number) => {
-  //   const result = await MySwal.fire({
-  //     title: '¿Estás seguro?',
-  //     text: 'Esta acción eliminará la cita permanentemente.',
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonColor: '#d33',
-  //     cancelButtonColor: '#3085d6',
-  //     confirmButtonText: 'Sí, eliminar',
-  //     cancelButtonText: 'Cancelar',
-  //   });
-
-  //   if (!result.isConfirmed) return;
-
-  //   try {
-  //     const token = localStorage.getItem('token');
-  //     if (!token) {
-  //       navigate('/login');
-  //       return;
-  //     }
-
-  //     await axios.delete(`${ApiRoutes.citas.miscitas}/${id}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     setAppointments((prev) => prev.filter((appointment) => appointment.id !== id));
-  //   } catch (error) {
-  //     setError('Error al eliminar la cita. Por favor, intente nuevamente.');
-  //     console.error('Error deleting appointment:', error);
-  //   }
-  // };
   const handleDeleteAppointment = async (id: number) => {
     const result = await MySwal.fire({
       title: '¿Estás seguro?',
@@ -423,62 +396,6 @@ const CitasList = () => {
                   </div>
                 ) : (
 
-                  // <div className="p-6">
-                  //   <div className="flex justify-between items-start">
-                  //     <div>
-
-                  //       <h3 className="text-lg font-semibold mb-2">
-                  //         Descripción:{" "}
-                  //         <span className="break-all">
-                  //           {appointment.description}
-                  //         </span>
-                  //       </h3>
-
-                  //       <div className="space-y-1 text-sm text-gray-500">
-                  //         <p>
-                  //           Fecha:{' '}
-                  //           {formatInTimeZone(
-                  //             parseISO(appointment.availableDate.date),
-                  //             'America/Costa_Rica',
-                  //             'yyyy-MM-dd'
-                  //           )}
-                  //         </p>
-                  //         <p>Hora: {appointment?.horaCita?.hora || "No disponible"}</p>
-
-
-                  //         <p className="flex items-center gap-1 mt-4">
-                  //           Estado:
-                  //           <span className={`inline-flex items-center ${appointment.status === 'Aprobada' ? 'text-green-600' :
-                  //             appointment.status === 'Denegada' ? 'text-red-600' : 'text-yellow-600'
-                  //             }`}>
-                  //             {appointment.status === 'Aprobada' && (
-                  //               <CheckCircleIcon className="h-4 w-4 mr-1" />
-                  //             )}
-                  //             {appointment.status === 'Denegada' && (
-                  //               <XCircleIcon className="h-4 w-4 mr-1" />
-                  //             )}
-                  //             {appointment.status === 'Pendiente' && (
-                  //               <span className="inline-block w-4 h-4 border-2 border-yellow-500 rounded-full mr-1"></span>
-                  //             )}
-                  //             {appointment.status}
-                  //           </span>
-                  //         </p>
-                  //       </div>
-                  //     </div>
-                  //     <div className="flex gap-2">
-                  //       {appointment.status !== 'Aprobada' && appointment.status !== 'Denegada' && (
-                  //         <button
-                  //           onClick={() => handleDeleteAppointment(appointment.id)}
-                  //           className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center"
-
-                  //         >
-                  //           <TrashIcon className="h-5 w-5 mr-2" />
-                  //           Eliminar
-                  //         </button>
-                  //       )}
-                  //     </div>
-                  //   </div>
-                  // </div>
 
                   <div className="p-6 flex flex-col h-full justify-between">
   <div>
