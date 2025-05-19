@@ -22,7 +22,8 @@ interface User {
 
 interface Concesion {
   id: number;
-  ArchivoAdjunto: string;
+  // ArchivoAdjunto: string;
+  ArchivoAdjunto: { nombre: string; ruta: string }[];
   Detalle: string;
   Date: string;
   status: string;
@@ -184,20 +185,22 @@ const ConcesionesList = () => {
 
                 <div className="text-sm text-gray-500 mt-2">
                   <p>Archivos Adjuntos:</p>
-                  <div className="flex gap-3 mt-2">
-                    {JSON.parse(concesion.ArchivoAdjunto || '[]').map((file: string, index: number) => (
-                      <button
-                        key={index}
-                        onClick={() => handlePreviewPdf(file)}
-                        className="flex items-center gap-2 bg-gray-200 px-3 py-2 rounded-md hover:bg-gray-300 transition"
-                      >
-                        <FaFilePdf className="text-red-500 h-6 w-6" />
-                        <span className="text-blue-600 hover:underline">
-                          Ver archivo {index + 1}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
+   <div className="flex flex-col gap-2 mt-2">
+  {Array.isArray(concesion.ArchivoAdjunto) &&
+    concesion.ArchivoAdjunto.map((file, index) => (
+      <button
+        key={index}
+        onClick={() => handlePreviewPdf(file.ruta)}
+        className="flex items-center gap-2 bg-gray-200 px-3 py-2 rounded-md hover:bg-gray-300 transition"
+      >
+        <FaFilePdf className="text-red-500 h-5 w-5" />
+        <span className="text-blue-600 hover:underline">
+          {file.nombre || `Archivo ${index + 1}`}
+        </span>
+      </button>
+    ))}
+</div>
+
                 </div>
 
                 <p className="flex items-center gap-1 mt-4">

@@ -22,7 +22,7 @@ interface User {
 
 interface Prorroga {
   id: number;
-  ArchivoAdjunto: string;
+  ArchivoAdjunto: { nombre: string; ruta: string }[];
   Detalle: string;
   Date: string;
   status: string;
@@ -69,27 +69,6 @@ const ProrrogasList = () => {
     fetchProrrogas();
   }, [navigate]);
 
-  /** Maneja la eliminación de una prórroga */
-  // const handleDeleteProrroga = async (id: number) => {
-  //   if (!window.confirm('¿Está seguro que desea eliminar esta prórroga?')) return;
-
-  //   try {
-  //     const token = localStorage.getItem('token');
-  //     if (!token) {
-  //       navigate('/login');
-  //       return;
-  //     }
-
-  //     await axios.delete(`${ApiRoutes.eliminarprorroga}/${id}`, {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     });
-
-  //     setProrrogas((prev) => prev.filter((prorroga) => prorroga.id !== id));
-  //   } catch (error) {
-  //     setError('Error al eliminar la prórroga. Intente nuevamente.');
-  //     console.error('Error eliminando prórroga:', error);
-  //   }
-  // };
   const handleDeleteProrroga = async (id: number) => {
     const result = await MySwal.fire({
       title: '¿Estás seguro?',
@@ -185,32 +164,21 @@ const ProrrogasList = () => {
 
                 <div className="text-sm text-gray-500 mt-2">
                   <p>Archivos Adjuntos:</p>
-                  <div className="flex gap-3 mt-2">
-                    {JSON.parse(prorroga.ArchivoAdjunto || '[]').map((file: string, index: number) => (
-                      <button
-                        key={index}
-                        onClick={() => handlePreviewPdf(file)}
-                        className="flex items-center gap-2 bg-gray-200 px-3 py-2 rounded-md hover:bg-gray-300 transition"
-                      >
-                        <FaFilePdf className="text-red-500 h-6 w-6" />
-                        <span className="text-blue-600 hover:underline">
-                          Ver archivo {index + 1}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
+<div className="flex flex-col gap-2 mt-2">
+    {prorroga.ArchivoAdjunto.map((archivo, index) => (
+      <button
+        key={index}
+        onClick={() => handlePreviewPdf(archivo.ruta)}
+        className="flex items-center gap-2 bg-gray-200 px-3 py-2 rounded-md hover:bg-gray-300 transition"
+      >
+        <FaFilePdf className="text-red-500 h-6 w-6" />
+        <span className="text-blue-600 hover:underline">
+          {archivo.nombre || `Archivo ${index + 1}`}
+        </span>
+      </button>
+    ))}
+  </div>
                 </div>
-
-                {/* <p className="flex items-center gap-1 mt-4">
-                  Estado:
-                  <span className={`inline-flex items-center ${
-                    prorroga.status === 'Aprobada' ? 'text-green-600' :
-                    prorroga.status === 'Denegada' ? 'text-red-600' : 'text-yellow-600'
-                  }`}>
-                    {prorroga.status === 'Aprobada' ? <CheckCircleIcon className="h-4 w-4 mr-1" /> : <XCircleIcon className="h-4 w-4 mr-1" />}
-                    {prorroga.status}
-                  </span>
-                </p> */}
 
                 <p className="flex items-center gap-1 mt-4">
                   Estado:
