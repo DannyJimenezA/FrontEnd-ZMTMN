@@ -50,6 +50,19 @@ interface Appointment {
   };
 }
 
+const formatTo12Hour = (time24: string): string => {
+  if (!time24) return 'Hora inválida';
+  const parts = time24.split(':');
+  if (parts.length < 2) return time24;
+
+  const hour = parseInt(parts[0], 10);
+  const minute = parts[1]?.padStart(2, '0') || '00';
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const formattedHour = hour % 12 || 12;
+
+  return `${formattedHour}:${minute} ${ampm}`;
+};
+
 
 const CitasList = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -103,6 +116,7 @@ const CitasList = () => {
             adjustedDate: zonedDate,
           };
         });
+
 
         adjustedAppointments.sort((a, b) => {
   if (!a.adjustedDate || !b.adjustedDate) return 0;
@@ -370,10 +384,11 @@ const CitasList = () => {
                               <option value="" disabled>No hay horas disponibles</option>
                             ) : (
                               availableHours.map((hora) => (
-                                <option key={hora} value={hora}>
-                                  {hora}
-                                </option>
-                              ))
+                              <option key={hora} value={hora}>
+                              {formatTo12Hour(hora)}
+                            </option>
+                          ))
+
                             )}
                           </select>
                         </div>
@@ -404,7 +419,7 @@ const CitasList = () => {
     </h3>
     <div className="space-y-1 text-sm text-gray-500">
       <p>Fecha: {formatInTimeZone(parseISO(appointment.availableDate.date), 'America/Costa_Rica', 'yyyy-MM-dd')}</p>
-      <p>Hora: {appointment?.horaCita?.hora || "No disponible"}</p>
+      <p>Hora: {appointment?.horaCita?.hora ? formatTo12Hour(appointment.horaCita.hora) : "No disponible"}</p>
       <p className="flex items-center gap-1 mt-4">
         Estado:
         <span className={`inline-flex items-center ${appointment.status === 'Aprobada' ? 'text-green-600' : appointment.status === 'Denegada' ? 'text-red-600' : 'text-yellow-600'}`}>

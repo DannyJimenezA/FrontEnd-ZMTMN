@@ -23,6 +23,20 @@ interface AvailableDate {
   }[];
 }
 
+const formatTo12Hour = (time24: string): string => {
+  if (!time24) return 'Hora inválida';
+  const parts = time24.split(':');
+  if (parts.length < 2) return time24;
+
+  const hour = parseInt(parts[0], 10);
+  const minute = parts[1]?.padStart(2, '0') || '00';
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const formattedHour = hour % 12 || 12;
+
+  return `${formattedHour}:${minute} ${ampm}`;
+};
+
+
 export default function UsuarioCita() {
   const [date, setDate] = useState<Date | null>(null);
   const [time, setTime] = useState('');
@@ -317,7 +331,8 @@ export default function UsuarioCita() {
                     <option disabled>No hay horas disponibles</option>
                   ) : (
                     availableHours.map(h => (
-                      <option key={h} value={h}>{h}</option>
+                     <option key={h} value={h}>{formatTo12Hour(h)}</option>
+
                     ))
                   )}
                 </select>
