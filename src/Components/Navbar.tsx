@@ -148,14 +148,14 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
                   <Link to="/mis-prorrogas" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
                     Prórrogas
                   </Link>
+                  <Link to="/mis-expedientes" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
+                    Copia de Expediente
+                  </Link>
                   <Link to="/mis-precarios" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
                     Uso Precario
                   </Link>
                   <Link to="/mis-planos" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
                     Revisión de Planos
-                  </Link>
-                  <Link to="/mis-expedientes" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
-                    Copia de Expediente
                   </Link>
                 </div>
               )}
@@ -189,7 +189,7 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
                 </button>
                 {isUserDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-2 p-4">
-                    <p className="text-sm text-gray-700 font-semibold">{userEmail}</p>
+                    <p className="text-sm text-gray-700 font-semibold break-all">{userEmail}</p>
                     <Link
       to="/mi-perfil"
       className="block mt-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100"

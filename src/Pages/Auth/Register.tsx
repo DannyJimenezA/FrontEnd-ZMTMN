@@ -301,7 +301,7 @@ export default function Register() {
           value={formData[name as keyof typeof formData]}
           onChange={handleChange}
         />
-        {showPasswordToggle && setPasswordToggleValue && (
+        {/* {showPasswordToggle && setPasswordToggleValue && (
           <button
             type="button"
             onClick={() => setPasswordToggleValue(!passwordToggleValue)}
@@ -313,7 +313,24 @@ export default function Register() {
               <EyeIcon className="h-5 w-5 text-gray-400 hover:text-gray-500" />
             )}
           </button>
-        )}
+        )} */}
+        {showPasswordToggle && typeof passwordToggleValue === 'boolean' && setPasswordToggleValue && (
+  <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+    <button
+      type="button"
+      onClick={() => setPasswordToggleValue(!passwordToggleValue)}
+      className="focus:outline-none"
+      tabIndex={-1}
+    >
+      {passwordToggleValue ? (
+        <EyeSlashIcon className="h-5 w-5 text-gray-400 hover:text-gray-500" />
+      ) : (
+        <EyeIcon className="h-5 w-5 text-gray-400 hover:text-gray-500" />
+      )}
+    </button>
+  </div>
+)}
+
       </div>
       {fieldErrors[name] && (
         <p className="mt-1 text-sm text-red-500">{fieldErrors[name]}</p>

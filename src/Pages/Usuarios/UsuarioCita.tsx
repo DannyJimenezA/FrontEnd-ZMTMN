@@ -140,9 +140,15 @@ export default function UsuarioCita() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      // const yaTieneCita = userAppointments.data.some(
+      //   (cita: any) => cita.availableDate.date === formattedDate
+      // );
       const yaTieneCita = userAppointments.data.some(
-        (cita: any) => cita.availableDate.date === formattedDate
-      );
+  (cita: any) =>
+    cita.availableDate.date === formattedDate &&
+    ['Pendiente', 'Aprobada'].includes(cita.status)
+);
+
 
       if (yaTieneCita) {
         await MySwal.fire({
@@ -184,33 +190,65 @@ export default function UsuarioCita() {
       setDescription('');
       navigate('/mis-citas');
 
-    } catch (err: any) {
-      console.error('Error al agendar la cita:', err);
 
-      const errorMsg = err?.response?.data?.message;
+} catch (err: any) {
+  console.error('Error al agendar la cita:', err);
 
-      if (typeof errorMsg === 'string') {
-        await MySwal.fire({
-          icon: 'error',
-          title: 'Error al agendar la cita',
-          text: errorMsg,
-          confirmButtonColor: '#dc2626',
-        });
-      } else {
-        await MySwal.fire({
-          icon: 'error',
-          title: 'Error inesperado',
-          text: 'Ocurrió un problema al agendar la cita. Intenta nuevamente.',
-          confirmButtonColor: '#dc2626',
-        });
-      }
+  let mensajeFinal = 'Ocurrió un problema al agendar la cita. Intenta nuevamente.';
+
+  // Revisa si hay respuesta del backend
+  const data = err?.response?.data;
+
+  if (data) {
+    if (typeof data.message === 'string') {
+      mensajeFinal = data.message;
+    } else if (Array.isArray(data.message)) {
+      mensajeFinal = data.message.join('\n');
+    } else if (typeof data === 'string') {
+      mensajeFinal = data;
+    } else if (data.error) {
+      mensajeFinal = data.error;
     }
+  } else if (err.message) {
+    mensajeFinal = err.message; // fallback para errores de red
+  }
+
+  console.log('Respuesta del backend:', err?.response?.data);
+
+  await MySwal.fire({
+    icon: 'error',
+    title: 'Error al agendar la cita',
+    text: mensajeFinal,
+    confirmButtonColor: '#dc2626',
+  });
+}
+
+
   };
 
+  // const filterAvailableDates = (date: Date) => {
+  //   const formatted = date.toISOString().split('T')[0];
+  //   return availableDates.some(d => d.date === formatted);
+  // };
   const filterAvailableDates = (date: Date) => {
-    const formatted = date.toISOString().split('T')[0];
-    return availableDates.some(d => d.date === formatted);
-  };
+  const formatted = date.toISOString().split('T')[0];
+
+  const available = availableDates.some(d => d.date === formatted);
+  if (!available) return false;
+
+  const now = new Date();
+
+  const appointmentDate = new Date(date);
+  appointmentDate.setHours(0, 0, 0, 0);
+
+  const dayBefore = new Date(appointmentDate);
+  dayBefore.setDate(dayBefore.getDate() - 1);
+  dayBefore.setHours(12, 0, 0, 0); // día anterior a las 12:00 PM
+
+  // Si ya pasó el corte → bloquear esta fecha
+  return now < dayBefore;
+};
+
 
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center bg-gray-100">

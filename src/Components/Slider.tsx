@@ -3,7 +3,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
 // Importa tus imágenes con la ruta correcta
-import image1 from '../Img/Img01.jpg';
+import image1 from '../Img/img05.jpg';
 import image2 from '../Img/Img02.jpg';
 import image3 from '../Img/Img03.jpg';
 

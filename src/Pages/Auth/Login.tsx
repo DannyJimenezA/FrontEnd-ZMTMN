@@ -3,9 +3,10 @@ import { EnvelopeIcon, LockClosedIcon, EyeIcon, EyeSlashIcon } from '@heroicons/
 import { useNavigate } from 'react-router-dom';
 import ApiRoutes from '../../Components/ApiRoutes';
 import ApiService from '../../Components/ApiService';
-import image from '../../Img/Img01.jpg'
+import image from '../../Img/img05.jpg'
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
+import { useAuth } from './AuthContext';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,6 +14,8 @@ export default function Login() {
   //const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const MySwal = withReactContent(Swal);
+
+  const { login: loginWithContext } = useAuth();
 
 
   useEffect(() => {
@@ -33,99 +36,196 @@ export default function Login() {
   }, []);
   
 
+  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  
+  //   if (!email.includes('@')) {
+  //     await MySwal.fire({
+  //       icon: 'error',
+  //       title: 'Correo Inválido',
+  //       text: 'Por favor ingresa un correo electrónico válido.',
+  //       confirmButtonColor: '#ef4444',
+  //     });
+  //     return;
+  //   }
+  
+  //   try {
+  //     const data = await ApiService.post<{ access_token: string }>(ApiRoutes.auth.login, { email, password });
+  
+  //     loginWithContext(data.access_token);
+  
+  //     await MySwal.fire({
+  //       icon: 'success',
+  //       title: '¡Bienvenido!',
+  //       text: 'Inicio de sesión exitoso.',
+  //       timer: 2000,
+  //       timerProgressBar: true,
+  //       showConfirmButton: false,
+  //       allowOutsideClick: false,
+  //       allowEscapeKey: false,
+  //     });
+  
+  //     navigate('/');
+  //   } catch (error: any) {
+  //     console.error('Login error:', error);
+  
+  //     if (error.data && error.data.message) {
+  //       let apiMessage = error.data.message;
+  
+  //       if (Array.isArray(apiMessage)) {
+  //         apiMessage = apiMessage[0]; // Normaliza si es un array
+  //       }
+  
+  //       if (typeof apiMessage === 'string') {
+  //         const loweredMessage = apiMessage.toLowerCase();
+  
+  //         if (loweredMessage.includes('correo no registrado')) {
+  //           const result = await MySwal.fire({
+  //             icon: 'warning',
+  //             title: 'Correo no registrado',
+  //             text: '¿Deseas crear una cuenta nueva?',
+  //             showCancelButton: true,
+  //             confirmButtonText: 'Registrarme',
+  //             cancelButtonText: 'Cancelar',
+  //             confirmButtonColor: '#2563eb',
+  //             cancelButtonColor: '#ef4444',
+  //           });
+  
+  //           if (result.isConfirmed) {
+  //             navigate('/register');
+  //           }
+  //           return;
+  //         }
+  
+  //         if (loweredMessage.includes('contraseña incorrecta')) {
+  //           await MySwal.fire({
+  //             icon: 'error',
+  //             title: 'Contraseña incorrecta',
+  //             text: 'La contraseña ingresada no es correcta. Intenta de nuevo.',
+  //             confirmButtonColor: '#ef4444',
+  //           });
+  //           return;
+  //         }
+  
+  //         if (loweredMessage.includes('cuenta no activada')) {
+  //           await MySwal.fire({
+  //             icon: 'warning',
+  //             title: 'Cuenta no activada',
+  //             text: 'Debes confirmar tu correo electrónico antes de iniciar sesión.',
+  //             confirmButtonColor: '#f59e0b',
+  //           });
+  //           return;
+  //         }
+  //       }
+  //     }
+  
+  //     // Si llega aquí: error inesperado
+  //     await MySwal.fire({
+  //       icon: 'error',
+  //       title: 'Error de Inicio de Sesión',
+  //       text: 'Ocurrió un error inesperado. Intenta más tarde.',
+  //       confirmButtonColor: '#ef4444',
+  //     });
+  //   }
+  // };
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  
-    if (!email.includes('@')) {
-      await MySwal.fire({
-        icon: 'error',
-        title: 'Correo Inválido',
-        text: 'Por favor ingresa un correo electrónico válido.',
-        confirmButtonColor: '#ef4444',
-      });
-      return;
-    }
-  
-    try {
-      const data = await ApiService.post<{ access_token: string }>(ApiRoutes.auth.login, { email, password });
-  
-      localStorage.setItem('token', data.access_token);
-  
-      await MySwal.fire({
-        icon: 'success',
-        title: '¡Bienvenido!',
-        text: 'Inicio de sesión exitoso.',
-        timer: 2000,
-        timerProgressBar: true,
-        showConfirmButton: false,
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-      });
-  
-      navigate('/');
-    } catch (error: any) {
-      console.error('Login error:', error);
-  
-      if (error.data && error.data.message) {
-        let apiMessage = error.data.message;
-  
-        if (Array.isArray(apiMessage)) {
-          apiMessage = apiMessage[0]; // Normaliza si es un array
+  e.preventDefault();
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email.trim())) {
+    await MySwal.fire({
+      icon: 'error',
+      title: 'Correo inválido',
+      text: 'Por favor ingresa un correo electrónico válido.',
+      confirmButtonColor: '#ef4444',
+    });
+    return;
+  }
+
+  try {
+    const data = await ApiService.post<{ access_token: string }>(
+      ApiRoutes.auth.login,
+      { email, password }
+    );
+
+    loginWithContext(data.access_token);
+
+    await MySwal.fire({
+      icon: 'success',
+      title: '¡Bienvenido!',
+      text: 'Inicio de sesión exitoso.',
+      timer: 2000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
+
+    navigate('/');
+  } catch (error: any) {
+    console.error('Login error:', error);
+
+    if (error.data && error.data.message) {
+      let apiMessage = error.data.message;
+
+      if (Array.isArray(apiMessage)) {
+        apiMessage = apiMessage[0]; // Normaliza si es un array
+      }
+
+      if (typeof apiMessage === 'string') {
+        const loweredMessage = apiMessage.toLowerCase();
+
+        if (loweredMessage.includes('correo no registrado')) {
+          const result = await MySwal.fire({
+            icon: 'warning',
+            title: 'Correo no registrado',
+            text: '¿Deseas crear una cuenta nueva?',
+            showCancelButton: true,
+            confirmButtonText: 'Registrarme',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#2563eb',
+            cancelButtonColor: '#ef4444',
+          });
+
+          if (result.isConfirmed) {
+            navigate('/register');
+          }
+          return;
         }
-  
-        if (typeof apiMessage === 'string') {
-          const loweredMessage = apiMessage.toLowerCase();
-  
-          if (loweredMessage.includes('correo no registrado')) {
-            const result = await MySwal.fire({
-              icon: 'warning',
-              title: 'Correo no registrado',
-              text: '¿Deseas crear una cuenta nueva?',
-              showCancelButton: true,
-              confirmButtonText: 'Registrarme',
-              cancelButtonText: 'Cancelar',
-              confirmButtonColor: '#2563eb',
-              cancelButtonColor: '#ef4444',
-            });
-  
-            if (result.isConfirmed) {
-              navigate('/register');
-            }
-            return;
-          }
-  
-          if (loweredMessage.includes('contraseña incorrecta')) {
-            await MySwal.fire({
-              icon: 'error',
-              title: 'Contraseña incorrecta',
-              text: 'La contraseña ingresada no es correcta. Intenta de nuevo.',
-              confirmButtonColor: '#ef4444',
-            });
-            return;
-          }
-  
-          if (loweredMessage.includes('cuenta no activada')) {
-            await MySwal.fire({
-              icon: 'warning',
-              title: 'Cuenta no activada',
-              text: 'Debes confirmar tu correo electrónico antes de iniciar sesión.',
-              confirmButtonColor: '#f59e0b',
-            });
-            return;
-          }
+
+        if (loweredMessage.includes('contraseña incorrecta')) {
+          await MySwal.fire({
+            icon: 'error',
+            title: 'Contraseña incorrecta',
+            text: 'La contraseña ingresada no es correcta. Intenta de nuevo.',
+            confirmButtonColor: '#ef4444',
+          });
+          return;
+        }
+
+        if (loweredMessage.includes('cuenta no activada')) {
+          await MySwal.fire({
+            icon: 'warning',
+            title: 'Cuenta no activada',
+            text: 'Debes confirmar tu correo electrónico antes de iniciar sesión.',
+            confirmButtonColor: '#f59e0b',
+          });
+          return;
         }
       }
-  
-      // Si llega aquí: error inesperado
-      await MySwal.fire({
-        icon: 'error',
-        title: 'Error de Inicio de Sesión',
-        text: 'Ocurrió un error inesperado. Intenta más tarde.',
-        confirmButtonColor: '#ef4444',
-      });
     }
-  };
-  
+
+    // Si llega aquí: error inesperado
+    await MySwal.fire({
+      icon: 'error',
+      title: 'Error de Inicio de Sesión',
+      text: 'Ocurrió un error inesperado. Intenta más tarde.',
+      confirmButtonColor: '#ef4444',
+    });
+  }
+};
+
 
   const handleBack = () => {
     navigate('/');
@@ -154,8 +254,9 @@ export default function Login() {
               </div>
               <input
                 id="email-address"
+                maxLength={60}
                 name="email"
-                type="email"
+                type="text"
                 autoComplete="email"
                 required
                 className="appearance-none block w-full px-3 py-3 pl-10 border border-gray-900 rounded-lg placeholder-gray-900 bg-white text-black focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -176,6 +277,7 @@ export default function Login() {
               </div>
               <input
                 id="password"
+                maxLength={25}
                 name="password"
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="current-password"
