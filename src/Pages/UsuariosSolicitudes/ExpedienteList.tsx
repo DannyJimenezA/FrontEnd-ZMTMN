@@ -39,6 +39,13 @@ const ExpedientesList = () => {
   const navigate = useNavigate();
 
   const MySwal = withReactContent(Swal);
+
+  const formatToDDMMYYYY = (isoDate: string): string => {
+    const [year, month, day] = isoDate.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
+
   /** Carga los expedientes del usuario autenticado */
   useEffect(() => {
     const fetchExpedientes = async () => {
@@ -108,24 +115,24 @@ const ExpedientesList = () => {
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar',
     });
-  
+
     if (!result.isConfirmed) return;
-  
+
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         navigate('/login');
         return;
       }
-  
+
       await axios.delete(`${ApiRoutes.eliminarexpediente}/${idExpediente}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       setExpedientes((prev) =>
         prev.filter((expediente) => expediente.idExpediente !== idExpediente)
       );
-  
+
       await MySwal.fire({
         icon: 'success',
         title: 'Expediente eliminado',
@@ -138,7 +145,7 @@ const ExpedientesList = () => {
       console.error('Error eliminando expediente:', error);
     }
   };
-  
+
 
   if (isLoading) {
     return (
@@ -154,13 +161,13 @@ const ExpedientesList = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Mis Solicitudes de Copia de Expediente</h1>
-                    <button
-                      onClick={handleCreateExpediente}
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                    >
-                      <FaFilePdf className="h-4 w-4 mr-2" />
-                      Enviar Solicitud
-                    </button>
+          <button
+            onClick={handleCreateExpediente}
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            <FaFilePdf className="h-4 w-4 mr-2" />
+            Enviar Solicitud
+          </button>
         </div>
 
         {error && (
@@ -179,25 +186,24 @@ const ExpedientesList = () => {
           ) : (
             expedientes.map((expediente) => (
               <div key={expediente.idExpediente} className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold">Expediente: {expediente.numeroExpediente}</h3>
-                <p className="text-sm text-gray-500">Fecha: {expediente.Date}</p>
-                {/* <p className="text-sm text-gray-500">Solicitante: {expediente.nombreSolicitante}</p> */}
-                {/* <p className="text-sm text-gray-500">Teléfono: {expediente.telefonoSolicitante}</p>
-                <p className="text-sm text-gray-500">Notificación: {expediente.medioNotificacion}</p>
-                 */}
-                 {expediente.medioNotificacion === 'telefono' && (
-  <p className="text-sm text-gray-500">
-    Notificación por Teléfono: {expediente.telefonoSolicitante}
-  </p>
-)}
+                <h3 className="text-lg font-semibold break-all">Expediente: {expediente.numeroExpediente}</h3>
+                {/* <p className="text-sm text-gray-500">Fecha: {expediente.Date}</p> */}
+                <p>Fecha: {expediente.Date ? formatToDDMMYYYY(expediente.Date) : 'No disponible'}</p>
 
-{expediente.medioNotificacion === 'correo' && (
-  <p className="text-sm text-gray-500">
-    Notificación por Correo: {expediente.user?.email || 'No disponible'}
-  </p>
-)}
 
-                <p className="text-sm text-gray-500">
+                {expediente.medioNotificacion === 'telefono' && (
+                  <p >
+                    Notificación por Teléfono: {expediente.telefonoSolicitante}
+                  </p>
+                )}
+
+                {expediente.medioNotificacion === 'correo' && (
+                  <p >
+                    Notificación por Correo: {expediente.user?.email || 'No disponible'}
+                  </p>
+                )}
+
+                <p >
                   Copia Certificada: {expediente.copiaCertificada ? "Sí" : "No"}
                 </p>
 
@@ -211,10 +217,10 @@ const ExpedientesList = () => {
                     {expediente.status}
                   </span>
                 </p> */}
-                                <p className="flex items-center gap-1 mt-4">
+                <p className="flex items-center gap-1 mt-4">
                   Estado:
                   <span className={`inline-flex items-center ${expediente.status === 'Aprobada' ? 'text-green-600' :
-                      expediente.status === 'Denegada' ? 'text-red-600' : 'text-yellow-600'
+                    expediente.status === 'Denegada' ? 'text-red-600' : 'text-yellow-600'
                     }`}>
                     {expediente.status === 'Aprobada' && (
                       <CheckCircleIcon className="h-4 w-4 mr-1" />
@@ -235,7 +241,7 @@ const ExpedientesList = () => {
                     className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center"
                   >
                     <TrashIcon className="h-5 w-5 mr-2" />
-                    Eliminar 
+                    Eliminar
                   </button>
                 )}
               </div>

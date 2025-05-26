@@ -37,6 +37,14 @@ const ConcesionesList = () => {
   const navigate = useNavigate();
   const MySwal = withReactContent(Swal);
 
+
+  const formatToDDMMYYYY = (isoDate: string): string => {
+    const [year, month, day] = isoDate.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
+
+
   /** Carga las concesiones del usuario autenticado */
   useEffect(() => {
     const fetchConcesiones = async () => {
@@ -102,22 +110,22 @@ const ConcesionesList = () => {
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar',
     });
-  
+
     if (!result.isConfirmed) return;
-  
+
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         navigate('/login');
         return;
       }
-  
+
       await axios.delete(`${ApiRoutes.eliminarconcesion}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       setConcesiones((prev) => prev.filter((concesion) => concesion.id !== id));
-  
+
       await MySwal.fire({
         icon: 'success',
         title: 'Eliminado',
@@ -130,7 +138,7 @@ const ConcesionesList = () => {
       console.error('Error eliminando concesión:', error);
     }
   };
-  
+
 
   const handleCreateConcesion = () => {
     navigate('/usuario-concesion');
@@ -180,45 +188,47 @@ const ConcesionesList = () => {
           ) : (
             concesiones.map((concesion) => (
               <div key={concesion.id} className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold break-all">Detalle: {concesion.Detalle || "Sin descripción"}</h3>
-                <p className="text-sm text-gray-500">Fecha: {concesion.Date}</p>
+                <h3 className="text-lg font-semibold break-word">Detalle: {concesion.Detalle || "Sin descripción"}</h3>
+               
+                {/* <p className="text-sm text-gray-500">Fecha: {concesion.Date}</p> */}
+                <p>Fecha: {concesion.Date ? formatToDDMMYYYY(concesion.Date) : 'No disponible'}</p>
+
 
                 <div className="text-sm text-gray-500 mt-2">
                   <p>Archivos Adjuntos:</p>
-   <div className="flex flex-col gap-2 mt-2">
-  {Array.isArray(concesion.ArchivoAdjunto) &&
-    concesion.ArchivoAdjunto.map((file, index) => (
-      <button
-        key={index}
-        onClick={() => handlePreviewPdf(file.ruta)}
-        className="flex items-center gap-2 bg-gray-200 px-3 py-2 rounded-md hover:bg-gray-300 transition"
-      >
-        <FaFilePdf className="text-red-500 h-5 w-5" />
-        <span className="text-blue-600 hover:underline">
-          {file.nombre || `Archivo ${index + 1}`}
-        </span>
-      </button>
-    ))}
-</div>
+                  <div className="flex flex-col gap-2 mt-2">
+                    {Array.isArray(concesion.ArchivoAdjunto) &&
+                      concesion.ArchivoAdjunto.map((file, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handlePreviewPdf(file.ruta)}
+                          className="flex items-center gap-2 bg-gray-200 px-3 py-2 rounded-md hover:bg-gray-300 transition"
+                        >
+                          <FaFilePdf className="text-red-500 h-5 w-5" />
+                          <span className="text-blue-600 hover:underline">
+                            {file.nombre || `Archivo ${index + 1}`}
+                          </span>
+                        </button>
+                      ))}
+                  </div>
 
                 </div>
 
                 <p className="flex items-center gap-1 mt-4">
                   Estado:
-                  <span className={`inline-flex items-center ${
-                    concesion.status === 'Aprobada' ? 'text-green-600' :
+                  <span className={`inline-flex items-center ${concesion.status === 'Aprobada' ? 'text-green-600' :
                     concesion.status === 'Denegada' ? 'text-red-600' : 'text-yellow-600'
-                  }`}>
-{concesion.status === 'Aprobada' && (
-  <CheckCircleIcon className="h-4 w-4 mr-1" />
-)}
-{concesion.status === 'Denegada' && (
-  <XCircleIcon className="h-4 w-4 mr-1" />
-)}
-{concesion.status === 'Pendiente' && (
-  <span className="inline-block w-4 h-4 border-2 border-yellow-500 rounded-full mr-1"></span>
-)}
-{concesion.status}
+                    }`}>
+                    {concesion.status === 'Aprobada' && (
+                      <CheckCircleIcon className="h-4 w-4 mr-1" />
+                    )}
+                    {concesion.status === 'Denegada' && (
+                      <XCircleIcon className="h-4 w-4 mr-1" />
+                    )}
+                    {concesion.status === 'Pendiente' && (
+                      <span className="inline-block w-4 h-4 border-2 border-yellow-500 rounded-full mr-1"></span>
+                    )}
+                    {concesion.status}
 
                   </span>
                 </p>

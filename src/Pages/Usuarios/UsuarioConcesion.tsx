@@ -84,86 +84,94 @@ export default function UsuarioConcesion() {
     URL.revokeObjectURL(fileToRemove.preview);
   };
 
-  // const handleSend = async () => {
-  //   if (uploadedFiles.length === 0) {
-  //     MySwal.fire('Error', 'No has subido ningún archivo.', 'warning');
-  //     return;
-  //   }
+// const handleSend = async () => {
+//   if (uploadedFiles.length === 0) {
+//     MySwal.fire('Error', 'No has subido ningún archivo.', 'warning');
+//     return;
+//   }
 
-  //   if (!fileDetails.trim()) {
-  //     MySwal.fire('Error', 'Debes ingresar un detalle de los archivos.', 'warning');
-  //     return;
-  //   }
+//   if (!fileDetails.trim()) {
+//     MySwal.fire('Error', 'Debes ingresar un detalle de los archivos.', 'warning');
+//     return;
+//   }
 
-  //   const confirmacion = await MySwal.fire({
-  //     title: '¿Está seguro de enviar la solicitud de concesión?',
-  //     icon: 'question',
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Aceptar',
-  //     cancelButtonText: 'Cancelar',
-  //     customClass: {
-  //       confirmButton: 'btn-azul',
-  //       cancelButton: 'btn-rojo',
-  //       actions: 'botones-horizontales',
-  //     },
-  //     buttonsStyling: false,
-  //   });
+//   const confirmacion = await MySwal.fire({
+//     title: '¿Está seguro de enviar la solicitud de concesión?',
+//     icon: 'question',
+//     showCancelButton: true,
+//     confirmButtonText: 'Aceptar',
+//     cancelButtonText: 'Cancelar',
+//     customClass: {
+//       confirmButton: 'btn-azul',
+//       cancelButton: 'btn-rojo',
+//       actions: 'botones-horizontales',
+//     },
+//     buttonsStyling: false,
+//   });
 
-  //   if (!confirmacion.isConfirmed) return;
+//   if (!confirmacion.isConfirmed) return;
 
-  //   const formData = new FormData();
-  //   uploadedFiles.forEach((file) => {
-  //     formData.append('files', file.file);
-  //   });
-  //   formData.append('detalle', fileDetails.trim());
+//   const formData = new FormData();
 
-  //   const token = localStorage.getItem('token');
-  //   if (!token) {
-  //     MySwal.fire('Error', 'No se encontró una sesión activa.', 'error');
-  //     return;
-  //   }
+//   // Adjuntar archivos PDF al FormData
+//   uploadedFiles.forEach(({ file }) => {
+//     formData.append('files', file); // ⬅️ Backend formateará nombre y ruta
+//   });
 
-  //   const decodedToken = parseJwt(token);
-  //   const userId = decodedToken?.sub;
+//   formData.append('detalle', fileDetails.trim());
 
-  //   if (!userId) {
-  //     MySwal.fire('Error', 'No se pudo obtener el ID del usuario.', 'error');
-  //     return;
-  //   }
+//   const token = localStorage.getItem('token');
+//   if (!token) {
+//     MySwal.fire('Error', 'No se encontró una sesión activa.', 'error');
+//     return;
+//   }
 
-  //   formData.append('userId', userId);
+//   const decodedToken = parseJwt(token);
+//   const userId = decodedToken?.sub;
 
-  //   try {
-  //     const response = await fetch(ApiRoutes.concesiones, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Authorization': `Bearer ${token}`,
-  //       },
-  //       body: formData,
-  //     });
+//   if (!userId) {
+//     MySwal.fire('Error', 'No se pudo obtener el ID del usuario.', 'error');
+//     return;
+//   }
 
-  //     if (!response.ok) {
-  //       const errorResponse = await response.json();
-  //       console.error('Error en el servidor:', errorResponse);
-  //       throw new Error('Error al enviar los datos al servidor');
-  //     }
+//   formData.append('userId', userId);
 
-  //     await MySwal.fire({
-  //       title: 'Solicitud de Concesión enviada con éxito',
-  //       text: '¡Tu solicitud se ha enviado exitosamente!',
-  //       icon: 'success',
-  //       timer: 2000,
-  //       showConfirmButton: false,
-  //     });
+//   try {
+//     const response = await fetch(ApiRoutes.concesiones, {
+//       method: 'POST',
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//       body: formData,
+//     });
 
-  //     setUploadedFiles([]);
-  //     setFileDetails('');
-  //     navigate('/mis-concesiones');
-  //   } catch (error) {
-  //     console.error('Error al enviar archivos:', error);
-  //     MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
-  //   }
-  // };
+//     if (!response.ok) {
+//       const errorResponse = await response.json();
+//       console.error('Error en el servidor:', errorResponse);
+//       throw new Error('Error al enviar los datos al servidor');
+//     }
+
+//     await MySwal.fire({
+//       title: 'Solicitud de Concesión enviada con éxito',
+//       text: '¡Tu solicitud se ha enviado exitosamente!',
+//       icon: 'success',
+//       timer: 2000,
+//       showConfirmButton: false,
+//     });
+
+//     setUploadedFiles([]);
+//     setFileDetails('');
+//     navigate('/mis-concesiones');
+//   } catch (error) {
+//     console.error('Error al enviar archivos:', error);
+//     MySwal.fire(
+//       'Error',
+//       'Hubo un problema al enviar los archivos. Intente de nuevo.',
+//       'error'
+//     );
+//   }
+// };
+
 
 const handleSend = async () => {
   if (uploadedFiles.length === 0) {
@@ -173,6 +181,18 @@ const handleSend = async () => {
 
   if (!fileDetails.trim()) {
     MySwal.fire('Error', 'Debes ingresar un detalle de los archivos.', 'warning');
+    return;
+  }
+
+  // Validación de palabras largas
+  const palabrasLargas = fileDetails.split(/\s+/).filter(p => p.length > 30);
+  if (palabrasLargas.length > 0) {
+    await MySwal.fire({
+      icon: 'warning',
+      title: 'Detalle inválido',
+      text: 'Por favor evita usar palabras con más de 30 caracteres seguidos en el detalle.',
+      confirmButtonText: 'Entendido',
+    });
     return;
   }
 
@@ -193,12 +213,9 @@ const handleSend = async () => {
   if (!confirmacion.isConfirmed) return;
 
   const formData = new FormData();
-
-  // Adjuntar archivos PDF al FormData
   uploadedFiles.forEach(({ file }) => {
-    formData.append('files', file); // ⬅️ Backend formateará nombre y ruta
+    formData.append('files', file);
   });
-
   formData.append('detalle', fileDetails.trim());
 
   const token = localStorage.getItem('token');
@@ -252,7 +269,6 @@ const handleSend = async () => {
     );
   }
 };
-
 
 
   const parseJwt = (token: string | null) => {

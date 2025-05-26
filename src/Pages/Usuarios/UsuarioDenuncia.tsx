@@ -122,83 +122,182 @@ export default function UsuarioDenuncia() {
     URL.revokeObjectURL(fileToRemove.preview);
   };
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   const requiredFields: string[] = [];
+
+  //   if (!formData.tipoDenuncia) requiredFields.push("Tipo de Denuncia");
+  //   if (!formData.lugarDenuncia) requiredFields.push("Lugar de Denuncia");
+  //   if (!formData.descripcion.trim()) requiredFields.push("Descripción");
+  //   if (!formData.ubicacion.trim()) requiredFields.push("Ubicación Exacta");
+  //   if (!formData.detallesEvidencia.trim()) requiredFields.push("Detalles de la Evidencia");
+
+  //   if (formData.notificacion) {
+  //     if (!formData.metodoNotificacion.trim()) requiredFields.push("Método de Notificación");
+  //     if (!formData.medioNotificacion.trim()) requiredFields.push("Medio de Notificación");
+  //   }
+
+  //   if (uploadedFiles.length === 0) requiredFields.push("Al menos una imagen");
+
+  //   if (requiredFields.length > 0) {
+  //     MySwal.fire({
+  //       icon: 'warning',
+  //       title: 'Campos obligatorios faltantes',
+  //       html: `<ul class="text-left">${requiredFields.map(f => `<li>• ${f}</li>`).join('')}</ul>`,
+  //       confirmButtonText: 'Entendido',
+  //     });
+  //     return;
+  //   }
+
+  //   const confirmacion = await MySwal.fire({
+  //     title: '¿Está seguro de enviar la denuncia?',
+  //     icon: 'question',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Aceptar',
+  //     cancelButtonText: 'Cancelar',
+  //     customClass: {
+  //       confirmButton: 'btn-azul',
+  //       cancelButton: 'btn-rojo',
+  //       actions: 'botones-horizontales',
+  //     },
+  //     buttonsStyling: false,
+  //   });
+
+  //   if (!confirmacion.isConfirmed) return;
+
+  //   const formDataToSend = new FormData();
+  //   Object.entries(formData).forEach(([key, value]) => {
+  //     formDataToSend.append(key, String(value));
+  //   });
+
+  //   uploadedFiles.forEach(({ file }) => {
+  //     formDataToSend.append('files', file);
+  //   });
+
+  //   try {
+  //     const response = await fetch(`${ApiRoutes.denuncias}/upload`, {
+  //       method: 'POST',
+  //       body: formDataToSend,
+  //     });
+
+  //     if (response.ok) {
+  //       await MySwal.fire({
+  //         title: 'Denuncia enviada con éxito',
+  //         text: '¡Tu denuncia se ha enviado exitosamente!',
+  //         icon: 'success',
+  //         timer: 2000,
+  //         showConfirmButton: false,
+  //       });
+  //       navigate('/');
+  //     } else {
+  //       const errorData = await response.json();
+  //       MySwal.fire('Error al enviar la denuncia', errorData.message, 'error');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error al enviar la denuncia:', error);
+  //     MySwal.fire('Error', 'Hubo un error al enviar la denuncia. Intente nuevamente.', 'error');
+  //   }
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const requiredFields: string[] = [];
+  const requiredFields: string[] = [];
 
-    if (!formData.tipoDenuncia) requiredFields.push("Tipo de Denuncia");
-    if (!formData.lugarDenuncia) requiredFields.push("Lugar de Denuncia");
-    if (!formData.descripcion.trim()) requiredFields.push("Descripción");
-    if (!formData.ubicacion.trim()) requiredFields.push("Ubicación Exacta");
-    if (!formData.detallesEvidencia.trim()) requiredFields.push("Detalles de la Evidencia");
+  if (!formData.tipoDenuncia) requiredFields.push("Tipo de Denuncia");
+  if (!formData.lugarDenuncia) requiredFields.push("Lugar de Denuncia");
+  if (!formData.descripcion.trim()) requiredFields.push("Descripción");
+  if (!formData.ubicacion.trim()) requiredFields.push("Ubicación Exacta");
+  if (!formData.detallesEvidencia.trim()) requiredFields.push("Detalles de la Evidencia");
 
-    if (formData.notificacion) {
-      if (!formData.metodoNotificacion.trim()) requiredFields.push("Método de Notificación");
-      if (!formData.medioNotificacion.trim()) requiredFields.push("Medio de Notificación");
-    }
+  if (formData.notificacion) {
+    if (!formData.metodoNotificacion.trim()) requiredFields.push("Método de Notificación");
+    if (!formData.medioNotificacion.trim()) requiredFields.push("Medio de Notificación");
+  }
 
-    if (uploadedFiles.length === 0) requiredFields.push("Al menos una imagen");
+  if (uploadedFiles.length === 0) requiredFields.push("Al menos una imagen");
 
-    if (requiredFields.length > 0) {
-      MySwal.fire({
-        icon: 'warning',
-        title: 'Campos obligatorios faltantes',
-        html: `<ul class="text-left">${requiredFields.map(f => `<li>• ${f}</li>`).join('')}</ul>`,
-        confirmButtonText: 'Entendido',
+  if (requiredFields.length > 0) {
+    await MySwal.fire({
+      icon: 'warning',
+      title: 'Campos obligatorios faltantes',
+      html: `<ul class="text-left">${requiredFields.map(f => `<li>• ${f}</li>`).join('')}</ul>`,
+      confirmButtonText: 'Entendido',
+    });
+    return;
+  }
+
+  // ❗ Validación de palabras largas
+  const camposALimitar = [
+    { nombre: 'ubicación exacta', valor: formData.ubicacion },
+    { nombre: 'detalles de evidencia', valor: formData.detallesEvidencia },
+    { nombre: 'descripción', valor: formData.descripcion },
+  ];
+
+  const palabraLarga = camposALimitar.find(campo =>
+    campo.valor.split(/\s+/).some(p => p.length > 30)
+  );
+
+  if (palabraLarga) {
+    await MySwal.fire({
+      icon: 'warning',
+      title: 'Texto inválido',
+      text: `El campo "${palabraLarga.nombre}" contiene una palabra muy larga (más de 30 caracteres seguidos).`,
+      confirmButtonText: 'Entendido',
+    });
+    return;
+  }
+
+  const confirmacion = await MySwal.fire({
+    title: '¿Está seguro de enviar la denuncia?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Aceptar',
+    cancelButtonText: 'Cancelar',
+    customClass: {
+      confirmButton: 'btn-azul',
+      cancelButton: 'btn-rojo',
+      actions: 'botones-horizontales',
+    },
+    buttonsStyling: false,
+  });
+
+  if (!confirmacion.isConfirmed) return;
+
+  const formDataToSend = new FormData();
+  Object.entries(formData).forEach(([key, value]) => {
+    formDataToSend.append(key, String(value));
+  });
+
+  uploadedFiles.forEach(({ file }) => {
+    formDataToSend.append('files', file);
+  });
+
+  try {
+    const response = await fetch(`${ApiRoutes.denuncias}/upload`, {
+      method: 'POST',
+      body: formDataToSend,
+    });
+
+    if (response.ok) {
+      await MySwal.fire({
+        title: 'Denuncia enviada con éxito',
+        text: '¡Tu denuncia se ha enviado exitosamente!',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false,
       });
-      return;
+      navigate('/');
+    } else {
+      const errorData = await response.json();
+      MySwal.fire('Error al enviar la denuncia', errorData.message, 'error');
     }
-
-    const confirmacion = await MySwal.fire({
-      title: '¿Está seguro de enviar la denuncia?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Aceptar',
-      cancelButtonText: 'Cancelar',
-      customClass: {
-        confirmButton: 'btn-azul',
-        cancelButton: 'btn-rojo',
-        actions: 'botones-horizontales',
-      },
-      buttonsStyling: false,
-    });
-
-    if (!confirmacion.isConfirmed) return;
-
-    const formDataToSend = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      formDataToSend.append(key, String(value));
-    });
-
-    uploadedFiles.forEach(({ file }) => {
-      formDataToSend.append('files', file);
-    });
-
-    try {
-      const response = await fetch(`${ApiRoutes.denuncias}/upload`, {
-        method: 'POST',
-        body: formDataToSend,
-      });
-
-      if (response.ok) {
-        await MySwal.fire({
-          title: 'Denuncia enviada con éxito',
-          text: '¡Tu denuncia se ha enviado exitosamente!',
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false,
-        });
-        navigate('/');
-      } else {
-        const errorData = await response.json();
-        MySwal.fire('Error al enviar la denuncia', errorData.message, 'error');
-      }
-    } catch (error) {
-      console.error('Error al enviar la denuncia:', error);
-      MySwal.fire('Error', 'Hubo un error al enviar la denuncia. Intente nuevamente.', 'error');
-    }
-  };
+  } catch (error) {
+    console.error('Error al enviar la denuncia:', error);
+    MySwal.fire('Error', 'Hubo un error al enviar la denuncia. Intente nuevamente.', 'error');
+  }
+};
 
 
   return (
