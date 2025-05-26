@@ -78,6 +78,13 @@ const CitasList = () => {
 
   const MySwal = withReactContent(Swal);
 
+const formatToDDMMYYYY = (isoDate: string): string => {
+  const [year, month, day] = isoDate.split("-");
+  return `${day}/${month}/${year}`;
+};
+
+
+
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -414,11 +421,13 @@ const CitasList = () => {
 
                   <div className="p-6 flex flex-col h-full justify-between">
   <div>
-    <h3 className="text-lg font-semibold mb-2 break-all">
-      Descripción: <span className="break-all">{appointment.description}</span>
+    <h3 className="text-lg font-semibold mb-2 break-word">
+      Descripción: <span className="break-word">{appointment.description}</span>
     </h3>
-    <div className="space-y-1 text-sm text-gray-500">
-      <p>Fecha: {formatInTimeZone(parseISO(appointment.availableDate.date), 'America/Costa_Rica', 'yyyy-MM-dd')}</p>
+ 
+      {/* <p>Fecha: {formatInTimeZone(parseISO(appointment.availableDate.date), 'America/Costa_Rica', 'yyyy-MM-dd')}</p> */}
+      <p>Fecha: {appointment.availableDate?.date ? formatToDDMMYYYY(appointment.availableDate.date) : 'No disponible'}</p>
+
       <p>Hora: {appointment?.horaCita?.hora ? formatTo12Hour(appointment.horaCita.hora) : "No disponible"}</p>
       <p className="flex items-center gap-1 mt-4">
         Estado:
@@ -429,7 +438,7 @@ const CitasList = () => {
           {appointment.status}
         </span>
       </p>
-    </div>
+   
   </div>
 
   {/* Botón eliminar al final */}
