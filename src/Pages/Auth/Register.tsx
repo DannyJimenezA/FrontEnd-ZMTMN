@@ -4,7 +4,6 @@ import {
   EnvelopeIcon,
   IdentificationIcon,
   UserIcon,
-  PhoneIcon,
   LockClosedIcon,
   EyeIcon,
   EyeSlashIcon,
@@ -145,134 +144,134 @@ export default function Register() {
     </div>
   );
 
- return (
-  <div className="min-h-screen w-full bg-gray-50">
-    <div className="h-full w-full px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-4xl mx-auto">
-        <div className="bg-white shadow-xl rounded-lg p-8">
-          <h2 className="text-3xl font-extrabold text-gray-900 mb-8 text-center">
-            Registro de Usuario
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-            <div className="grid gap-6 md:grid-cols-2">
-              {renderInput('nombre', 'Nombre', 'text', <UserIcon className="h-5 w-5 text-gray-400" />, false, undefined, undefined, 30)}
-              {renderInput('apellido1', 'Primer apellido', 'text', <UserIcon className="h-5 w-5 text-gray-400" />, false, undefined, undefined, 30)}
-              {renderInput('apellido2', 'Segundo apellido', 'text', <UserIcon className="h-5 w-5 text-gray-400" />, false, undefined, undefined, 30)}
+  return (
+    <div className="min-h-screen w-full bg-gray-50">
+      <div className="h-full w-full px-4 py-12 sm:px-6 lg:px-8">
+        <div className="w-full max-w-4xl mx-auto">
+          <div className="bg-white shadow-xl rounded-lg p-8">
+            <h2 className="text-3xl font-extrabold text-gray-900 mb-8 text-center">
+              Registro de Usuario
+            </h2>
+            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+              <div className="grid gap-6 md:grid-cols-2">
+                {renderInput('nombre', 'Nombre', 'text', <UserIcon className="h-5 w-5 text-gray-400" />, false, undefined, undefined, 30)}
+                {renderInput('apellido1', 'Primer apellido', 'text', <UserIcon className="h-5 w-5 text-gray-400" />, false, undefined, undefined, 30)}
+                {renderInput('apellido2', 'Segundo apellido', 'text', <UserIcon className="h-5 w-5 text-gray-400" />, false, undefined, undefined, 30)}
+                  
+                                  {renderInput('email', 'Correo electrónico', 'email', <EnvelopeIcon className="h-5 w-5 text-gray-400" />, false)}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Identificación</label>
-                <select
-                  value={tipoIdentificacion}
-                  onChange={(e) => setTipoIdentificacion(e.target.value as any)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 sm:text-sm"
-                >
-                  <option value="nacional">Cédula Nacional</option>
-                  <option value="residente">DIMEX (Residente)</option>
-                  <option value="extranjero">Pasaporte (Extranjero)</option>
-                </select>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Identificación</label>
+                  <select
+                    value={tipoIdentificacion}
+                    onChange={(e) => setTipoIdentificacion(e.target.value as any)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 sm:text-sm"
+                  >
+                    <option value="nacional">Cédula Nacional</option>
+                    <option value="residente">DIMEX (Residente)</option>
+                    <option value="extranjero">Pasaporte (Extranjero)</option>
+                  </select>
+                </div>
+
+                {renderInput(
+                  'cedula',
+                  tipoIdentificacion === 'nacional'
+                    ? 'Cédula Nacional'
+                    : tipoIdentificacion === 'residente'
+                      ? 'DIMEX'
+                      : 'Pasaporte',
+                  'text',
+                  <IdentificationIcon className="h-5 w-5 text-gray-400" />,
+                  false,
+                  undefined,
+                  undefined,
+                  tipoIdentificacion === 'extranjero' ? 20 : 12
+                )}
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Teléfono</label>
+                  <select
+                    value={tipoTelefono}
+                    onChange={(e) => setTipoTelefono(e.target.value as 'nacional' | 'extranjero')}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 sm:text-sm"
+                  >
+                    <option value="nacional">Nacional</option>
+                    <option value="extranjero">Extranjero</option>
+                  </select>
+                </div>
+
+
+                {tipoTelefono === 'extranjero' ? (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Teléfono Extranjero</label>
+                    <div className="flex gap-2 items-center">
+                      <span className="inline-flex items-center px-3 border border-r-0 border-gray-300 bg-gray-100 text-gray-500 text-sm rounded-l-md">+</span>
+                      <input
+                        type="text"
+                        name="telefonoPrefijo"
+                        value={formData.telefonoPrefijo}
+                        onChange={handleChange}
+                        className="w-20 px-3 py-2 border border-gray-300 rounded-md text-gray-900 sm:text-sm"
+                        maxLength={3}
+                        placeholder="Pref"
+                        required
+                      />
+                      <input
+                        type="tel"
+                        name="telefono"
+                        value={formData.telefono}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 sm:text-sm"
+                        maxLength={12}
+                        required
+                      />
+                    </div>
+                    {(fieldErrors.telefonoPrefijo || fieldErrors.telefono) && (
+                      <p className="mt-1 text-sm text-red-500">{fieldErrors.telefonoPrefijo || fieldErrors.telefono}</p>
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Teléfono</label>
+                    <div className="flex">
+                      <span className="inline-flex items-center px-3 border border-r-0 border-gray-300 bg-gray-100 text-gray-500 text-sm rounded-l-md">+506</span>
+                      <input
+                        type="tel"
+                        name="telefono"
+                        value={formData.telefono}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-r-md text-gray-900 sm:text-sm"
+                        maxLength={8}
+                        required
+                      />
+                    </div>
+                    {fieldErrors.telefono && (
+                      <p className="mt-1 text-sm text-red-500">{fieldErrors.telefono}</p>
+                    )}
+                  </div>
+                )}
+
+                {renderInput('password', 'Contraseña', 'password', <LockClosedIcon className="h-5 w-5 text-gray-400" />, true, showPassword, setShowPassword)}
+                {renderInput('confirmPassword', 'Confirmar Contraseña', 'password', <LockClosedIcon className="h-5 w-5 text-gray-400" />, true, showConfirmPassword, setShowConfirmPassword)}
               </div>
 
-              {renderInput(
-                'cedula',
-                tipoIdentificacion === 'nacional'
-                  ? 'Cédula Nacional'
-                  : tipoIdentificacion === 'residente'
-                    ? 'DIMEX'
-                    : 'Pasaporte',
-                'text',
-                <IdentificationIcon className="h-5 w-5 text-gray-400" />,
-                false,
-                undefined,
-                undefined,
-                tipoIdentificacion === 'extranjero' ? 20 : 12
-              )}
+              <div>
+                <button type="submit" disabled={isSubmitting} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg">
+                  Registrarse
+                </button>
+                <button type="button" onClick={() => navigate('/login')} disabled={isSubmitting} className="w-full mt-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-3 rounded-lg">
+                  Volver
+                </button>
+              </div>
 
-              {renderInput('email', 'Correo electrónico', 'email', <EnvelopeIcon className="h-5 w-5 text-gray-400" />, false)}
-
-             <div>
-  <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Teléfono</label>
-  <select
-    value={tipoTelefono}
-    onChange={(e) => setTipoTelefono(e.target.value as 'nacional' | 'extranjero')}
-    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 sm:text-sm"
-  >
-    <option value="nacional">Nacional</option>
-    <option value="extranjero">Extranjero</option>
-  </select>
-</div>
-
-
-              {tipoTelefono === 'extranjero' ? (
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-2">Teléfono Extranjero</label>
-    <div className="flex gap-2 items-center">
-      <span className="inline-flex items-center px-3 border border-r-0 border-gray-300 bg-gray-100 text-gray-500 text-sm rounded-l-md">+</span>
-      <input
-        type="text"
-        name="telefonoPrefijo"
-        value={formData.telefonoPrefijo}
-        onChange={handleChange}
-        className="w-20 px-3 py-2 border border-gray-300 rounded-md text-gray-900 sm:text-sm"
-        maxLength={3}
-        placeholder="Pref"
-        required
-      />
-      <input
-        type="tel"
-        name="telefono"
-        value={formData.telefono}
-        onChange={handleChange}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 sm:text-sm"
-        maxLength={12}
-        required
-      />
-    </div>
-    {(fieldErrors.telefonoPrefijo || fieldErrors.telefono) && (
-      <p className="mt-1 text-sm text-red-500">{fieldErrors.telefonoPrefijo || fieldErrors.telefono}</p>
-    )}
-  </div>
-) : (
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-2">Teléfono</label>
-    <div className="flex">
-      <span className="inline-flex items-center px-3 border border-r-0 border-gray-300 bg-gray-100 text-gray-500 text-sm rounded-l-md">+506</span>
-      <input
-        type="tel"
-        name="telefono"
-        value={formData.telefono}
-        onChange={handleChange}
-        className="w-full px-3 py-2 border border-gray-300 rounded-r-md text-gray-900 sm:text-sm"
-        maxLength={8}
-        required
-      />
-    </div>
-    {fieldErrors.telefono && (
-      <p className="mt-1 text-sm text-red-500">{fieldErrors.telefono}</p>
-    )}
-  </div>
-              )} 
-
-              {renderInput('password', 'Contraseña', 'password', <LockClosedIcon className="h-5 w-5 text-gray-400" />, true, showPassword, setShowPassword)}
-              {renderInput('confirmPassword', 'Confirmar Contraseña', 'password', <LockClosedIcon className="h-5 w-5 text-gray-400" />, true, showConfirmPassword, setShowConfirmPassword)}
-            </div>
-
-            <div>
-              <button type="submit" disabled={isSubmitting} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg">
-                Registrarse
-              </button>
-              <button type="button" onClick={() => navigate('/login')} disabled={isSubmitting} className="w-full mt-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-3 rounded-lg">
-                Volver
-              </button>
-            </div>
-
-            <div className="text-center text-sm mt-4">
-              <span className="text-gray-600">¿Ya tienes una cuenta?</span>{' '}
-              <a href="/login" className="text-blue-600 hover:text-blue-500 font-medium">Inicia sesión aquí</a>
-            </div>
-          </form>
+              <div className="text-center text-sm mt-4">
+                <span className="text-gray-600">¿Ya tienes una cuenta?</span>{' '}
+                <a href="/login" className="text-blue-600 hover:text-blue-500 font-medium">Inicia sesión aquí</a>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
-  </div>
- );
+  );
 }
