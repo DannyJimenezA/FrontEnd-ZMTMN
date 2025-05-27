@@ -240,12 +240,11 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
               </button>
               {isMobileDropdownOpen && (
                 <div className="pl-4">
-                  <Link to="/mis-concesiones" className="block py-2 text-gray-600 hover:text-blue-600">Concesiones</Link>
-                  <Link to="/mis-prorrogas" className="block py-2 text-gray-600 hover:text-blue-600">Prorrogas</Link>
-                  <Link to="/mis-precarios" className="block py-2 text-gray-600 hover:text-blue-600">Uso Precario</Link>
-                  <Link to="/mis-planos" className="block py-2 text-gray-600 hover:text-blue-600">Revisión de Planos</Link>
-                  <Link to="/mis-expedientes" className="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100">
-                    Copia de Expediente
+                  <Link to="/mis-concesiones" className="block px-4 py-2 text-gray-600 hover:text-blue-600">Concesiones</Link>
+                  <Link to="/mis-prorrogas" className="block px-4 py-2 text-gray-600 hover:text-blue-600">Prórrogas</Link>
+                  <Link to="/mis-precarios" className="block px-4 py-2 text-gray-600 hover:text-blue-600">Uso Precario</Link>
+                  <Link to="/mis-planos" className="block px-4 py-2 text-gray-600 hover:text-blue-600">Revisión de Planos</Link>
+                  <Link to="/mis-expedientes" className="block px-4 py-2 text-gray-600 hover:text-blue-600 ">Copia de Expediente
                   </Link>
                 </div>
               )}

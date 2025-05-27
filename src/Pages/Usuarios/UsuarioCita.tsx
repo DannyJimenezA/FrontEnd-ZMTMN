@@ -23,6 +23,20 @@ interface AvailableDate {
   }[];
 }
 
+const formatTo12Hour = (time24: string): string => {
+  if (!time24) return 'Hora inválida';
+  const parts = time24.split(':');
+  if (parts.length < 2) return time24;
+
+  const hour = parseInt(parts[0], 10);
+  const minute = parts[1]?.padStart(2, '0') || '00';
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const formattedHour = hour % 12 || 12;
+
+  return `${formattedHour}:${minute} ${ampm}`;
+};
+
+
 export default function UsuarioCita() {
   const [date, setDate] = useState<Date | null>(null);
   const [time, setTime] = useState('');
@@ -91,163 +105,319 @@ export default function UsuarioCita() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
 
-    const camposFaltantes: string[] = [];
-    if (!date) camposFaltantes.push('Fecha');
-    if (!time) camposFaltantes.push('Hora');
-    if (!description.trim()) camposFaltantes.push('Motivo de la cita');
+  //   const camposFaltantes: string[] = [];
+  //   if (!date) camposFaltantes.push('Fecha');
+  //   if (!time) camposFaltantes.push('Hora');
+  //   if (!description.trim()) camposFaltantes.push('Motivo de la cita');
 
-    if (camposFaltantes.length > 0) {
-      await MySwal.fire({
-        icon: 'warning',
-        title: 'Campos requeridos faltantes',
-        html: `<ul style="text-align: left;">${camposFaltantes.map(c => `<li>• ${c}</li>`).join('')}</ul>`,
-        confirmButtonText: 'Entendido',
-      });
-      return;
-    }
+  //   if (camposFaltantes.length > 0) {
+  //     await MySwal.fire({
+  //       icon: 'warning',
+  //       title: 'Campos requeridos faltantes',
+  //       html: `<ul style="text-align: left;">${camposFaltantes.map(c => `<li>• ${c}</li>`).join('')}</ul>`,
+  //       confirmButtonText: 'Entendido',
+  //     });
+  //     return;
+  //   }
 
-    const confirmacion = await MySwal.fire({
-      title: '¿Está seguro de agendar una cita?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Aceptar',
-      cancelButtonText: 'Cancelar',
-      customClass: {
-        confirmButton: 'btn-azul',
-        cancelButton: 'btn-rojo',
-        actions: 'botones-horizontales',
-      },
-      buttonsStyling: false,
-    });
+  //   const confirmacion = await MySwal.fire({
+  //     title: '¿Está seguro de agendar una cita?',
+  //     icon: 'question',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Aceptar',
+  //     cancelButtonText: 'Cancelar',
+  //     customClass: {
+  //       confirmButton: 'btn-azul',
+  //       cancelButton: 'btn-rojo',
+  //       actions: 'botones-horizontales',
+  //     },
+  //     buttonsStyling: false,
+  //   });
 
-    if (!confirmacion.isConfirmed) {
-      return;
-    }
+  //   if (!confirmacion.isConfirmed) {
+  //     return;
+  //   }
 
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
+  //   const token = localStorage.getItem('token');
+  //   if (!token) {
+  //     navigate('/login');
+  //     return;
+  //   }
 
-    const formattedDate = date!.toISOString().split('T')[0];
+  //   const formattedDate = date!.toISOString().split('T')[0];
 
-    try {
-      const userAppointments = await axios.get(ApiRoutes.citas.miscitas, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  //   try {
+  //     const userAppointments = await axios.get(ApiRoutes.citas.miscitas, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
 
-      // const yaTieneCita = userAppointments.data.some(
-      //   (cita: any) => cita.availableDate.date === formattedDate
-      // );
-      const yaTieneCita = userAppointments.data.some(
-  (cita: any) =>
-    cita.availableDate.date === formattedDate &&
-    ['Pendiente', 'Aprobada'].includes(cita.status)
-);
-
-
-      if (yaTieneCita) {
-        await MySwal.fire({
-          icon: 'warning',
-          title: 'Ya tienes una cita programada para esta fecha.',
-          confirmButtonText: 'Aceptar',
-        });
-        return;
-      }
-
-      const fechaSeleccionada = availableDates.find(d => d.date === formattedDate);
-      const horaSeleccionada = fechaSeleccionada?.horasCita.find(h => h.hora === time);
-
-      if (!fechaSeleccionada || !horaSeleccionada) {
-        await MySwal.fire('Error', 'Fecha u hora no válida.', 'error');
-        return;
-      }
-
-      const nuevaCita = {
-        description,
-        availableDateId: fechaSeleccionada.id,
-        horasCitaId: horaSeleccionada.id,
-      };
-
-      await axios.post(ApiRoutes.citas.crearcita, nuevaCita, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      await MySwal.fire({
-        icon: 'success',
-        title: '¡Cita agendada con éxito!',
-        text: 'La cita fue agendada correctamente.',
-        timer: 2000,
-        showConfirmButton: false,
-      });
-
-      setDate(null);
-      setTime('');
-      setDescription('');
-      navigate('/mis-citas');
+  //     // const yaTieneCita = userAppointments.data.some(
+  //     //   (cita: any) => cita.availableDate.date === formattedDate
+  //     // );
+  //     const yaTieneCita = userAppointments.data.some(
+  //       (cita: any) =>
+  //         cita.availableDate.date === formattedDate &&
+  //         ['Pendiente', 'Aprobada'].includes(cita.status)
+  //     );
 
 
-} catch (err: any) {
-  console.error('Error al agendar la cita:', err);
+  //     if (yaTieneCita) {
+  //       await MySwal.fire({
+  //         icon: 'warning',
+  //         title: 'Ya tienes una cita programada para esta fecha.',
+  //         confirmButtonText: 'Aceptar',
+  //       });
+  //       return;
+  //     }
 
-  let mensajeFinal = 'Ocurrió un problema al agendar la cita. Intenta nuevamente.';
+  //     const fechaSeleccionada = availableDates.find(d => d.date === formattedDate);
+  //     const horaSeleccionada = fechaSeleccionada?.horasCita.find(h => h.hora === time);
 
-  // Revisa si hay respuesta del backend
-  const data = err?.response?.data;
+  //     if (!fechaSeleccionada || !horaSeleccionada) {
+  //       await MySwal.fire('Error', 'Fecha u hora no válida.', 'error');
+  //       return;
+  //     }
 
-  if (data) {
-    if (typeof data.message === 'string') {
-      mensajeFinal = data.message;
-    } else if (Array.isArray(data.message)) {
-      mensajeFinal = data.message.join('\n');
-    } else if (typeof data === 'string') {
-      mensajeFinal = data;
-    } else if (data.error) {
-      mensajeFinal = data.error;
-    }
-  } else if (err.message) {
-    mensajeFinal = err.message; // fallback para errores de red
-  }
+  //     const nuevaCita = {
+  //       description,
+  //       availableDateId: fechaSeleccionada.id,
+  //       horasCitaId: horaSeleccionada.id,
+  //     };
 
-  console.log('Respuesta del backend:', err?.response?.data);
+  //     await axios.post(ApiRoutes.citas.crearcita, nuevaCita, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
 
-  await MySwal.fire({
-    icon: 'error',
-    title: 'Error al agendar la cita',
-    text: mensajeFinal,
-    confirmButtonColor: '#dc2626',
-  });
-}
+  //     await MySwal.fire({
+  //       icon: 'success',
+  //       title: '¡Cita agendada con éxito!',
+  //       text: 'La cita fue agendada correctamente.',
+  //       timer: 2000,
+  //       showConfirmButton: false,
+  //     });
+
+  //     setDate(null);
+  //     setTime('');
+  //     setDescription('');
+  //     navigate('/mis-citas');
 
 
-  };
+  //   } catch (err: any) {
+  //     console.error('Error al agendar la cita:', err);
+
+  //     let mensajeFinal = 'Ocurrió un problema al agendar la cita. Intenta nuevamente.';
+
+  //     // Revisa si hay respuesta del backend
+  //     const data = err?.response?.data;
+
+  //     if (data) {
+  //       if (typeof data.message === 'string') {
+  //         mensajeFinal = data.message;
+  //       } else if (Array.isArray(data.message)) {
+  //         mensajeFinal = data.message.join('\n');
+  //       } else if (typeof data === 'string') {
+  //         mensajeFinal = data;
+  //       } else if (data.error) {
+  //         mensajeFinal = data.error;
+  //       }
+  //     } else if (err.message) {
+  //       mensajeFinal = err.message; // fallback para errores de red
+  //     }
+
+  //     console.log('Respuesta del backend:', err?.response?.data);
+
+  //     await MySwal.fire({
+  //       icon: 'error',
+  //       title: 'Error al agendar la cita',
+  //       text: mensajeFinal,
+  //       confirmButtonColor: '#dc2626',
+  //     });
+  //   }
+
+
+  // };
 
   // const filterAvailableDates = (date: Date) => {
   //   const formatted = date.toISOString().split('T')[0];
   //   return availableDates.some(d => d.date === formatted);
   // };
-  const filterAvailableDates = (date: Date) => {
-  const formatted = date.toISOString().split('T')[0];
+  //   const filterAvailableDates = (date: Date) => {
+  //   const formatted = date.toISOString().split('T')[0];
 
-  const available = availableDates.some(d => d.date === formatted);
-  if (!available) return false;
+  //   const available = availableDates.some(d => d.date === formatted);
+  //   if (!available) return false;
 
-  const now = new Date();
+  //   const now = new Date();
 
-  const appointmentDate = new Date(date);
-  appointmentDate.setHours(0, 0, 0, 0);
+  //   const appointmentDate = new Date(date);
+  //   appointmentDate.setHours(0, 0, 0, 0);
 
-  const dayBefore = new Date(appointmentDate);
-  dayBefore.setDate(dayBefore.getDate() - 1);
-  dayBefore.setHours(12, 0, 0, 0); // día anterior a las 12:00 PM
+  //   const dayBefore = new Date(appointmentDate);
+  //   dayBefore.setDate(dayBefore.getDate() - 1);
+  //   dayBefore.setHours(12, 0, 0, 0); // día anterior a las 12:00 PM
 
-  // Si ya pasó el corte → bloquear esta fecha
-  return now < dayBefore;
+  //   // Si ya pasó el corte → bloquear esta fecha
+  //   return now < dayBefore;
+  // };
+  
+  
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  const camposFaltantes: string[] = [];
+  if (!date) camposFaltantes.push('Fecha');
+  if (!time) camposFaltantes.push('Hora');
+  if (!description.trim()) camposFaltantes.push('Motivo de la cita');
+
+  if (camposFaltantes.length > 0) {
+    await MySwal.fire({
+      icon: 'warning',
+      title: 'Campos requeridos faltantes',
+      html: `<ul style="text-align: left;">${camposFaltantes.map(c => `<li>• ${c}</li>`).join('')}</ul>`,
+      confirmButtonText: 'Entendido',
+    });
+    return;
+  }
+
+  // ❗ Validación de palabras largas
+  const palabrasLargas = description.split(/\s+/).filter(p => p.length > 30);
+  if (palabrasLargas.length > 0) {
+    await MySwal.fire({
+      icon: 'warning',
+      title: 'Motivo inválido',
+      text: 'Por favor evita usar palabras con más de 30 caracteres seguidos.',
+      confirmButtonText: 'Entendido',
+    });
+    return;
+  }
+
+  const confirmacion = await MySwal.fire({
+    title: '¿Está seguro de agendar una cita?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Aceptar',
+    cancelButtonText: 'Cancelar',
+    customClass: {
+      confirmButton: 'btn-azul',
+      cancelButton: 'btn-rojo',
+      actions: 'botones-horizontales',
+    },
+    buttonsStyling: false,
+  });
+
+  if (!confirmacion.isConfirmed) return;
+
+  const token = localStorage.getItem('token');
+  if (!token) {
+    navigate('/login');
+    return;
+  }
+
+  const formattedDate = date!.toISOString().split('T')[0];
+
+  try {
+    const userAppointments = await axios.get(ApiRoutes.citas.miscitas, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const yaTieneCita = userAppointments.data.some(
+      (cita: any) =>
+        cita.availableDate.date === formattedDate &&
+        ['Pendiente', 'Aprobada'].includes(cita.status)
+    );
+
+    if (yaTieneCita) {
+      await MySwal.fire({
+        icon: 'warning',
+        title: 'Ya tienes una cita programada para esta fecha.',
+        confirmButtonText: 'Aceptar',
+      });
+      return;
+    }
+
+    const fechaSeleccionada = availableDates.find(d => d.date === formattedDate);
+    const horaSeleccionada = fechaSeleccionada?.horasCita.find(h => h.hora === time);
+
+    if (!fechaSeleccionada || !horaSeleccionada) {
+      await MySwal.fire('Error', 'Fecha u hora no válida.', 'error');
+      return;
+    }
+
+    const nuevaCita = {
+      description,
+      availableDateId: fechaSeleccionada.id,
+      horasCitaId: horaSeleccionada.id,
+    };
+
+    await axios.post(ApiRoutes.citas.crearcita, nuevaCita, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    await MySwal.fire({
+      icon: 'success',
+      title: '¡Cita agendada con éxito!',
+      text: 'La cita fue agendada correctamente.',
+      timer: 2000,
+      showConfirmButton: false,
+    });
+
+    setDate(null);
+    setTime('');
+    setDescription('');
+    navigate('/mis-citas');
+
+  } catch (err: any) {
+    console.error('Error al agendar la cita:', err);
+
+    let mensajeFinal = 'Ocurrió un problema al agendar la cita. Intenta nuevamente.';
+
+    const data = err?.response?.data;
+    if (data) {
+      if (typeof data.message === 'string') mensajeFinal = data.message;
+      else if (Array.isArray(data.message)) mensajeFinal = data.message.join('\n');
+      else if (typeof data === 'string') mensajeFinal = data;
+      else if (data.error) mensajeFinal = data.error;
+    } else if (err.message) {
+      mensajeFinal = err.message;
+    }
+
+    await MySwal.fire({
+      icon: 'error',
+      title: 'Error al agendar la cita',
+      text: mensajeFinal,
+      confirmButtonColor: '#dc2626',
+    });
+  }
 };
+
+  
+  const filterAvailableDates = (date: Date) => {
+    const formatted = date.toISOString().split('T')[0];
+
+    // Buscar si la fecha existe en la lista de disponibles
+    const fecha = availableDates.find(d => d.date === formatted);
+
+    if (!fecha) return false;
+
+    // Validar si tiene al menos una hora con disponibilidad
+    const tieneHorasDisponibles = fecha.horasCita.some(h => h.disponibilidad);
+    if (!tieneHorasDisponibles) return false;
+
+    // Validar el corte de día anterior a las 12:00 PM
+    const now = new Date();
+    const appointmentDate = new Date(date);
+    appointmentDate.setHours(0, 0, 0, 0);
+
+    const dayBefore = new Date(appointmentDate);
+    dayBefore.setDate(dayBefore.getDate() - 1);
+    dayBefore.setHours(12, 0, 0, 0);
+
+    return now < dayBefore;
+  };
+
 
 
   return (
@@ -292,7 +462,8 @@ export default function UsuarioCita() {
                 selected={date}
                 onChange={handleDateChange}
                 filterDate={filterAvailableDates}
-                dateFormat="yyyy-MM-dd"
+                // dateFormat="yyyy-MM-dd"
+                dateFormat="dd/MM/yyyy"
                 placeholderText="Selecciona una fecha"
                 minDate={new Date()}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -317,7 +488,8 @@ export default function UsuarioCita() {
                     <option disabled>No hay horas disponibles</option>
                   ) : (
                     availableHours.map(h => (
-                      <option key={h} value={h}>{h}</option>
+                      <option key={h} value={h}>{formatTo12Hour(h)}</option>
+
                     ))
                   )}
                 </select>

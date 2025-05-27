@@ -44,6 +44,13 @@ const PlanosList = () => {
   
 const MySwal = withReactContent(Swal);
 
+
+const formatToDDMMYYYY = (isoDate: string): string => {
+  const [year, month, day] = isoDate.split("-");
+  return `${day}/${month}/${year}`;
+};
+
+
   /** Carga los planos del usuario autenticado */
   useEffect(() => {
     const fetchPlanos = async () => {
@@ -188,10 +195,12 @@ const MySwal = withReactContent(Swal);
           ) : (
             planos.map((plano) => (
               <div key={plano.id} className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold break-all">Comentario: {plano.Comentario}</h3>
-                <p className="text-sm text-gray-500">Fecha: {plano.Date}</p>
-                <p className="text-sm text-gray-500">Número de plano: {plano.NumeroPlano}</p>
-                <p className="text-sm text-gray-500">Número de expediente: {plano.NumeroExpediente}</p>
+                <h3 className="text-lg font-semibold break-word">Comentario: {plano.Comentario}</h3>
+                {/* <p className="text-sm text-gray-500">Fecha: {plano.Date}</p> */}
+               <p>Fecha: {plano.Date ? formatToDDMMYYYY(plano.Date) : 'No disponible'}</p>
+
+                <p >Número de plano: {plano.NumeroPlano}</p>
+                <p >Número de expediente: {plano.NumeroExpediente}</p>
 
                 <div className="text-sm text-gray-500 mt-2">
                   <p>Archivos Adjuntos:</p>

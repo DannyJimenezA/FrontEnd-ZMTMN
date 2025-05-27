@@ -85,90 +85,191 @@ export default function UsuarioPlano() {
     URL.revokeObjectURL(fileToRemove.preview);
   };
 
-  const handleSend = async () => {
-    if (uploadedFiles.length === 0) {
-      MySwal.fire('Error', 'No has subido ningún archivo.', 'warning');
-      return;
-    }
+  // const handleSend = async () => {
+  //   if (uploadedFiles.length === 0) {
+  //     MySwal.fire('Error', 'No has subido ningún archivo.', 'warning');
+  //     return;
+  //   }
 
-    if (!comentario.trim()) {
-      MySwal.fire('Error', 'Debes ingresar un comentario.', 'warning');
-      return;
-    }
+  //   if (!comentario.trim()) {
+  //     MySwal.fire('Error', 'Debes ingresar un comentario.', 'warning');
+  //     return;
+  //   }
 
-    if (!numeroPlano.trim()) {
-      MySwal.fire('Error', 'Debes ingresar el número de plano.', 'warning');
-      return;
-    }
+  //   if (!numeroPlano.trim()) {
+  //     MySwal.fire('Error', 'Debes ingresar el número de plano.', 'warning');
+  //     return;
+  //   }
 
-    if (!numeroExpediente.trim()) {
-      MySwal.fire('Error', 'Debes ingresar el número de expediente.', 'warning');
-      return;
-    }
+  //   if (!numeroExpediente.trim()) {
+  //     MySwal.fire('Error', 'Debes ingresar el número de expediente.', 'warning');
+  //     return;
+  //   }
 
-    const confirmacion = await MySwal.fire({
-      title: '¿Está seguro de enviar esta solicitud?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Aceptar',
-      cancelButtonText: 'Cancelar',
-      customClass: {
-        confirmButton: 'btn-azul',
-        cancelButton: 'btn-rojo',
-        actions: 'botones-horizontales',
+  //   const confirmacion = await MySwal.fire({
+  //     title: '¿Está seguro de enviar esta solicitud?',
+  //     icon: 'question',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Aceptar',
+  //     cancelButtonText: 'Cancelar',
+  //     customClass: {
+  //       confirmButton: 'btn-azul',
+  //       cancelButton: 'btn-rojo',
+  //       actions: 'botones-horizontales',
+  //     },
+  //     buttonsStyling: false,
+  //   });
+
+  //   if (!confirmacion.isConfirmed) return;
+
+  //   const formData = new FormData();
+  //   uploadedFiles.forEach((file) => formData.append('files', file.file));
+  //   formData.append('Comentario', comentario.trim());
+  //   formData.append('NumeroPlano', numeroPlano.trim());
+  //   formData.append('NumeroExpediente', numeroExpediente.trim());
+
+  //   const token = localStorage.getItem('token');
+  //   const decodedToken = parseJwt(token);
+  //   const userId = decodedToken?.sub;
+
+  //   if (!userId) {
+  //     MySwal.fire('Error', 'No se pudo obtener el ID del usuario.', 'error');
+  //     return;
+  //   }
+
+  //   formData.append('userId', userId);
+
+  //   try {
+  //     const response = await fetch(ApiRoutes.planos, {
+  //       method: 'POST',
+  //       headers: { Authorization: `Bearer ${token}` },
+  //       body: formData,
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       throw new Error(errorData.message || 'Error al enviar los datos');
+  //     }
+
+  //     await MySwal.fire({
+  //       title: 'Solicitud de Revisión de Plano enviada con éxito',
+  //       text: '¡Tu solicitud se ha enviado exitosamente!',
+  //       icon: 'success',
+  //       timer: 2000,
+  //       showConfirmButton: false,
+  //     });
+
+  //     setUploadedFiles([]);
+  //     setComentario('');
+  //     setNumeroPlano('');
+  //     setNumeroExpediente('');
+  //     navigate('/mis-planos');
+  //   } catch (error) {
+  //     console.error('Error al enviar archivos:', error);
+  //     MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
+  //   }
+  // };
+
+const handleSend = async () => {
+  if (uploadedFiles.length === 0) {
+    await MySwal.fire('Error', 'No has subido ningún archivo.', 'warning');
+    return;
+  }
+
+  if (!comentario.trim()) {
+    await MySwal.fire('Error', 'Debes ingresar un comentario.', 'warning');
+    return;
+  }
+
+  if (!numeroPlano.trim()) {
+    await MySwal.fire('Error', 'Debes ingresar el número de plano.', 'warning');
+    return;
+  }
+
+  if (!numeroExpediente.trim()) {
+    await MySwal.fire('Error', 'Debes ingresar el número de expediente.', 'warning');
+    return;
+  }
+
+  // ❗ Validación de palabras largas en el comentario
+  const palabrasLargas = comentario.split(/\s+/).filter(p => p.length > 30);
+  if (palabrasLargas.length > 0) {
+    await MySwal.fire({
+      icon: 'warning',
+      title: 'Comentario inválido',
+      text: 'Evita usar palabras con más de 30 caracteres seguidos en el comentario.',
+      confirmButtonText: 'Entendido',
+    });
+    return;
+  }
+
+  const confirmacion = await MySwal.fire({
+    title: '¿Está seguro de enviar esta solicitud?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Aceptar',
+    cancelButtonText: 'Cancelar',
+    customClass: {
+      confirmButton: 'btn-azul',
+      cancelButton: 'btn-rojo',
+      actions: 'botones-horizontales',
+    },
+    buttonsStyling: false,
+  });
+
+  if (!confirmacion.isConfirmed) return;
+
+  const formData = new FormData();
+  uploadedFiles.forEach((file) => formData.append('files', file.file));
+  formData.append('Comentario', comentario.trim());
+  formData.append('NumeroPlano', numeroPlano.trim());
+  formData.append('NumeroExpediente', numeroExpediente.trim());
+
+  const token = localStorage.getItem('token');
+  const decodedToken = parseJwt(token);
+  const userId = decodedToken?.sub;
+
+  if (!userId) {
+    await MySwal.fire('Error', 'No se pudo obtener el ID del usuario.', 'error');
+    return;
+  }
+
+  formData.append('userId', userId);
+
+  try {
+    const response = await fetch(ApiRoutes.planos, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-      buttonsStyling: false,
+      body: formData,
     });
 
-    if (!confirmacion.isConfirmed) return;
-
-    const formData = new FormData();
-    uploadedFiles.forEach((file) => formData.append('files', file.file));
-    formData.append('Comentario', comentario.trim());
-    formData.append('NumeroPlano', numeroPlano.trim());
-    formData.append('NumeroExpediente', numeroExpediente.trim());
-
-    const token = localStorage.getItem('token');
-    const decodedToken = parseJwt(token);
-    const userId = decodedToken?.sub;
-
-    if (!userId) {
-      MySwal.fire('Error', 'No se pudo obtener el ID del usuario.', 'error');
-      return;
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error al enviar los datos');
     }
 
-    formData.append('userId', userId);
+    await MySwal.fire({
+      title: 'Solicitud de Revisión de Plano enviada con éxito',
+      text: '¡Tu solicitud se ha enviado exitosamente!',
+      icon: 'success',
+      timer: 2000,
+      showConfirmButton: false,
+    });
 
-    try {
-      const response = await fetch(ApiRoutes.planos, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
+    setUploadedFiles([]);
+    setComentario('');
+    setNumeroPlano('');
+    setNumeroExpediente('');
+    navigate('/mis-planos');
+  } catch (error) {
+    console.error('Error al enviar archivos:', error);
+    await MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
+  }
+};
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al enviar los datos');
-      }
 
-      await MySwal.fire({
-        title: 'Solicitud de Revisión de Plano enviada con éxito',
-        text: '¡Tu solicitud se ha enviado exitosamente!',
-        icon: 'success',
-        timer: 2000,
-        showConfirmButton: false,
-      });
-
-      setUploadedFiles([]);
-      setComentario('');
-      setNumeroPlano('');
-      setNumeroExpediente('');
-      navigate('/mis-planos');
-    } catch (error) {
-      console.error('Error al enviar archivos:', error);
-      MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
-    }
-  };
 
   const parseJwt = (token: string | null) => {
     if (!token) return null;
@@ -215,7 +316,7 @@ export default function UsuarioPlano() {
         <label htmlFor="numeroPlano" className="block text-lg font-medium text-gray-700 mb-2">Número de Plano</label>
         <input
           id="numeroPlano"
-          maxLength={30}
+          maxLength={20}
           value={numeroPlano}
           onChange={(e) => setNumeroPlano(e.target.value)}
           className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -227,7 +328,7 @@ export default function UsuarioPlano() {
         <label htmlFor="numeroExpediente" className="block text-lg font-medium text-gray-700 mb-2">Número de Expediente</label>
         <input
           id="numeroExpediente"
-          maxLength={30}
+          maxLength={20}
           value={numeroExpediente}
           onChange={(e) => setNumeroExpediente(e.target.value)}
           className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"

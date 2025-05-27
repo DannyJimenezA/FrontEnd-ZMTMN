@@ -84,93 +84,107 @@ export default function UsuarioProrroga() {
     URL.revokeObjectURL(fileToRemove.preview);
   };
 
-  // const handleSend = async () => {
-  //   if (uploadedFiles.length === 0) {
-  //     MySwal.fire('Error', 'No has subido ningún archivo.', 'warning');
-  //     return;
-  //   }
 
-  //   if (!fileDescription.trim()) {
-  //     MySwal.fire('Error', 'Debes ingresar una descripción de los archivos.', 'warning');
-  //     return;
-  //   }
+// const handleSend = async () => {
+//   if (uploadedFiles.length === 0) {
+//     MySwal.fire('Error', 'No has subido ningún archivo.', 'warning');
+//     return;
+//   }
 
-  //   const confirmacion = await MySwal.fire({
-  //     title: '¿Está seguro de enviar esta solicitud?',
-  //     icon: 'question',
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Aceptar',
-  //     cancelButtonText: 'Cancelar',
-  //     customClass: {
-  //       confirmButton: 'btn-azul',
-  //       cancelButton: 'btn-rojo',
-  //       actions: 'botones-horizontales',
-  //     },
-  //     buttonsStyling: false,
-  //   });
+//   if (!fileDescription.trim()) {
+//     MySwal.fire('Error', 'Debes ingresar una descripción de los archivos.', 'warning');
+//     return;
+//   }
 
-  //   if (!confirmacion.isConfirmed) return;
+//   const confirmacion = await MySwal.fire({
+//     title: '¿Está seguro de enviar esta solicitud?',
+//     icon: 'question',
+//     showCancelButton: true,
+//     confirmButtonText: 'Aceptar',
+//     cancelButtonText: 'Cancelar',
+//     customClass: {
+//       confirmButton: 'btn-azul',
+//       cancelButton: 'btn-rojo',
+//       actions: 'botones-horizontales',
+//     },
+//     buttonsStyling: false,
+//   });
 
-  //   const formData = new FormData();
-  //   uploadedFiles.forEach((file) => {
-  //     formData.append('files', file.file);
-  //   });
-  //   formData.append('detalle', fileDescription.trim());
+//   if (!confirmacion.isConfirmed) return;
 
-  //   const token = localStorage.getItem('token');
-  //   if (!token) {
-  //     MySwal.fire('Error', 'No se encontró una sesión activa.', 'error');
-  //     return;
-  //   }
+//   const token = localStorage.getItem('token');
+//   if (!token) {
+//     MySwal.fire('Error', 'No se encontró una sesión activa.', 'error');
+//     return;
+//   }
 
-  //   const decodedToken = parseJwt(token);
-  //   const userId = decodedToken?.sub;
-  //   if (!userId) {
-  //     MySwal.fire('Error', 'No se pudo obtener el ID del usuario.', 'error');
-  //     return;
-  //   }
+//   const decodedToken = parseJwt(token);
+//   const userId = decodedToken?.sub;
+//   if (!userId) {
+//     MySwal.fire('Error', 'No se pudo obtener el ID del usuario.', 'error');
+//     return;
+//   }
 
-  //   formData.append('userId', userId);
+//   const formData = new FormData();
+//   uploadedFiles.forEach((file) => {
+//     formData.append('files', file.file); // 🔁 se llama 'files' como espera el backend
+//   });
+//   formData.append('detalle', fileDescription.trim());
+//   formData.append('userId', userId);
 
-  //   try {
-  //     const response = await fetch(ApiRoutes.prorrogas, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Authorization': `Bearer ${token}`,
-  //       },
-  //       body: formData,
-  //     });
+//   try {
+//     const response = await fetch(ApiRoutes.prorrogas, {
+//       method: 'POST',
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//       body: formData,
+//     });
 
-  //     if (!response.ok) {
-  //       const errorResponse = await response.json();
-  //       throw new Error(errorResponse.message || 'Error al enviar los datos al servidor');
-  //     }
+//     if (!response.ok) {
+//       const errorResponse = await response.json();
+//       throw new Error(errorResponse.message || 'Error al enviar los datos al servidor');
+//     }
 
-  //     await MySwal.fire({
-  //       title: 'Solicitud de Prórroga enviada con éxito',
-  //       text: '¡Tu solicitud de prórroga se ha enviado exitosamente!',
-  //       icon: 'success',
-  //       timer: 2000,
-  //       showConfirmButton: false,
-  //     });
+//     await MySwal.fire({
+//       title: 'Solicitud de Prórroga enviada con éxito',
+//       text: '¡Tu solicitud se ha enviado exitosamente!',
+//       icon: 'success',
+//       timer: 2000,
+//       showConfirmButton: false,
+//     });
 
-  //     setUploadedFiles([]);
-  //     setFileDescription('');
-  //     navigate('/mis-prorrogas');
-  //   } catch (error) {
-  //     console.error('Error al enviar archivos:', error);
-  //     MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
-  //   }
-  // };
+//     setUploadedFiles([]);
+//     setFileDescription('');
+//     navigate('/mis-prorrogas');
+//   } catch (error) {
+//     console.error('Error al enviar archivos:', error);
+//     MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
+//   }
+// };
+
+
 
 const handleSend = async () => {
   if (uploadedFiles.length === 0) {
-    MySwal.fire('Error', 'No has subido ningún archivo.', 'warning');
+    await MySwal.fire('Error', 'No has subido ningún archivo.', 'warning');
     return;
   }
 
   if (!fileDescription.trim()) {
-    MySwal.fire('Error', 'Debes ingresar una descripción de los archivos.', 'warning');
+    await MySwal.fire('Error', 'Debes ingresar una descripción de los archivos.', 'warning');
+    return;
+  }
+
+  // ❗ Validación de palabras largas
+  const palabrasLargas = fileDescription.split(/\s+/).filter(p => p.length > 30);
+  if (palabrasLargas.length > 0) {
+    await MySwal.fire({
+      icon: 'warning',
+      title: 'Descripción inválida',
+      text: 'Por favor evita usar palabras con más de 30 caracteres seguidos en la descripción.',
+      confirmButtonText: 'Entendido',
+    });
     return;
   }
 
@@ -192,20 +206,20 @@ const handleSend = async () => {
 
   const token = localStorage.getItem('token');
   if (!token) {
-    MySwal.fire('Error', 'No se encontró una sesión activa.', 'error');
+    await MySwal.fire('Error', 'No se encontró una sesión activa.', 'error');
     return;
   }
 
   const decodedToken = parseJwt(token);
   const userId = decodedToken?.sub;
   if (!userId) {
-    MySwal.fire('Error', 'No se pudo obtener el ID del usuario.', 'error');
+    await MySwal.fire('Error', 'No se pudo obtener el ID del usuario.', 'error');
     return;
   }
 
   const formData = new FormData();
-  uploadedFiles.forEach((file) => {
-    formData.append('files', file.file); // 🔁 se llama 'files' como espera el backend
+  uploadedFiles.forEach(({ file }) => {
+    formData.append('files', file);
   });
   formData.append('detalle', fileDescription.trim());
   formData.append('userId', userId);
@@ -226,7 +240,7 @@ const handleSend = async () => {
 
     await MySwal.fire({
       title: 'Solicitud de Prórroga enviada con éxito',
-      text: '¡Tu solicitud se ha enviado exitosamente!',
+      text: '¡Tu solicitud de prórroga se ha enviado exitosamente!',
       icon: 'success',
       timer: 2000,
       showConfirmButton: false,
@@ -237,7 +251,7 @@ const handleSend = async () => {
     navigate('/mis-prorrogas');
   } catch (error) {
     console.error('Error al enviar archivos:', error);
-    MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
+    await MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
   }
 };
 

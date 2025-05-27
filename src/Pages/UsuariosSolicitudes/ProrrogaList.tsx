@@ -36,6 +36,12 @@ const ProrrogasList = () => {
   const navigate = useNavigate();
   const MySwal = withReactContent(Swal);
 
+  const formatToDDMMYYYY = (isoDate: string): string => {
+    const [year, month, day] = isoDate.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
+
   /** Carga las prórrogas del usuario autenticado */
   useEffect(() => {
     const fetchProrrogas = async () => {
@@ -80,22 +86,22 @@ const ProrrogasList = () => {
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar',
     });
-  
+
     if (!result.isConfirmed) return;
-  
+
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         navigate('/login');
         return;
       }
-  
+
       await axios.delete(`${ApiRoutes.eliminarprorroga}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       setProrrogas((prev) => prev.filter((prorroga) => prorroga.id !== id));
-  
+
       await MySwal.fire({
         icon: 'success',
         title: 'Eliminado',
@@ -108,7 +114,7 @@ const ProrrogasList = () => {
       console.error('Error eliminando prórroga:', error);
     }
   };
-  
+
 
   const handleCreateProrroga = () => {
     navigate('/usuario-prorroga');
@@ -159,25 +165,27 @@ const ProrrogasList = () => {
           ) : (
             prorrogas.map((prorroga) => (
               <div key={prorroga.id} className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold break-all">Detalle: {prorroga.Detalle || "Sin descripción"}</h3>
-                <p className="text-sm text-gray-500">Fecha: {prorroga.Date}</p>
+                <h3 className="text-lg font-semibold break-word">Detalle: {prorroga.Detalle || "Sin descripción"}</h3>
+                {/* <p className="text-sm text-gray-500">Fecha: {prorroga.Date}</p> */}
+<p>Fecha: {prorroga.Date ? formatToDDMMYYYY(prorroga.Date) : 'No disponible'}</p>
+
 
                 <div className="text-sm text-gray-500 mt-2">
                   <p>Archivos Adjuntos:</p>
-<div className="flex flex-col gap-2 mt-2">
-    {prorroga.ArchivoAdjunto.map((archivo, index) => (
-      <button
-        key={index}
-        onClick={() => handlePreviewPdf(archivo.ruta)}
-        className="flex items-center gap-2 bg-gray-200 px-3 py-2 rounded-md hover:bg-gray-300 transition"
-      >
-        <FaFilePdf className="text-red-500 h-6 w-6" />
-        <span className="text-blue-600 hover:underline">
-          {archivo.nombre || `Archivo ${index + 1}`}
-        </span>
-      </button>
-    ))}
-  </div>
+                  <div className="flex flex-col gap-2 mt-2">
+                    {prorroga.ArchivoAdjunto.map((archivo, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handlePreviewPdf(archivo.ruta)}
+                        className="flex items-center gap-2 bg-gray-200 px-3 py-2 rounded-md hover:bg-gray-300 transition"
+                      >
+                        <FaFilePdf className="text-red-500 h-6 w-6" />
+                        <span className="text-blue-600 hover:underline">
+                          {archivo.nombre || `Archivo ${index + 1}`}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <p className="flex items-center gap-1 mt-4">
@@ -204,7 +212,7 @@ const ProrrogasList = () => {
                     className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center"
                   >
                     <TrashIcon className="h-5 w-5 mr-2" />
-                    Eliminar 
+                    Eliminar
                   </button>
                 )}
               </div>
