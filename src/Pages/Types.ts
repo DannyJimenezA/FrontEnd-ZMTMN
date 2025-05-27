@@ -163,7 +163,7 @@ export interface DecodedToken {
     apellido1: string;
     apellido2: string;
     email: string;
-    cedila: string;
+    cedula: string;
     telefono: number;
     password: string;
     isActive: boolean;
