@@ -37,92 +37,210 @@ export default function UsuarioExpediente() {
     }
   }, [navigate]);
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  // const handleSubmit = async (event: React.FormEvent) => {
+  //   event.preventDefault();
 
-    if (!numeroExpediente.trim()) {
-      MySwal.fire('Campo requerido', 'Debes ingresar el número o nombre del expediente.', 'warning');
-      return;
-    }
+  //   if (!numeroExpediente.trim()) {
+  //     MySwal.fire('Campo requerido', 'Debes ingresar el número o nombre del expediente.', 'warning');
+  //     return;
+  //   }
 
-    if (!copiaCertificada) {
-      MySwal.fire('Campo requerido', 'Debes indicar si deseas copia certificada.', 'warning');
-      return;
-    }
+  //   if (!copiaCertificada) {
+  //     MySwal.fire('Campo requerido', 'Debes indicar si deseas copia certificada.', 'warning');
+  //     return;
+  //   }
 
-    if (!medioNotificacion) {
-      MySwal.fire('Campo requerido', 'Debes seleccionar un medio de notificación.', 'warning');
-      return;
-    }
+  //   if (!medioNotificacion) {
+  //     MySwal.fire('Campo requerido', 'Debes seleccionar un medio de notificación.', 'warning');
+  //     return;
+  //   }
 
-    const confirmacion = await MySwal.fire({
-      title: '¿Está seguro de enviar esta solicitud?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Aceptar',
-      cancelButtonText: 'Cancelar',
-      customClass: {
-        confirmButton: 'btn-azul',
-        cancelButton: 'btn-rojo',
-        actions: 'botones-horizontales',
+  //   const confirmacion = await MySwal.fire({
+  //     title: '¿Está seguro de enviar esta solicitud?',
+  //     icon: 'question',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Aceptar',
+  //     cancelButtonText: 'Cancelar',
+  //     customClass: {
+  //       confirmButton: 'btn-azul',
+  //       cancelButton: 'btn-rojo',
+  //       actions: 'botones-horizontales',
+  //     },
+  //     buttonsStyling: false,
+  //   });
+
+  //   if (!confirmacion.isConfirmed) return;
+
+  //   const token = localStorage.getItem('token');
+  //   const decodedToken = parseJwt(token);
+  //   const userId = decodedToken?.sub;
+
+  //   if (!userId) {
+  //     console.error('No se pudo extraer el userId del token');
+  //     return;
+  //   }
+
+  //   const solicitud = {
+  //     userId,
+  //     telefonoSolicitante,
+  //     emailSolicitante,
+  //     numeroExpediente,
+  //     copiaCertificada,
+  //     medioNotificacion,
+  //   };
+
+  //   try {
+  //     const response = await fetch(`${ApiRoutes.expedientes}/solicitud`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: JSON.stringify(solicitud),
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       throw new Error(errorData.message || 'Error al enviar los datos al servidor');
+  //     }
+
+  //     await MySwal.fire({
+  //       title: 'Solicitud de Expediente enviada con éxito',
+  //       text: '¡Tu solicitud se ha enviado exitosamente!',
+  //       icon: 'success',
+  //       timer: 2000,
+  //       showConfirmButton: false,
+  //     });
+
+  //     setTelefonoSolicitante('');
+  //     setEmailSolicitante('');
+  //     setNumeroExpediente('');
+  //     setCopiaCertificada(null);
+  //     setMedioNotificacion('');
+  //     navigate('/mis-expedientes');
+  //   } catch (error) {
+  //     console.error('Error al enviar la solicitud:', error);
+  //     MySwal.fire('Error', 'Hubo un problema al enviar la solicitud. Inténtalo de nuevo.', 'error');
+  //   }
+  // };
+
+const handleSubmit = async (event: React.FormEvent) => {
+  event.preventDefault();
+
+  if (!numeroExpediente.trim()) {
+    await MySwal.fire('Campo requerido', 'Debes ingresar el número o nombre del expediente.', 'warning');
+    return;
+  }
+
+  if (!copiaCertificada) {
+    await MySwal.fire('Campo requerido', 'Debes indicar si deseas copia certificada.', 'warning');
+    return;
+  }
+
+  if (!medioNotificacion) {
+    await MySwal.fire('Campo requerido', 'Debes seleccionar un medio de notificación.', 'warning');
+    return;
+  }
+
+  const confirmacion = await MySwal.fire({
+    title: '¿Está seguro de enviar esta solicitud?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Aceptar',
+    cancelButtonText: 'Cancelar',
+    customClass: {
+      confirmButton: 'btn-azul',
+      cancelButton: 'btn-rojo',
+      actions: 'botones-horizontales',
+    },
+    buttonsStyling: false,
+  });
+
+  if (!confirmacion.isConfirmed) return;
+
+  const token = localStorage.getItem('token');
+  const decodedToken = parseJwt(token);
+  const userId = decodedToken?.sub;
+
+  if (!userId) {
+    console.error('No se pudo extraer el userId del token');
+    return;
+  }
+
+  const solicitud = {
+    userId,
+    telefonoSolicitante,
+    emailSolicitante,
+    numeroExpediente,
+    copiaCertificada,
+    medioNotificacion,
+  };
+
+  try {
+    const response = await fetch(`${ApiRoutes.expedientes}/solicitud`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
-      buttonsStyling: false,
+      body: JSON.stringify(solicitud),
     });
 
-    if (!confirmacion.isConfirmed) return;
+    const errorData = await response.clone().json();
 
-    const token = localStorage.getItem('token');
-    const decodedToken = parseJwt(token);
-    const userId = decodedToken?.sub;
+    if (!response.ok) {
+      // Validación específica por conflicto de expediente pendiente
+      if (
+        response.status === 409 &&
+        errorData.message?.toLowerCase().includes('expediente') &&
+        errorData.message?.toLowerCase().includes('pendiente')
+      ) {
+        await MySwal.fire({
+          icon: 'warning',
+          title: 'Solicitud duplicada',
+          text: errorData.message,
+          confirmButtonText: 'Entendido',
+        });
+        return;
+      }
 
-    if (!userId) {
-      console.error('No se pudo extraer el userId del token');
+      throw new Error(errorData.message || 'Error al enviar los datos al servidor');
+    }
+
+    await MySwal.fire({
+      title: 'Solicitud de Expediente enviada con éxito',
+      text: '¡Tu solicitud se ha enviado exitosamente!',
+      icon: 'success',
+      timer: 2000,
+      showConfirmButton: false,
+    });
+
+    setTelefonoSolicitante('');
+    setEmailSolicitante('');
+    setNumeroExpediente('');
+    setCopiaCertificada(null);
+    setMedioNotificacion('');
+    navigate('/mis-expedientes');
+  } catch (error: any) {
+    console.error('Error al enviar la solicitud:', error);
+
+    if (
+      error.message?.toLowerCase().includes('expediente') &&
+      error.message?.toLowerCase().includes('pendiente')
+    ) {
+      await MySwal.fire({
+        icon: 'warning',
+        title: 'Solicitud duplicada',
+        text: error.message,
+        confirmButtonText: 'Entendido',
+      });
       return;
     }
 
-    const solicitud = {
-      userId,
-      telefonoSolicitante,
-      emailSolicitante,
-      numeroExpediente,
-      copiaCertificada,
-      medioNotificacion,
-    };
+    await MySwal.fire('Error', 'Hubo un problema al enviar la solicitud. Inténtalo de nuevo.', 'error');
+  }
+};
 
-    try {
-      const response = await fetch(`${ApiRoutes.expedientes}/solicitud`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(solicitud),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al enviar los datos al servidor');
-      }
-
-      await MySwal.fire({
-        title: 'Solicitud de Expediente enviada con éxito',
-        text: '¡Tu solicitud se ha enviado exitosamente!',
-        icon: 'success',
-        timer: 2000,
-        showConfirmButton: false,
-      });
-
-      setTelefonoSolicitante('');
-      setEmailSolicitante('');
-      setNumeroExpediente('');
-      setCopiaCertificada(null);
-      setMedioNotificacion('');
-      navigate('/mis-expedientes');
-    } catch (error) {
-      console.error('Error al enviar la solicitud:', error);
-      MySwal.fire('Error', 'Hubo un problema al enviar la solicitud. Inténtalo de nuevo.', 'error');
-    }
-  };
 
   const parseJwt = (token: string | null): DecodedToken | null => {
     if (!token) return null;

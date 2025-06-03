@@ -60,7 +60,7 @@ export default function UsuarioPlano() {
         file,
         preview: URL.createObjectURL(file),
       }));
-  
+
     if (uploadedFiles.length + nuevosArchivos.length > 5) {
       MySwal.fire({
         title: 'Límite Excedido',
@@ -70,10 +70,10 @@ export default function UsuarioPlano() {
       });
       return;
     }
-  
+
     setUploadedFiles(prevFiles => [...prevFiles, ...nuevosArchivos]);
   }, [uploadedFiles]);
-  
+
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -85,7 +85,6 @@ export default function UsuarioPlano() {
     URL.revokeObjectURL(fileToRemove.preview);
   };
 
-  // const handleSend = async () => {
   //   if (uploadedFiles.length === 0) {
   //     MySwal.fire('Error', 'No has subido ningún archivo.', 'warning');
   //     return;
@@ -170,7 +169,119 @@ export default function UsuarioPlano() {
   //   }
   // };
 
-const handleSend = async () => {
+  // const handleSend = async () => {
+  //   if (uploadedFiles.length === 0) {
+  //     await MySwal.fire('Error', 'No has subido ningún archivo.', 'warning');
+  //     return;
+  //   }
+
+  //   if (!comentario.trim()) {
+  //     await MySwal.fire('Error', 'Debes ingresar un comentario.', 'warning');
+  //     return;
+  //   }
+
+  //   if (!numeroPlano.trim()) {
+  //     await MySwal.fire('Error', 'Debes ingresar el número de plano.', 'warning');
+  //     return;
+  //   }
+
+  //   if (!numeroExpediente.trim()) {
+  //     await MySwal.fire('Error', 'Debes ingresar el número de expediente.', 'warning');
+  //     return;
+  //   }
+
+  //   // ❗ Validación de palabras largas en el comentario
+  //   const palabrasLargas = comentario.split(/\s+/).filter(p => p.length > 30);
+  //   if (palabrasLargas.length > 0) {
+  //     await MySwal.fire({
+  //       icon: 'warning',
+  //       title: 'Comentario inválido',
+  //       text: 'Evita usar palabras con más de 30 caracteres seguidos en el comentario.',
+  //       confirmButtonText: 'Entendido',
+  //     });
+  //     return;
+  //   }
+
+  //   const confirmacion = await MySwal.fire({
+  //     title: '¿Está seguro de enviar esta solicitud?',
+  //     icon: 'question',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Aceptar',
+  //     cancelButtonText: 'Cancelar',
+  //     customClass: {
+  //       confirmButton: 'btn-azul',
+  //       cancelButton: 'btn-rojo',
+  //       actions: 'botones-horizontales',
+  //     },
+  //     buttonsStyling: false,
+  //   });
+
+  //   if (!confirmacion.isConfirmed) return;
+
+  //   const formData = new FormData();
+  //   uploadedFiles.forEach((file) => formData.append('files', file.file));
+  //   formData.append('Comentario', comentario.trim());
+  //   formData.append('NumeroPlano', numeroPlano.trim());
+  //   formData.append('NumeroExpediente', numeroExpediente.trim());
+
+  //   const token = localStorage.getItem('token');
+  //   const decodedToken = parseJwt(token);
+  //   const userId = decodedToken?.sub;
+
+  //   if (!userId) {
+  //     await MySwal.fire('Error', 'No se pudo obtener el ID del usuario.', 'error');
+  //     return;
+  //   }
+
+  //   formData.append('userId', userId);
+
+  //   try {
+  //     const response = await fetch(ApiRoutes.planos, {
+  //       method: 'POST',
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: formData,
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+
+  //       // Validación combinada por status y mensaje
+  //       if (response.status === 409 && errorData.message?.includes('número de plano en estado pendiente')) {
+  //         await MySwal.fire({
+  //           icon: 'warning',
+  //           title: 'Solicitud duplicada',
+  //           text: errorData.message,
+  //           confirmButtonText: 'Entendido',
+  //         });
+  //         return;
+  //       }
+
+  //       throw new Error(errorData.message || 'Error al enviar los datos');
+  //     }
+
+
+  //     await MySwal.fire({
+  //       title: 'Solicitud de Revisión de Plano enviada con éxito',
+  //       text: '¡Tu solicitud se ha enviado exitosamente!',
+  //       icon: 'success',
+  //       timer: 2000,
+  //       showConfirmButton: false,
+  //     });
+
+  //     setUploadedFiles([]);
+  //     setComentario('');
+  //     setNumeroPlano('');
+  //     setNumeroExpediente('');
+  //     navigate('/mis-planos');
+  //   } catch (error) {
+  //     console.error('Error al enviar archivos:', error);
+  //     await MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
+  //   }
+  // };
+
+  const handleSend = async () => {
   if (uploadedFiles.length === 0) {
     await MySwal.fire('Error', 'No has subido ningún archivo.', 'warning');
     return;
@@ -191,7 +302,6 @@ const handleSend = async () => {
     return;
   }
 
-  // ❗ Validación de palabras largas en el comentario
   const palabrasLargas = comentario.split(/\s+/).filter(p => p.length > 30);
   if (palabrasLargas.length > 0) {
     await MySwal.fire({
@@ -220,7 +330,7 @@ const handleSend = async () => {
   if (!confirmacion.isConfirmed) return;
 
   const formData = new FormData();
-  uploadedFiles.forEach((file) => formData.append('files', file.file));
+  uploadedFiles.forEach(file => formData.append('files', file.file));
   formData.append('Comentario', comentario.trim());
   formData.append('NumeroPlano', numeroPlano.trim());
   formData.append('NumeroExpediente', numeroExpediente.trim());
@@ -239,14 +349,27 @@ const handleSend = async () => {
   try {
     const response = await fetch(ApiRoutes.planos, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
       body: formData,
     });
 
+    const errorData = await response.clone().json();
+
     if (!response.ok) {
-      const errorData = await response.json();
+      if (
+        response.status === 409 &&
+        errorData.message?.toLowerCase().includes('número de plano') &&
+        errorData.message?.toLowerCase().includes('pendiente')
+      ) {
+        await MySwal.fire({
+          icon: 'warning',
+          title: 'Solicitud duplicada',
+          text: errorData.message,
+          confirmButtonText: 'Entendido',
+        });
+        return;
+      }
+
       throw new Error(errorData.message || 'Error al enviar los datos');
     }
 
@@ -263,11 +386,26 @@ const handleSend = async () => {
     setNumeroPlano('');
     setNumeroExpediente('');
     navigate('/mis-planos');
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error al enviar archivos:', error);
+
+    if (
+      error.message?.toLowerCase().includes('número de plano') &&
+      error.message?.toLowerCase().includes('pendiente')
+    ) {
+      await MySwal.fire({
+        icon: 'warning',
+        title: 'Solicitud duplicada',
+        text: error.message,
+        confirmButtonText: 'Entendido',
+      });
+      return;
+    }
+
     await MySwal.fire('Error', 'Hubo un problema al enviar los archivos. Intente de nuevo.', 'error');
   }
 };
+
 
 
 
@@ -335,57 +473,17 @@ const handleSend = async () => {
           placeholder="Ingresa el número de expediente"
         />
       </div>
-      {/* <div {...getRootProps()} className={`p-8 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}`}>
+
+
+      {/* Aquí se añadió mt-6 para separar del input anterior */}
+      <div {...getRootProps()} className={`mt-6 p-8 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}`}>
         <input {...getInputProps()} />
         <p className="text-lg text-gray-500">
           {isDragActive
             ? 'Suelta los archivos aquí...'
             : 'Arrastra y suelta archivos PDF aquí, o haz clic para seleccionar archivos'}
         </p>
-      </div> */}
-      
-
-{/* <div className="mt-4">
-  <label htmlFor="numeroPlano" className="block text-lg font-medium text-gray-700 mb-2">Número de Plano</label>
-  <input
-    id="numeroPlano"
-    inputMode="numeric"
-    pattern="[0-9]*"
-    value={numeroPlano}
-    onChange={(e) => {
-      const onlyNums = e.target.value.replace(/\D/g, '');
-      setNumeroPlano(onlyNums);
-    }}
-    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-    placeholder="Ingresa el número de plano"
-  />
-</div>
-
-<div className="mt-4">
-  <label htmlFor="numeroExpediente" className="block text-lg font-medium text-gray-700 mb-2">Número de Expediente</label>
-  <input
-    id="numeroExpediente"
-    inputMode="numeric"
-    pattern="[0-9]*"
-    value={numeroExpediente}
-    onChange={(e) => {
-      const onlyNums = e.target.value.replace(/\D/g, '');
-      setNumeroExpediente(onlyNums);
-    }}
-    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-    placeholder="Ingresa el número de expediente"
-  />
-</div> */}
-
-{/* Aquí se añadió mt-6 para separar del input anterior */}
-<div {...getRootProps()} className={`mt-6 p-8 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}`}>
-  <input {...getInputProps()} />
-  <p className="text-lg text-gray-500">
-    {isDragActive
-      ? 'Suelta los archivos aquí...'
-      : 'Arrastra y suelta archivos PDF aquí, o haz clic para seleccionar archivos'}
-  </p>
-</div>
+      </div>
 
 
       {uploadedFiles.length > 0 && (

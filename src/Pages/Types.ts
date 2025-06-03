@@ -165,6 +165,7 @@ export interface DecodedToken {
     email: string;
     cedula: string;
     telefono: number;
+      telefonoPrefijo?: string;
     password: string;
     isActive: boolean;
     roles: {
