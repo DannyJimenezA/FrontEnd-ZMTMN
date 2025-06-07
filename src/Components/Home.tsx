@@ -19,16 +19,18 @@ export default function Home() {
         </section>
 
         <ImageSlider />
-
         <section className="text-center mb-16">
           <h2 className="text-3xl font-semibold mb-4 text-gray-800">Definición</h2>
-          <p className="text-lg text-gray-700 mb-4">
-            La Zona Marítimo Terrestre es la franja territorial de doscientos metros de ancho a todo lo largo de los litorales Atlántico y Pacífico de la República, cualquiera que sea su naturaleza, medidos horizontalmente a partir de la línea de la pleamar ordinaria, los terrenos y rocas que deje el mar en descubierto en la marea baja.
-          </p>
-          <p className="text-lg text-gray-700 mb-4">
-            Esta zona marítima se extiende también por las márgenes de los ríos hasta el sitio en que sean navegables o se hagan sensibles las mareas, con un ancho de doscientos metros desde cada orilla, contados desde la línea que marque la marea alta. Su uso y aprovechamiento se encuentra regulado por la Ley No. 6043.
-          </p>
+          <div className="bg-white p-6 rounded-lg shadow-md max-w-8xl mx-auto">
+            <p className="text-lg text-gray-700 mb-4">
+              La Zona Marítimo Terrestre es la franja territorial de doscientos metros de ancho a todo lo largo de los litorales Atlántico y Pacífico de la República, cualquiera que sea su naturaleza, medidos horizontalmente a partir de la línea de la pleamar ordinaria, los terrenos y rocas que deje el mar en descubierto en la marea baja.
+            </p>
+            <p className="text-lg text-gray-700 mb-0">
+              Esta zona marítima se extiende también por las márgenes de los ríos hasta el sitio en que sean navegables o se hagan sensibles las mareas, con un ancho de doscientos metros desde cada orilla, contados desde la línea que marque la marea alta. Su uso y aprovechamiento se encuentra regulado por la Ley No. 6043.
+            </p>
+          </div>
         </section>
+
 
         <section className="text-center mb-16">
           <h2 className="text-3xl font-semibold mb-4 text-gray-800">Composición</h2>
@@ -51,21 +53,24 @@ export default function Home() {
             </div>
           </div>
         </section>
-
         <section className="text-center mb-16">
-          <h2 className="text-3xl font-semibold mb-4 text-gray-800">Competencias del Departamento de Zona Marítima Terrestre</h2>
-          <ul className="list-disc pl-6 space-y-4 text-lg text-gray-700">
-            <li>
+          <h2 className="text-3xl font-semibold mb-8 text-gray-800">
+            Competencias del Departamento de Zona Marítima Terrestre
+          </h2>
+
+          <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="bg-white p-6 rounded-lg shadow-md text-left text-gray-700 text-lg">
               Gestionar los trámites relativos a las concesiones de terrenos ubicados en la zona restringida de la zona marítimo terrestre jurisdicción de esta Municipalidad conforme lo establece el Plan Regulador Costero vigente para el sector costero, cumpliendo con establecido en Ley Nº6043 y su Reglamento, asimismo, tramitar las solicitudes de prórrogas de concesión, cesiones de derechos de una concesión inscrita.
-            </li>
-            <li>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-md text-left text-gray-700 text-lg">
               Gestionar los trámites relativos al otorgamiento de permisos de uso en precario sobre aquellos terrenos ubicados en la zona restringida de la zona marítimo terrestre jurisdicción de esta Municipalidad donde no se cuenta con Plan Regulador Costero.
-            </li>
-            <li>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-md text-left text-gray-700 text-lg">
               Realizar las inspecciones de terrenos y áreas con uso público ubicados dentro de la zona marítimo terrestre jurisdicción de esta Municipalidad, para el resguardo y protección de estos bienes demaniales.
-            </li>
-          </ul>
+            </div>
+          </div>
         </section>
+
 
         <section id="videos-ayuda" className="text-center scroll-mt-28">
 
