@@ -1,4 +1,0 @@
-User-agent: *
-Disallow:
-
-Sitemap: https://zmtmn-usuarios.vercel.app/sitemap.xml
