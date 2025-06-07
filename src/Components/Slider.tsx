@@ -22,15 +22,23 @@ export default function ImageSlider() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto mb-16">
-      <Slider {...settings}>
-        {images.map((image, index) => (
-          <div key={index} className="outline-none">
-            <img src={image} alt={`Slide ${index + 1}`} className="w-full h-[400px] object-cover" />
-          </div>
-        ))}
-      </Slider>
-    </div>
+<div className="w-full max-w-4xl mx-auto mb-16">
+  <Slider {...settings}>
+    {images.map((image, index) => (
+      <div key={index} className="outline-none">
+        <div className="aspect-video overflow-hidden rounded-lg shadow-md">
+          <img
+            src={image}
+            alt={`Slide ${index + 1}`}
+            className="w-full h-full object-cover object-center"
+            loading="lazy"
+          />
+        </div>
+      </div>
+    ))}
+  </Slider>
+</div>
+
   );
 }
 

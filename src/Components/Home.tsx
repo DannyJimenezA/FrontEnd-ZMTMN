@@ -2,11 +2,13 @@ import ImageSlider from './Slider';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import DocumentosPDF from './DocumentosPDF';
+import VideosAyuda from './VideosAyuda';
+import AyudaContactoFlotante from './AyudaContactoFlotante';
 
 export default function Home() {
   return (
     <div >
-      <Navbar/>
+      <Navbar />
       <div className="container mx-auto px-4 py-12">
         <section className="text-center mb-16">
           <h1 className="text-5xl font-bold mb-6 text-gray-800">Zona Marítima Terrestre</h1>
@@ -65,12 +67,17 @@ export default function Home() {
           </ul>
         </section>
 
+        <section id="videos-ayuda" className="text-center scroll-mt-28">
+
+          <VideosAyuda />
+        </section>
         <section className="text-center">
 
-          <DocumentosPDF/>
+          <DocumentosPDF />
         </section>
       </div>
-            <Footer/>
+      <AyudaContactoFlotante />
+      <Footer />
     </div>
   );
 }

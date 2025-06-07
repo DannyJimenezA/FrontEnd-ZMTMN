@@ -4,7 +4,7 @@ const DocumentosPDF = () => {
   return (
     <section className="mb-16">
       <h2 className="text-3xl font-semibold mb-4 text-gray-800 text-center">Documentos</h2>
-      <p className="text-lg text-gray-600 mb-8 text-center">Aquí podrás descargar documentos relevantes sobre la Zona Marítima Terrestre:</p>
+      <p className="text-lg text-gray-600 mb-8 text-center">Aquí podrás descargar documentos relevantes del Departamento de Zona Marítima Terrestre:</p>
       <div className="bg-white p-6 rounded-lg shadow-md max-w-3xl mx-auto">
         <ul className="space-y-4">
           <li className="flex items-center">

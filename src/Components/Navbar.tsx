@@ -22,9 +22,9 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
   const navigate = useNavigate();
   // const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // Referencia para detectar clics fuera del dropdown de usuario
-    const userDropdownRef = useRef<HTMLDivElement>(null);
-    const solicitudesDropdownRef = useRef<HTMLDivElement>(null);
+  // Referencia para detectar clics fuera del dropdown de usuario
+  const userDropdownRef = useRef<HTMLDivElement>(null);
+  const solicitudesDropdownRef = useRef<HTMLDivElement>(null);
 
   // Verificar si el usuario está autenticado y si el token ha expirado
   const checkAuthentication = () => {
@@ -32,7 +32,7 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
     if (token) {
       try {
         const decodedToken: DecodedToken = jwtDecode(token);
-        
+
         // Verificar si el token ha expirado
         if (decodedToken.exp * 1000 > Date.now()) {
           setIsAuthenticated(true);
@@ -75,20 +75,6 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
     setIsUserDropdownOpen(false); // cerrar dropdown de usuario
     navigate('/');
   };
-
-  // Cerrar el dropdown de "Solicitudes" al hacer clic fuera
-  // useEffect(() => {
-  //   const handleClickOutside = (event: MouseEvent) => {
-  //     if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-  //       setIsSolicitudesDropdownOpen(false);
-  //     }
-  //   };
-
-  //   document.addEventListener('mousedown', handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener('mousedown', handleClickOutside);
-  //   };
-  // }, []);
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -129,12 +115,12 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
             <Link to="/usuario-denuncia" className="text-gray-600 hover:text-blue-600">Denuncias</Link>
 
             {/* Dropdown para "Realizar Solicitudes" */}
-            <div 
+            <div
               ref={solicitudesDropdownRef}
               onClick={() => {
                 setIsSolicitudesDropdownOpen(!isSolicitudesDropdownOpen);
                 setIsUserDropdownOpen(false);
-              }} 
+              }}
               className="relative dropdown-container"
             >
               <button className="text-gray-600 hover:text-blue-600">
@@ -159,29 +145,24 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
                   </Link>
                 </div>
               )}
+
             </div>
+            {/* <a
+              href="#videos-ayuda"
+              className="text-gray-600 hover:text-blue-600"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Ayudas
+            </a> */}
+
 
             {/* <Link to="/mis-solicitudes" className="text-gray-600 hover:text-blue-600">Mis Solicitudes</Link> */}
 
             {/* Condición de usuario autenticado */}
             {isAuthenticated ? (
-               <div ref={userDropdownRef} className="relative">
-                {/* <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsMenuOpen(!isMenuOpen);
-                  }}
-                  className="flex items-center gap-2"
-                >
-                  <UserIcon className="h-6 w-6 text-gray-600" />
-                </button>
-                {isMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-2 p-4">
-                    <p className="text-sm text-gray-700 font-semibold">{userEmail}</p>
-                    <button onClick={handleLogout} className="block mt-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left">
-                      Cerrar sesión
-                    </button> */}
-                    <button
+              <div ref={userDropdownRef} className="relative">
+
+                <button
                   onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
                   className="flex items-center gap-2"
                 >
@@ -191,12 +172,12 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
                   <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-2 p-4">
                     <p className="text-sm text-gray-700 font-semibold break-all">{userEmail}</p>
                     <Link
-      to="/mi-perfil"
-      className="block mt-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100"
-      onClick={() => setIsUserDropdownOpen(false)}
-    >
-      Mi información
-    </Link>
+                      to="/mi-perfil"
+                      className="block mt-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100"
+                      onClick={() => setIsUserDropdownOpen(false)}
+                    >
+                      Mi información
+                    </Link>
                     <button
                       onClick={handleLogout}
                       className="block mt-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left"
@@ -212,7 +193,7 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
           </div>
 
           {/* Mobile menu button */}
-          <button 
+          <button
             className="md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
@@ -223,13 +204,13 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
             )}
           </button>
         </div>
-        
+
         {/* Mobile menu */}
         {isMenuOpen && (
           <div className="md:hidden py-4 space-y-2">
             <Link to="/mis-citas" className="block py-2 px-4 text-gray-600 hover:text-blue-600">Citas</Link>
             <Link to="/usuario-denuncia" className="block py-2 px-4 text-gray-600 hover:text-blue-600">Denuncias</Link>
-            
+
             {/* Dropdown de "Realizar Solicitudes" en móvil */}
             <div className="relative">
               <button
@@ -249,52 +230,35 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
                 </div>
               )}
             </div>
+            {/* <a
+              href="#videos-ayuda"
+              className="block py-2 px-4 text-gray-600 hover:text-blue-600"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Ayudas
+            </a> */}
 
-            {/* <Link to="/mis-solicitudes" className="block py-2 px-4 text-gray-600 hover:text-blue-600">Mis Solicitudes</Link> */}
 
-            {/* Autenticación en modo móvil */}
-            {/* {isAuthenticated ? (
-              <div className="relative">
-                <button
-                  onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                  className="flex items-center w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 focus:outline-none"
+            {isAuthenticated ? (
+              <>
+                <div className="block py-2 px-4 text-gray-600">{userEmail}</div>
+                <Link
+                  to="/mi-perfil"
+                  className="block w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition"
+                  onClick={() => setIsMenuOpen(false)}
                 >
-                  <UserIcon className="h-6 w-6 mr-2" /> {userEmail}
+                  Mi información
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-red-600 hover:text-white hover:bg-red-500 transition"
+                >
+                  Cerrar sesión
                 </button>
-                {isUserDropdownOpen && (
-                  <div className="pl-4">
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100"
-                    >
-                      Cerrar sesión
-                    </button>
-                  </div>
-                )}
-              </div>
+              </>
             ) : (
               <Link to="/login" className="block py-2 px-4 text-gray-600 hover:text-blue-600">Iniciar Sesión</Link>
-            )} */}
-            {isAuthenticated ? (
-  <>
-    <div className="block py-2 px-4 text-gray-600">{userEmail}</div>
-    <Link
-  to="/mi-perfil"
-  className="block w-full text-left px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition"
-  onClick={() => setIsMenuOpen(false)}
->
-  Mi información
-</Link>
-    <button
-      onClick={handleLogout}
-      className="block w-full text-left px-4 py-2 text-red-600 hover:text-white hover:bg-red-500 transition"
-    >
-      Cerrar sesión
-    </button>
-  </>
-) : (
-  <Link to="/login" className="block py-2 px-4 text-gray-600 hover:text-blue-600">Iniciar Sesión</Link>
-)}
+            )}
 
           </div>
         )}
