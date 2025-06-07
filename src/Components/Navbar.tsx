@@ -194,6 +194,7 @@ export default function Navbar({ isFixed = false }: NavbarProps) {
 
           {/* Mobile menu button */}
           <button
+            aria-label="Abrir menú de navegación"
             className="md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >

@@ -11,13 +11,13 @@ export default function Footer() {
           <div className="text-center md:text-left">
             <h3 className="text-lg font-semibold mb-4">Síguenos en nuestras redes</h3>
             <div className="flex justify-center md:justify-start space-x-4">
-              <a href="https://www.facebook.com/alcaldia.denicoya" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
+              <a href="https://www.facebook.com/alcaldia.denicoya" target="_blank" rel="noopener noreferrer"   aria-label="Facebook de la Municipalidad de Nicoya" className="text-gray-400 hover:text-white">
                 <FaFacebook size={24} />
               </a>
-              <a href="https://www.instagram.com/municipalidadnicoya/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
+              <a href="https://www.instagram.com/municipalidadnicoya/" target="_blank" rel="noopener noreferrer"   aria-label="Instagram de la Municipalidad de Nicoya" className="text-gray-400 hover:text-white">
                 <FaInstagram size={24} />
               </a>
-              <a href="https://www.nicoya.go.cr" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
+              <a href="https://www.nicoya.go.cr" target="_blank" rel="noopener noreferrer"   aria-label="Sitio web oficial de la Municipalidad de Nicoya" className="text-gray-400 hover:text-white">
                 <TbWorld size={24} />
               </a>
             </div>
