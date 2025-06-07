@@ -48,7 +48,7 @@ export default function VideosAyuda() {
         <div className="bg-white rounded-lg shadow-md p-4">
           <div className="relative w-full aspect-video mb-4">
             <iframe
-              src="https://player.cloudinary.com/embed/?cloud_name=dxztlnzdp&public_id=Nicoya_Guanacaste_Costa_Rica_-_Hermosa_Vista_A%C3%A9rea_Con_Drone_4K_s3jp5y&profile=cld-default"
+              src="https://player.cloudinary.com/embed/?cloud_name=dxztlnzdp&public_id=WhatsApp_Video_2025-06-07_at_16.58.36_588e6e7d_rmq93s&profile=cld-default"
               className="absolute inset-0 w-full h-full rounded"
               allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
               allowFullScreen

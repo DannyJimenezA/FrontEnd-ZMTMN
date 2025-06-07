@@ -133,7 +133,7 @@ export default function CustomImageSlider(): JSX.Element {
 
         {/* Dots */}
         <div className="absolute bottom-4 right-4 flex space-x-2 z-20">
-          {images.map((_, index) => (
+          {/* {images.map((_, index) => (
             <button
               key={index}
               className={`w-3 h-3 rounded-full transition-colors ${
@@ -141,20 +141,34 @@ export default function CustomImageSlider(): JSX.Element {
               }`}
               onClick={() => setCurrentIndex(index)}
             />
-          ))}
+          ))} */}
+          {images.map((_, index) => (
+  <button
+    key={index}
+    aria-label={`Ir a la imagen ${index + 1}`}
+    aria-current={index === currentIndex ? "true" : undefined}
+    className={`w-3 h-3 rounded-full transition-colors ${
+      index === currentIndex ? 'bg-blue-600' : 'bg-gray-300'
+    }`}
+    onClick={() => setCurrentIndex(index)}
+  />
+))}
+
         </div>
 
         {/* Botón Izquierdo */}
         <button
           onClick={prevSlide}
+            aria-label="Imagen anterior"
           className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full z-20"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
 
         {/* Botón Derecho */}
-        <button
+        <button  
           onClick={nextSlide}
+          aria-label="Siguiente imagen"
           className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full z-20"
         >
           <ChevronRight className="h-4 w-4" />
