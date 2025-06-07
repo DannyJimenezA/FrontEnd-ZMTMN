@@ -142,15 +142,16 @@ export default function CustomImageSlider(): JSX.Element {
               onClick={() => setCurrentIndex(index)}
             />
           ))} */}
-          {images.map((_, index) => (
+          {images.map((image, index) => (
             <button
+              key={image.alt || `dot-${index}`} // Usa una key única
               aria-label={`Ir a la imagen ${index + 1}`}
-              className={`w-5 h-5 p-2 rounded-full transition-colors ${index === currentIndex ? 'bg-blue-600' : 'bg-gray-300'
+              className={`w-4 h-4 rounded-full transition-colors ${index === currentIndex ? 'bg-blue-600' : 'bg-gray-300'
                 }`}
               onClick={() => setCurrentIndex(index)}
             />
-
           ))}
+
 
         </div>
 
