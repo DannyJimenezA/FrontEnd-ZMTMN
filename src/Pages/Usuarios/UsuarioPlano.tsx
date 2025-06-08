@@ -45,39 +45,58 @@ export default function UsuarioPlano() {
   }, [navigate]);
 
   // const onDrop = useCallback((acceptedFiles: File[]) => {
-  //   const newFiles = acceptedFiles
+  //   const nuevosArchivos = acceptedFiles
   //     .filter(file => file.type === 'application/pdf')
   //     .map(file => ({
   //       file,
   //       preview: URL.createObjectURL(file),
   //     }));
-  //   setUploadedFiles(prevFiles => [...prevFiles, ...newFiles]);
-  // }, []);
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const nuevosArchivos = acceptedFiles
-      .filter(file => file.type === 'application/pdf')
-      .map(file => ({
-        file,
-        preview: URL.createObjectURL(file),
-      }));
 
-    if (uploadedFiles.length + nuevosArchivos.length > 5) {
-      MySwal.fire({
-        title: 'Límite Excedido',
-        text: 'Solo se pueden subir hasta 5 archivos PDF.',
-        icon: 'warning',
-        confirmButtonColor: '#2563eb',
-      });
-      return;
-    }
+  //   if (uploadedFiles.length + nuevosArchivos.length > 5) {
+  //     MySwal.fire({
+  //       title: 'Límite Excedido',
+  //       text: 'Solo se pueden subir hasta 5 archivos PDF.',
+  //       icon: 'warning',
+  //       confirmButtonColor: '#2563eb',
+  //     });
+  //     return;
+  //   }
 
-    setUploadedFiles(prevFiles => [...prevFiles, ...nuevosArchivos]);
-  }, [uploadedFiles]);
+  //   setUploadedFiles(prevFiles => [...prevFiles, ...nuevosArchivos]);
+  // }, [uploadedFiles]);
+
+const onDrop = useCallback((acceptedFiles: File[]) => {
+  const allowedExtensions = ['.pdf', '.shp', '.shx', '.dbf', '.prj'];
+
+  const nuevosArchivos = acceptedFiles
+    .filter(file => {
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      return ext && allowedExtensions.includes(`.${ext}`);
+    })
+    .map(file => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+
+  if (uploadedFiles.length + nuevosArchivos.length > 10) {
+    MySwal.fire({
+      title: 'Límite Excedido',
+      text: 'Solo se pueden subir hasta 10 archivos (PDF y shapefiles).',
+      icon: 'warning',
+      confirmButtonColor: '#2563eb',
+    });
+    return;
+  }
+
+  setUploadedFiles(prevFiles => [...prevFiles, ...nuevosArchivos]);
+}, [uploadedFiles]);
 
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'application/pdf': ['.pdf'] },
+    accept: { 'application/pdf': ['.pdf'],
+       'application/octet-stream': ['.shp', '.shx', '.dbf', '.prj'],
+     },
   });
 
   const removeFile = (fileToRemove: UploadedFile) => {
@@ -481,7 +500,7 @@ export default function UsuarioPlano() {
         <p className="text-lg text-gray-500">
           {isDragActive
             ? 'Suelta los archivos aquí...'
-            : 'Arrastra y suelta archivos PDF aquí, o haz clic para seleccionar archivos'}
+            : 'Arrastra y suelta archivos PDF o Shapefile aquí, o haz clic para seleccionar archivos'}
         </p>
       </div>
 
